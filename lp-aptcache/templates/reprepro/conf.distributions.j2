@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+{% for c in  pkg.repo.conf -%}
+Origin: {{ c.origin }}
+Suite: {{ c.suite }}
+Codename: {{ c.codename }}
+Architectures: {{ c.arch }}
+Components: {{ c.comp }}
+{% endfor %}

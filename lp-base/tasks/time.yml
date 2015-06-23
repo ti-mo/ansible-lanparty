@@ -1,0 +1,16 @@
+---
+- name: Time | Check current timezone
+  shell: cat /etc/timezone
+  register: time
+  changed_when: time.stdout != timezone
+
+- name: Time | Set timezone variables
+  copy:
+    content: "{{ timezone }}"
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  when: time.changed
+  notify: update timezone

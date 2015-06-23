@@ -1,0 +1,30 @@
+---
+- name: Kibana Directories
+  file:
+    path={{ item }}
+    state=directory
+  with_items:
+    - /var/tmp/kibana
+    - '{{ kibana.install_dir }}'
+
+- name: Download Kibana
+  get_url:
+    url=https://download.elasticsearch.org/kibana/kibana/kibana-{{ kibana.version }}.tar.gz
+    dest=/var/tmp/kibana/kibana-{{ kibana.version }}.tar.gz
+  register: dl
+
+- name: Extract Kibana
+  unarchive:
+    src=/var/tmp/kibana/kibana-{{ kibana.version }}.tar.gz
+    dest=/var/tmp/kibana/
+    copy=no
+  when: dl.changed
+
+- name: Install Kibana
+  shell: rsync -a /var/tmp/kibana/kibana-{{ kibana.version }}/ {{ kibana.install_dir }}/
+  when: dl.changed
+
+- name: Kibana Configuration
+  template:
+    src=kibana.conf.j2
+    dest={{ kibana.install_dir }}/config.js

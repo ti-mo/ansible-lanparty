@@ -1,0 +1,11 @@
+---
+- name: MotD | Render Message of the Day
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: MotD | Disable motd.dynamic
+  lineinfile:
+    regexp: 'motd\.dynamic'
+    dest: /etc/pam.d/sshd
+    state: absent

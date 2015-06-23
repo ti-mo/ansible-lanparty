@@ -1,0 +1,13 @@
+---
+- name: Install isc-dhcp-server
+  apt:
+    name=isc-dhcp-server
+    cache_valid_time={{ apt.cachetime }}
+    update_cache=yes
+  tags: [ 'packages' ]
+
+- name: DHCPd Configuration
+  template:
+    src=dhcpd.j2
+    dest=/etc/dhcp/dhcpd.conf
+  notify: restart dhcpd

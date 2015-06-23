@@ -1,0 +1,14 @@
+---
+- name: IPTables Rules
+  template:
+    src=iptables.j2
+    dest="{{ iptables.path }}"
+  notify: restore iptables
+  tags: [ 'iptables' ]
+
+# Don't use state=started, this only needs to run once on boot
+- name: NetFilter Service
+  service:
+    name=netfilter-persistent
+    enabled=true
+  tags: [ 'services' ]

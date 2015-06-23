@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+# Nginx proxy for Kibana
+#
+server {
+  listen          *:80 ;
+  server_name     _;
+
+  access_log      /var/log/nginx/kibana.access.log;
+
+  location / {
+    root    {{ kibana.install_dir }};
+    index   index.html    index.htm;
+
+    # Access Control
+    {% for n in trusted_networks -%}
+    allow {{ n }};
+    {% endfor -%}
+    deny all;
+  }
+}

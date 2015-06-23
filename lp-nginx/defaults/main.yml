@@ -1,0 +1,3 @@
+---
+nginx:
+  disable_default: false

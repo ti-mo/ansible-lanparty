@@ -1,0 +1,32 @@
+---
+- name: TeamSpeak3 Configuration
+  template:
+    src=ts3server.ini.j2
+    dest={{ ts.install_dir }}/ts3server.ini
+
+- name: MySQL Client Configuration
+  template:
+    src=ts3db.ini.j2
+    dest={{ ts.install_dir }}/ts3db_{{ ts.db_driver }}.ini
+
+- name: File Permissions
+  file:
+    path={{ ts.install_dir }}
+    owner={{ ts.user }}
+    group={{ ts.user }}
+    recurse=yes
+
+- name: TS3 Init Wrapper
+  template:
+    src=ts3init.j2
+    dest=/etc/init.d/teamspeak3
+    mode=744
+  tags: [ 'services' ]
+
+- name: TeamSpeak3 Service
+  service:
+    name=teamspeak3
+    state=started
+    enabled=true
+    pattern=ts3server_linux_amd64
+  tags: [ 'services' ]

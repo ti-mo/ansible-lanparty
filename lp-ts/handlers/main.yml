@@ -1,0 +1,3 @@
+---
+- name: restart ts3
+  service: name=teamspeak3 state=restarted

@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+# Main RSyslog Configuration File
+#
+
+$ModLoad imuxsock   # offers UNIX socket for syslog() call
+$ModLoad imklog     # reads messages from kernel to syslog engine
+
+# Where to place spool and state files
+$WorkDirectory /var/spool/rsyslog
+
+# Include all config files in /etc/rsyslog.d/
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+# We still want some default on-disk logging
+*.*;auth,authpriv.none      -/var/log/syslog
+*.emerg                     :omusrmsg:*
+*.=debug                    -/var/log/debug
+
+# Remote Syslogging
+{% for h in groups['logstash'] %}
+*.*   @@{{ hostvars[h]['ansible_default_ipv4']['address'] }}:{{ logstash.ports.syslog }}
+{% endfor %}

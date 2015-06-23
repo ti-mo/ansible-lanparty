@@ -1,0 +1,9 @@
+---
+- include: install.yml
+  tags: [ 'voice', 'ts' ]
+
+- include: mysql_compat.yml
+  tags: [ 'mysql' ]
+
+- include: teamspeak.yml
+  tags: [ 'voice', 'ts' ]

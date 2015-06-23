@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+option rfc3442-classless-static-routes code 121 = array of unsigned integer 8;
+
+send host-name = gethostname();
+
+request subnet-mask, broadcast-address, time-offset, routers,
+        netbios-name-servers, netbios-scope, interface-mtu,
+        rfc3442-classless-static-routes, ntp-servers;

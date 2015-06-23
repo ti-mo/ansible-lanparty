@@ -1,0 +1,13 @@
+*** Probes ***
+
++ FPing
+
+binary = /usr/bin/fping
+
+{% for n, p in ping_providers|dictsort() %}
+{% for cn, c in p.classes|dictsort() %}
+++ {{ smokeping.tool }}{{ n }}{{ cn }}
+tos = {{ c.0 * 4 }}
+
+{% endfor %}
+{% endfor %}

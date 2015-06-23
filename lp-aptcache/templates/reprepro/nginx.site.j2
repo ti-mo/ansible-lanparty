@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+server {
+  listen          *:{{ pkg.repo.port }};
+  server_name     {{ pkg.repo.domain }};
+
+  access_log      /var/log/nginx/pkg.access.log;
+
+  location / {
+    root    {{ pkg.repo.path }};
+    index   index.html index.htm;
+    autoindex on;
+  }
+}

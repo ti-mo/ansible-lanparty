@@ -1,0 +1,10 @@
+---
+####
+# Observium
+- include: observium.yml
+  tags: [ 'observium' ]
+
+###
+# Weathermap
+- include: weathermap.yml
+  tags: [ 'weathermap' ]

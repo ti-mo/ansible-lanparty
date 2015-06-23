@@ -1,0 +1,42 @@
+---
+- name: TeamSpeak3 User
+  user:
+    name={{ ts.user }}
+    createhome=no
+    system=yes
+
+- name: Create Installation Directory
+  file:
+    path={{ ts.install_dir }}/tarballs
+    state=directory
+    owner={{ ts.user }}
+    group={{ ts.user }}
+
+- name: Fetch Tarball
+  get_url:
+    url={{ ts.url }}
+    dest={{ ts.install_dir }}/tarballs/
+  register: tarball
+
+- name: Unpack Tarball
+  unarchive:
+    copy=no
+    src='{{ ts.install_dir }}/tarballs/{{ ts.url | basename }}'
+    dest={{ ts.install_dir }}
+    owner={{ ts.user }}
+    group={{ ts.user }}
+  when: tarball.changed
+  notify: restart ts3
+
+- name: Check Leading Directory
+  stat: path={{ ts.install_dir }}/{{ ts.leading_dir }}
+  register: p
+
+- name: Install TeamSpeak3 Files
+  shell: rsync -a {{ ts.install_dir }}/{{ ts.leading_dir }}/ {{ ts.install_dir }}/
+  when: p.stat.isdir is defined and p.stat.isdir
+
+- name: Remove Leading Directory
+  file:
+    path={{ ts.install_dir }}/{{ ts.leading_dir }}
+    state=absent

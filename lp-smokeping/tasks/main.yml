@@ -1,0 +1,37 @@
+---
+- name: Smokeping Directory
+  file:
+    path=/etc/smokeping/config.d
+    state=directory
+
+- name: Render Smokeping Configs
+  template:
+    src={{ item }}.j2
+    dest=/etc/smokeping/config.d/{{ item | title }}
+  with_items:
+    - alerts
+    - database
+    - general
+    - presentation
+    - probes
+    - slaves
+    - targets
+  notify: restart smokeping
+
+- name: Install Smokeping
+  apt:
+    name={{ item }}
+    cache_valid_time={{ apt.cachetime }}
+    update_cache=yes
+  with_items:
+    - smokeping
+    - sendmail
+    - sendmail-bin
+    - apache2
+  tags: [ 'packages' ]
+
+- name: Smokeping Service
+  service:
+    name=smokeping
+    state=started
+    enabled=true

@@ -1,0 +1,42 @@
+---
+- name: System | Resolver Configuration
+  template:
+    src: resolvconf.j2
+    dest: /etc/resolv.conf
+  tags: [ 'dns' ]
+
+- name: System | Hosts File
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+  tags: [ 'dns' ]
+
+- name: System | Set Hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+  notify: restart rsyslog
+  tags: [ 'hostname' ]
+
+- name: System | Persist Hostname
+  copy:
+    dest: /etc/hostname
+    content: "{{ inventory_hostname }}"
+  tags: [ 'hostname' ]
+
+- name: System | Modify Grub Boot Delay
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: "^\\#?GRUB_TIMEOUT"
+    line: "GRUB_TIMEOUT={{ grub_timeout | default(1) }}"
+  notify: make grub
+  tags: [ 'grub' ]
+
+- name: System | IP Kernel Parameters
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items: kern.params
+  tags: [ 'kernel' ]

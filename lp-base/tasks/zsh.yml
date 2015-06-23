@@ -1,0 +1,19 @@
+---
+- name: ZSH | Install ZSH
+  apt:
+    name: zsh
+    cache_valid_time: "{{ apt.cachetime }}"
+    update_cache: yes
+  tags: [ 'packages' ]
+
+- name: ZSH | Oh-My-ZSH
+  git:
+    repo: https://github.com/robbyrussell/oh-my-zsh.git
+    dest: /usr/share/oh-my-zsh
+  tags: [ 'omz', 'oh-my-zsh' ]
+
+- name: ZSH | Render zshrc
+  template:
+    src: zshrc.j2
+    dest: /etc/zsh/zshrc
+  tags: [ 'zshrc' ]

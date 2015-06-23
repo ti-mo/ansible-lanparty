@@ -1,0 +1,13 @@
+---
+- name: TC | Render TC Manager
+  template:
+    src: tc.j2
+    dest: /etc/init.d/tc
+    mode: 0755
+  notify: reload tc
+
+- name: TC | Start Service
+  service:
+    name: tc
+    state: started
+    enabled: true

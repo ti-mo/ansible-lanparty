@@ -1,0 +1,26 @@
+---
+# User toevoegen kan in `users` volgens het patroon hieronder.
+#
+#   - name: newuser
+#     uid: 2000
+#     shell: /bin/bash
+#     state: present
+#     password: ''
+#     keys:
+#       - name: id_rsa
+#         state: present
+#
+# _name, uid en keys zijn mandatory_
+#
+# * name en uid moeten uniek zijn in de hele omgeving
+# * keys worden toegevoegd als files/keys/<user>/<keyname>.pub
+# * shell moet een absoluut path zijn en de binary moet reeds geïnstalleerd zijn
+# * password moet gehashed zijn met bv. `mkpasswd --method=SHA-512`
+# * state kan worden gebruikt om users en keys te verwijderen/revoken (`absent`)
+users:
+  - name:
+    uid:
+    shell:
+    password:
+    keys:
+      - name:

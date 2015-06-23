@@ -1,0 +1,17 @@
+---
+- name: Install ntp package
+  apt:
+    name=ntp state=present
+  tags: [ 'packages' ]
+
+- name: Install ntp.conf template
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  notify: restart ntp
+
+- name: Start ntp service
+  service:
+    name=ntp
+    state=started
+    enabled=true
+    pattern='/ntpd'
+  tags: [ 'services' ]

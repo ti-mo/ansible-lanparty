@@ -1,0 +1,27 @@
+---
+- include: reprepo.yml
+  tags: [ 'repo', 'reprepro' ]
+
+- name: Apt Cache | Install APT-Cacher-NG Package
+  apt:
+    name: apt-cacher-ng
+  tags: [ 'packages' ]
+
+- name: Apt Cache | Render Configuration
+  template:
+    src: acng/acng.conf.j2
+    dest: /etc/apt-cacher-ng/acng.conf
+  notify: restart acng
+
+- name: Apt Cache | Render Admin Credentials
+  template:
+    src: acng/security.conf.j2
+    dest: /etc/apt-cacher-ng/security.conf
+  notify: restart acng
+
+- name: Apt Cache | APT-Cacher-NG Service
+  service:
+    name: apt-cacher-ng
+    state: started
+    enabled: true
+  tags: [ 'services' ]

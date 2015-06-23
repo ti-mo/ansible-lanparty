@@ -1,0 +1,9 @@
+---
+- name: restore iptables
+  service: name=iptables-persistent state=reloaded
+
+- name: restore ipset
+  service: name=ipset state=restarted
+
+- name: warn interfaces
+  debug: msg='WARNING, /etc/network/interfaces has been modified. Please restart interfaces manually.'

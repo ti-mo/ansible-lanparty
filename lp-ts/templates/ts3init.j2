@@ -1,0 +1,14 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          teamspeak3
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop teamspeak3 server
+### END INIT INFO
+# {{ ansible_managed }}
+# Runs TeamSpeak3 as a daemon in user mode
+export LD_LIBRARY_PATH="{{ ts.install_dir }}"
+su -c "{{ ts.install_dir }}/ts3server_startscript.sh $@ inifile=ts3server.ini" {{ ts.user }}

@@ -1,0 +1,29 @@
+# {{ ansible_managed }}
+
+driftfile {{ ntp.driftfile }}
+
+{% if ntp.mode == 'client' %}
+# NTP Client Mode
+{% for host in groups['ntp'] %}
+server  {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }} iburst
+{% endfor %}
+{% endif %}
+
+{% if ntp.mode == 'server' %}
+# NTP Server Mode
+{% for server in ntp.upstream %}
+server  {{ server }}
+{% endfor %}
+
+{% for filegen in ntp.filegen %}
+filegen {{ filegen }}
+{% endfor %}
+{% endif %}
+
+{% for restrict in ntp.restrict %}
+restrict {{ restrict }}
+{% endfor %}
+
+{% if ntp.statistics %}
+statistics {{ ntp.statistics }}
+{% endif %}

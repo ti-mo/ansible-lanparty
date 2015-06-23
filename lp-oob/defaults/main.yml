@@ -1,0 +1,13 @@
+---
+oob:
+  ifaces: [] # Configure in host_vars/
+  ssh:
+    port: 22
+    config_path: /etc/ssh/sshd_oob_config
+  netns: oob
+  pid: /var/run/sshd-oob.pid
+  nsenter:
+    - name: oob
+      pid: "$(cat /var/run/sshd-oob.pid)"
+    - name: init
+      pid: 1

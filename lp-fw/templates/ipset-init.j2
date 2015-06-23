@@ -1,0 +1,71 @@
+#! /bin/bash
+
+### BEGIN INIT INFO
+# Provides:             ipset ipset
+# Required-Start:       $remote_fs $syslog
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# X-Start-Before:       iptables-persistent
+# X-Stop-After:         iptables-persistent
+# Short-Description:    IPSets startup script
+### END INIT INFO
+
+set -e
+
+IPSET="/sbin/ipset"
+CONF="/etc/ipset.conf"
+
+# Check if /sbin/ip exists
+test -x $IPSET || exit 1
+
+. /lib/lsb/init-functions
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
+
+case "$1" in
+  start)
+        log_daemon_msg "Restoring ipsets" "$CONF"
+
+        if $IPSET -! restore < $CONF; then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+  stop)
+        log_daemon_msg "Destroying ipsets" "$CONF"
+
+        if $IPSET destroy; then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+
+  restart)
+        log_daemon_msg "Flushing and restoring ipsets" "$CONF"
+        $IPSET flush
+        if $IPSET -! restore < $CONF; then
+            log_end_msg 0 || true
+        else
+            log_end_msg 1 || true
+        fi
+        ;;
+
+  status)
+        if $IPSET test RFC1918 192.168.0.0/16 2>/dev/null; then
+            log_daemon_msg "IPSet example RFC1918 is loaded" "192.168.0.0/16"
+            log_end_msg 0 || true
+        else
+            log_daemon_msg "IPSet example RFC1918 is not loaded" "192.168.0.0/16"
+            log_end_msg 1 || true
+        fi
+        ;;
+  *)
+        log_action_msg "Usage: /etc/init.d/$0 {start|stop|restart|status}" || true
+        exit 1
+esac
+
+
+exit 0

@@ -1,0 +1,19 @@
+---
+- name: Zones - Config directory
+  file:
+    state=directory
+    path={{ ns.domains.confdir }}
+
+- name: Zones - Zone Files
+  template:
+    src=domains.zone.j2
+    dest={{ ns.domains.confdir }}/{{ item.name }}.db
+  with_items: ns.domains.zones
+  notify: reload bind
+  tags: [ 'zones' ]
+
+- name: Zones - Config Files
+  template:
+    src=domains.conf.j2
+    dest={{ ns.domains.confdir }}/domains.conf
+  notify: reload bind

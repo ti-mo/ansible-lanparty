@@ -1,0 +1,5 @@
+---
+- name: restart dhcpd
+  service:
+    name=isc-dhcp-server
+    state=restarted

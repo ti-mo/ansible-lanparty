@@ -1,0 +1,10 @@
+# {{ ansible_managed}}
+
+{% if item.value is defined %}
+{% for s in item.value %}
+deb     http://{{ s.site }} {{ s.suite }} main
+{% if s.src | default(false) %}
+deb-src http://{{ s.site }} {{ s.suite }} main
+{% endif %}
+{% endfor %}
+{% endif %}

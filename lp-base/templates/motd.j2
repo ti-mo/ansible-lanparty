@@ -1,0 +1,9 @@
+
+    .__               {{ lp.name }} {{ lp.rev }}
+    |  | ______          ------
+    |  | \____ \      Distro:  {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_distribution_release }}) - {{ ansible_kernel }}
+    |  |_|  |_> >     Host:    {{ ansible_fqdn }} ({{ ansible_default_ipv4.address | default('<unassigned>')}})
+    |____/   __/      Gateway: {{ ansible_default_ipv4.gateway | default('<unassigned>') }} ({{ ansible_default_ipv4.alias }})
+         |__|         Infra:   {{ ansible_product_name }}
+
+

@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+# Main Nginx Configuration, use sites-enabled/conf.d to install apps
+#
+user {{ nginx.user | default('www-data') }};
+worker_processes {{ ansible_processor_vcpus | default(ansible_processor_count * ansible_processor_cores) }};
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  # General/Transport
+  #
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+
+  gzip on;
+  gzip_disable "msie6";
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  # Logging
+  #
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  # Includes
+  #
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}

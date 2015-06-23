@@ -1,0 +1,55 @@
+#! /bin/bash
+
+### BEGIN INIT INFO
+# Provides:             netfilter-sysctl
+# Required-Start:       $remote_fs $syslog netfilter-persistent
+# Required-Stop:        $remote_fs $syslog netfilter-persistent
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# Short-Description:    Re-executes sysctl -p after netfilter has loaded
+### END INIT INFO
+
+PATH=/sbin:/bin
+
+SYSCTL=/sbin/sysctl
+
+test -x $SYSCTL || exit 1
+
+. /lib/lsb/init-functions
+
+# Comment this out for sysctl to print every item changed
+QUIET_SYSCTL="-q"
+
+# Check for existance of the default file and exit if not there,
+# Closes #52839 for the boot-floppy people
+if [ -f /etc/default/rcS ] ; then
+  . /etc/default/rcS
+fi
+
+set -e
+
+case "$1" in
+  start|restart|force-reload|reload)
+    log_action_begin_msg "Setting kernel variables "
+    STATUS=0
+    for file in /etc/sysctl.conf /etc/sysctl.d/*.conf ; do
+      if [ -r "$file" ] ; then
+        if [ "$VERBOSE" = "yes" ] ; then
+          log_action_cont_msg " $file"
+        fi
+        $SYSCTL $QUIET_SYSCTL --load="$file" || STATUS=$?
+      fi
+    done
+    log_action_end_msg $STATUS
+    ;;
+  stop)
+    ;;
+    status)
+        ;;
+  *)
+    echo "Usage: /etc/init.d/netfilter-sysctl {start|stop|restart|reload|force-reload|status}" >&2
+    exit 3
+    ;;
+esac
+
+exit 0

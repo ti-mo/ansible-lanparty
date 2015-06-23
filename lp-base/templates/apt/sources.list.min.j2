@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+#
+{% if item.value is defined %}
+{% for s in item.value %}
+deb http://{{ s.site }} {{ s.suite }} main
+{% endfor %}
+{% else %}
+deb http://{{ item.site }} {{ item.suite }} main
+{% endif %}

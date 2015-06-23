@@ -1,0 +1,6 @@
+---
+- name: dhclient | Manage Requested Parameters
+  template:
+    src=dhclient.j2
+    dest=/etc/dhcp/dhclient.conf
+  notify: warn dhclient

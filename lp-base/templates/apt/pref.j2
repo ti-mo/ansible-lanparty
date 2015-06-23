@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+Package: *
+{% if item is defined %}
+Pin: release a={{ item.key }}
+Pin-Priority: {{ item.value }}
+{% else %}
+Pin: release l=Debian-Security
+Pin-Priority: 1000
+{% endif %}

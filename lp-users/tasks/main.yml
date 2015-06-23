@@ -1,0 +1,38 @@
+---
+- name: Users | User Management
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
+    state: "{{ item.state | default('present') }}"
+    password: "{{ item.password | default('')}}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    update_password: always
+  with_items: users
+
+- name: Users | Public authorized_keys
+  authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ lookup('file', 'files/keys/' + item.0.name + '/' + item.1.name + '.pub') }}"
+    state: "{{ item.1.state | default('present') }}"
+  with_subelements:
+    - users
+    - keys
+  when: item.0.state|default('present') == 'present'
+  tags: [ 'keys' ]
+
+- name: Users | Sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: "^{{ item.name }} ALL="
+    line: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
+  with_items: users
+  tags: [ 'sudo' ]
+
+- name: Users | PermitRootLogin without-password
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^\\#?PermitRootLogin"
+    line: "PermitRootLogin without-password"
+  notify: restart sshd
+  tags: [ 'sudo', 'root' ]

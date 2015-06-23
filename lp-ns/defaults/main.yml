@@ -1,0 +1,54 @@
+---
+ns:
+#####
+# General Configuration
+  # ACL for the NS; will need to be extended ASAP
+  allowed:
+  forwarders:
+  # Authoritative NS, used in zone files
+  auth:
+#
+#####
+
+#####
+# RNDC Key for management & Dynamic DNC
+  rndc:
+    # Original keyfiles in files/keys/rndc
+    algo:
+    key:
+    keyname:
+#
+#####
+
+#####
+#
+  domains:
+    # Directory to install forward zone files to
+    confdir: /etc/bind/zones
+    zones:
+      - name:
+        records:
+#
+#####
+
+#####
+# DHCP Segment of the DNS setup
+  dhcp:
+    # Directory to install dynamic zones to
+    confdir: /etc/bind/dhcp
+    fzones:
+    rzones:
+#
+#####
+
+#####
+# Spoofing zones for Content & Twitch cache
+  spoof:
+    # Directory to install spoofed zones to
+    confdir: /etc/bind/spoof
+    services:
+      - name: steam
+        dest:
+        domains:
+#
+#####

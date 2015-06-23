@@ -1,0 +1,3 @@
+---
+- name: restart ssh-oob
+  service: name=ssh-oob state=restarted

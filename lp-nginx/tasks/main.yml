@@ -1,0 +1,26 @@
+---
+- name: Install Nginx
+  apt:
+    name=nginx
+    cache_valid_time={{ apt.cachetime }}
+    update_cache=yes
+  tags: [ 'packages' ]
+
+- name: Nginx Configuration
+  template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Disable Default Site
+  file:
+    path=/etc/nginx/sites-enabled/default
+    state=absent
+  notify: reload nginx
+  when: nginx.disable_default
+
+- name: Nginx Service
+  service:
+    name=nginx
+    state=started
+    enabled=true

@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+#
+{% for n, i in netif|dictsort() %}
+{% if i.mac is defined %}
+KERNEL=="eth*", SUBSYSTEM=="net", ATTR{address}=="{{ i.mac }}", NAME="{{ n }}"
+{% endif %}
+{% endfor %}

@@ -1,0 +1,24 @@
+// {{ ansible_managed }}
+//
+
+// Managing acls
+acl internals {
+    127.0.0.0/8;
+    {% for net in ns.allowed %}
+    {{ net }};
+    {% endfor %}
+};
+
+// TSIG key used for the dynamic update
+include "/etc/bind/rndc.key";
+
+// Configure the communication channel for Administrative BIND9 with rndc
+// By default, they key is in the rndc.key file and is used by rndc and bind9
+// on the localhost
+controls {
+    inet 127.0.0.1 port 953 allow { {{ trusted_networks | join('; ') }}; };
+};
+
+// Load options and zones
+include "/etc/bind/named.conf.options";
+include "/etc/bind/named.conf.zones";

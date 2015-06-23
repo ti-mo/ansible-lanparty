@@ -1,0 +1,15 @@
+---
+- name: make grub
+  shell: grub-mkconfig -o /boot/grub/grub.cfg
+
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+
+- name: restart xinetd
+  service: name=xinetd state=restarted
+
+- name: restart snmpd
+  service: name=snmpd state=restarted
+
+- name: restart rsyslog
+  service: name=rsyslog state=restarted

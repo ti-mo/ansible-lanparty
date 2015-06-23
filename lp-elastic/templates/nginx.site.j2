@@ -1,0 +1,38 @@
+# {{ ansible_managed }}
+# Nginx proxy for Elasticsearch + Kibana
+#
+
+upstream elasticsearch {
+  server 127.0.0.1:9200;
+  keepalive 15;
+}
+
+server {
+  listen          *:80;
+  server_name     _;
+
+  # Shipping *.access.log to LogStash will make this storm
+  #access_log      /var/log/nginx/elasticsearch.access.log;
+  #error_log       /var/log/nginx/elasticsearch.error.log;
+
+  proxy_set_header  X-Real-IP  $remote_addr;
+  proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header  Host $http_host;
+
+  # These are required to allow Cross-Origin Resource Sharing
+  add_header 'Access-Control-Allow-Origin' '$http_origin';
+  add_header 'Access-Control-Allow-Credentials' 'true';
+  add_header 'Access-Control-Allow-Methods' 'OPTIONS, HEAD, GET, POST, PUT, DELETE';
+  add_header 'Access-Control-Allow-Headers' 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+
+  location / {
+    proxy_pass http://elasticsearch;
+    proxy_read_timeout 90;
+
+    # Access Control
+    {% for n in trusted_networks -%}
+    allow {{ n }};
+    {% endfor -%}
+    deny all;
+  }
+}

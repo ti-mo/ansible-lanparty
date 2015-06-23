@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+key "{{ ns.rndc.keyname }}" {
+    algorithm {{ ns.rndc.algo }};
+    secret "{{ ns.rndc.key }}";
+};
+
+options {
+    default-server  localhost;
+    default-key     "{{ ns.rndc.keyname }}";
+};

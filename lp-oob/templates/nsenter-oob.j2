@@ -1,0 +1,2 @@
+#!/bin/sh -e
+exec nsenter --net --mount --target {{ item.pid }} "$@"

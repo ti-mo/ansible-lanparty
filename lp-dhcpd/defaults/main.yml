@@ -1,0 +1,35 @@
+---
+dhcp:
+  ###
+  # Core config
+  logfacility:
+  searchdomain:
+  # Watch the trailing dot here
+  dhcpdomain:
+  nameservers:
+  timeservers:
+  ###
+
+  ###
+  # Static parameters
+  # Using standard as test; was interim
+  updatestyle: standard
+  leasetime: 86400
+  maxleasetime: 172800
+  ###
+
+  ###
+  # Network definitions in the DHCPd config
+  # Each network generates a subnet definition
+  # classes generates class matchers based on switch remote-id
+  networks:
+    visitor:
+      address:
+      mask:
+      router:
+      classes: true
+      pools:
+        # <remote-id>, <start-range>, <end-range>, <ddns>
+        # remote-id is used as the class name, capitalized and prepended to the matcher (*-SW)
+        # ddns is of type 'p' or 'n', p = ddns w/ port-id, n = disabled
+        - [ '', '', '', '' ]

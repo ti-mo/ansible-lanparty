@@ -1,0 +1,20 @@
+---
+- name: Spoof - Config directory
+  file:
+    state=directory
+    path={{ ns.spoof.confdir }}
+
+- name: Spoof - Zone Files
+  template:
+    src=spoof.zone.j2
+    dest={{ ns.spoof.confdir }}/{{ item.name }}.db
+  with_items: ns.spoof.services
+  notify: reload bind
+  tags: [ 'zones' ]
+
+- name: Spoof - Config Files
+  template:
+    src=spoof.conf.j2
+    dest={{ ns.spoof.confdir }}/{{ item.name }}.conf
+  with_items: ns.spoof.services
+  notify: restart bind

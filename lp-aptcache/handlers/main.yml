@@ -1,0 +1,5 @@
+---
+- name: restart acng
+  service:
+    name: apt-cacher-ng
+    state: restarted

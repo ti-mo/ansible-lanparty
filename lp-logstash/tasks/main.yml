@@ -1,0 +1,9 @@
+---
+- include: logstash.yml
+  tags: [ 'logstash' ]
+
+- include: nginx.yml
+  tags: [ 'nginx' ]
+
+- include: kibana.yml
+  tags: [ 'kibana' ]

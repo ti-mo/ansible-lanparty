@@ -1,0 +1,38 @@
+// {{ ansible_managed }}
+//
+
+// Resolver Zones
+include "{{ ns.domains.confdir }}/domains.conf";
+
+// DHCP Zones
+include "{{ ns.dhcp.confdir }}/dhcp.conf";
+
+// Spoof Zones
+{% for svc in ns.spoof.services %}
+include "{{ ns.spoof.confdir }}/{{ svc.name }}.conf";
+{% endfor %}
+
+// ---------------------------------------------------
+// Prime the server with knowledge of the root servers
+// Be authoritative for the localhost forward and reverse zones,
+// and for broadcast zones as per RFC 1912
+zone "." {
+    type hint;
+    file "/etc/bind/db.root";
+};
+zone "localhost" {
+    type master;
+    file "/etc/bind/db.local";
+};
+zone "127.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.127";
+};
+zone "0.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.0";
+};
+zone "255.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.255";
+};

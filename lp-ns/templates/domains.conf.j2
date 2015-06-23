@@ -1,0 +1,11 @@
+// {{ ansible_managed }}
+//
+
+// Normal Zones
+{% for zone in ns.domains.zones %}
+zone "{{ zone.name }}." IN {
+    type master;
+    file "{{ ns.domains.confdir }}/{{ zone.name }}.db";
+    allow-update { none; };
+};
+{% endfor %}

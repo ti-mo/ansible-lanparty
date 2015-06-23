@@ -1,0 +1,70 @@
+# {{ ansible_managed }}
+
+# Letter case in directive names does not matter. Must be separated with colons.
+# Valid boolean values are a zero number for false, non-zero numbers for true.
+
+# disk location for cache tree
+CacheDir: {{ pkg.cache.path }}
+
+# set empty to disable logging
+LogDir: {{ pkg.cache.logdir }}
+
+# Store the pid of the daemon process therein
+PidFile: {{ pkg.cache.pidfile }}
+
+# listen port
+Port:{{ pkg.cache.port }}
+
+# report page
+ReportPage: acng-report.html
+
+# Days before considering an unreferenced file expired (to be deleted).
+ExTreshold: {{ pkg.cache.expiry }}
+
+# Higher modes only working with the debug version
+# Warning, writes a lot into apt-cacher.err logfile
+# Value overwrites UnbufferLogs setting (aliased)
+# Debug:3
+
+# Repository remapping. See manual for details.
+# In this example, some backends files might be generated during package
+# installation using information collected on the system.
+Remap-debrep: file:deb_mirror*.gz /debian ; file:backends_debian # Debian Archives
+Remap-uburep: file:ubuntu_mirrors /ubuntu ; file:backends_ubuntu # Ubuntu Archives
+Remap-debvol: file:debvol_mirror*.gz /debian-volatile ; file:backends_debvol # Debian Volatile Archives
+Remap-cygwin: file:cygwin_mirrors /cygwin # ; file:backends_cygwin # incomplete, please create this file or specify preferred mirrors here
+Remap-sfnet:  file:sfnet_mirrors # ; file:backends_sfnet # incomplete, please create this file or specify preferred mirrors here
+Remap-alxrep: file:archlx_mirrors /archlinux # ; file:backend_archlx # Arch Linux
+Remap-fedora:  file:fedora_mirrors # Fedora Linux
+Remap-epel:   file:epel_mirrors # Fedora EPEL
+Remap-slrep:  file:sl_mirrors # Scientific Linux
+
+# Don't touch the following values without good consideration! 
+#
+# Max. count of connection threads kept ready (for faster response in the
+# future). Should be a sane value between 0 and average number of connections,
+# and depend on the amount of spare RAM.
+# MaxStandbyConThreads: 8
+#
+# Hard limit of active thread count for incoming connections, i.e. operation
+# is refused when this value is reached (below zero = unlimited).
+# MaxConThreads: -1
+#
+# Pigeonholing files with regular expressions (static/volatile). Can be
+# overriden here but not should not be done permanently because future update
+# of default settings would not be applied later.
+# VfilePattern = (^|.*/)(Index|Packages(\.gz|\.bz2|\.lzma|\.xz)?|InRelease|Release|Release\.gpg|Sources(\.gz|\.bz2|\.lzma|\.xz)?|release|index\.db-.*\.gz|Contents-[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|pkglist[^/]*\.bz2|rclist[^/]*\.bz2|meta-release[^/]*|Translation[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|MD5SUMS|SHA1SUMS|((setup|setup-legacy)(\.ini|\.bz2|\.hint)(\.sig)?)|mirrors\.lst|repo(index|md)\.xml(\.asc|\.key)?|directory\.yast|products|content(\.asc|\.key)?|media|filelists\.xml\.gz|filelists\.sqlite\.bz2|repomd\.xml|packages\.[a-zA-Z][a-zA-Z]\.gz|info\.txt|license\.tar\.gz|license\.zip|.*\.(db|files|abs)(\.tar(\.gz|\.bz2|\.lzma|\.xz))?|metalink\?repo|.*prestodelta\.xml\.gz|repodata/.*\.(xml|sqlite)(\.gz|\.bz2|\.lzma|\.xz))$|/dists/.*/installer-[^/]+/[^0-9][^/]+/images/.*
+# PfilePattern = .*(\.d?deb|\.rpm|\.drpm|\.dsc|\.tar(\.gz|\.bz2|\.lzma|\.xz)(\.gpg)?|\.diff(\.gz|\.bz2|\.lzma|\.xz)|\.jigdo|\.template|changelog|copyright|\.udeb|\.debdelta|\.diff/.*\.gz|(Devel)?ReleaseAnnouncement(\?.*)?|[a-f0-9]+-(susedata|updateinfo|primary|deltainfo).xml.gz|fonts/(final/)?[a-z]+32.exe(\?download.*)?|/dists/.*/installer-[^/]+/[0-9][^/]+/images/.*)$
+ 
+# Whitelist for expiration, file types not to be removed even when being
+# unreferenced. Default: many parts from VfilePattern where no parent index
+# exists or might be unknown.
+#WfilePattern = (^|.*/)(Release|InRelease|Release\.gpg|(Packages|Sources)(\.gz|\.bz2|\.lzma|\.xz)?|Translation[^/]*(\.gz|\.bz2|\.lzma|\.xz)?|MD5SUMS|SHA1SUMS|.*\.xml|.*\.(db|files|abs)(\.tar(\.gz|\.bz2|\.lzma|\.xz))?|[a-z]+32.exe)$|/dists/.*/installer-.*/images/.*
+
+# Precache a set of files referenced by specified index files. This can be used
+# to create a partial mirror usable for offline work. There are certain limits
+# and restrictions on the path specification, see manual for details. A list of
+# (maybe) relevant index files could be retrieved via 
+# "apt-get --print-uris update" on a client machine.
+#
+# PrecacheFor: debrep/dists/unstable/*/source/Sources* debrep/dists/unstable/*/binary-amd64/Packages*

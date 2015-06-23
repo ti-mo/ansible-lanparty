@@ -1,0 +1,61 @@
+*** Targets ***
+
+probe = FPingTN1C1
+
+menu = Top
+title = Network Latency Grapher
+remark = Welcome to the SmokePing website of Frag-o-Matic Company. \
+         Here you will learn all about the latency of our network.
+
++ Local
+
+menu = Local
+title = Local Network
+#parents = owner:/Test/James location:/
+
+++ LocalMachine
+
+menu = Local Machine
+title = This host
+host = localhost
+alerts = someloss,rttdetect,hostdown
+
++ FoM
+menu = FoM
+title = FoM
+
+++ General
+menu = General
+title = General pings
+
++++ Telenet-smtp
+menu = incline.eu
+title = incline.eu (via TN 1 QoS 1)
+probe = FPingTN1C1
+host = 91.121.168.206
+alerts = someloss,rttdetect,hostdown
+
++++ Google
+menu = kangaroot.net
+title = Kangaroot (via TN 1 QoS 1)
+probe = FPingTN1C1
+host = 62.213.213.86
+alerts = someloss,rttdetect,hostdown
+
+
+{% for n, p in ping_providers|dictsort() %}
+++ {{ n }}
+menu = {{ p.name }}
+title = {{ p.name }}
+
+{% for cn, c in p.classes|dictsort() %}
++++ {{ n }}-{{ cn }}
+menu = {{ cn }}
+title = {{ p.name }} {{ cn }}
+probe = {{ smokeping.tool }}{{ n }}{{ cn }}
+host = {{ ping_targets[0] }}
+alerts = {{ c.2 }}
+
+{% endfor %}
+
+{% endfor %}

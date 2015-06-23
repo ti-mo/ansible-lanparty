@@ -1,0 +1,28 @@
+*** Alerts ***
+to = noc@fom.lan
+from = smokealert@smokeping.fom.lan
+
++someloss
+type = loss
+# in percent
+pattern = >0%,*12*,>0%,*12*,>0%
+edgetrigger = yes
+comment = loss 3 times in a row!
+
+# This rule checks for 3 periods (3 * 10s default) where
+# the rtt is >1000ms
++rttdetect
+type = rtt
+# in milli seconds
+pattern = >1000,>1000,>1000
+edgetrigger = yes
+comment = QoS troubles?
+
+# This rule checks for one period (1 * 10s) of >60% loss
++hostdown
+type = loss
+# in percent
+pattern = >60%
+edgetrigger = yes
+comment = Massive loss for 10s
+

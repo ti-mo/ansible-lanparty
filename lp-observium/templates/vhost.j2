@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+#
+<VirtualHost *:80>
+    DocumentRoot {{ observium.install_dir }}/html/
+    ServerName  {{ observium.url }}
+    CustomLog {{ observium.install_dir }}/logs/access_log combined
+    ErrorLog {{ observium.install_dir }}/logs/error_log
+    AllowEncodedSlashes On
+
+    <Directory "{{ observium.install_dir }}/html/">
+        AllowOverride All
+        Options FollowSymLinks MultiViews
+    </Directory>
+</VirtualHost>

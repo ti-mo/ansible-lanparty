@@ -1,0 +1,6 @@
+---
+- include: elasticsearch.yml
+  tags: [ 'es', 'elasticsearch' ]
+
+- include: nginx.yml
+  tags: [ 'nginx' ]

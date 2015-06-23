@@ -1,0 +1,24 @@
+---
+# Package-related Tasks
+- include: packages.yml
+  tags: [ 'packages' ]
+
+- include: system.yml
+  tags: [ 'system' ]
+
+- include: time.yml
+  tags: [ 'time' ]
+
+- include: motd.yml
+  tags: [ 'motd' ]
+
+# Observium/LibreNMS Pluggable Monitoring Agent
+- include: agent.yml
+  tags: [ 'agent' ]
+
+# RSyslog Daemon
+- include: rsyslog.yml
+  tags: [ 'syslog', 'rsyslog' ]
+
+- include: zsh.yml
+  tags: [ 'zsh' ]

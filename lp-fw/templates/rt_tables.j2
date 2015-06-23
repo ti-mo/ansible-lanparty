@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+#
+# Reserved Values
+255   local
+254   main
+253   default
+0     unspec
+
+# Custom Tables
+{% for i, n in fw_rt_tables|dictsort() %}
+{{ n.0 }}   {{ i }}
+{% endfor %}

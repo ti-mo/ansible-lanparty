@@ -1,0 +1,2 @@
+# {{ ansible_managed }}
+Acquire::http { Proxy "http://{{ hostvars[groups['pkg'][0]]['ansible_default_ipv4']['address'] }}:{{ pkg.cache.port }}"; };

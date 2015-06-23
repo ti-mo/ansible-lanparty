@@ -1,0 +1,32 @@
+---
+- name: Icinga2 Installation
+  apt:
+    name={{ item }}
+    cache_valid_time={{ apt.cachetime }}
+    update_cache=yes
+  with_items:
+    - icinga2
+    - icinga2-ido-mysql
+  tags: [ 'packages' ]
+
+- name: Render IDO MySQL Feature
+  template:
+    src=ido-mysql.j2
+    dest=/etc/icinga2/features-available/ido-mysql.conf
+  notify: restart icinga2
+
+- name: Enable Icinga2 IDO MySQL Feature
+  command: icinga2-enable-feature {{ item }}
+  with_items:
+    - ido-mysql
+  register: res
+  changed_when: "'for these changes to take effect' in res.stdout"
+  notify: restart icinga2
+  tags: [ 'features' ]
+
+- name: Icinga2 Service
+  service:
+    name=icinga2
+    state=started
+    enabled=true
+  tags: [ 'services' ]

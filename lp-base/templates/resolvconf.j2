@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+search {{ domains.lan }}
+domain {{ domains.lan }}
+{% for ns in resolvers %}
+nameserver {{ ns }}
+{% endfor %}
+
+# Do not wait indefinitely for unavailable DNS
+options timeout:1
+options attempts:3

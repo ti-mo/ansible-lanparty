@@ -1,0 +1,90 @@
+# Playbook is largely copied from bennojoy's mysql playbook
+# Star and contribute patches at https://github.com/bennojoy/mysql
+---
+- name: Install MySQL Packages
+  apt: name={{ item }} cache_valid_time={{ apt.cachetime }} update_cache=yes
+  with_items:
+    - python-mysqldb
+    - mysql-server
+  tags: [ 'packages' ]
+
+- name: Render the my.cnf
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  notify: restart mysql
+  tags: [ 'configuration' ]
+
+- name: Create /etc/mysql/conf.d
+  file: path=/etc/mysql/conf.d state=directory
+  notify: restart mysql
+
+- name: MySQL Service
+  service: name=mysql state=started enabled=true
+
+- name: MySQL root password for all root accounts
+  mysql_user: name=root host={{ item }} password={{ mysql.root_pass }}
+  with_items:
+   - "{{ ansible_fqdn }}"
+   - 127.0.0.1
+   - ::1
+   - localhost
+  when: ansible_hostname != 'localhost'
+
+# Make sure to render after the users have been created with a fresh install
+# Ansible will try to log in with invalid credentials otherwise
+- name: Render .my.cnf file for Root user (for sudo)
+  template: src=my.cnf.profile.j2 dest=/root/.my.cnf
+            mode=0600 owner=ansible group=ansible
+
+- name: Render .my.cnf file for all users
+  template: src=my.cnf.profile.j2 dest=/home/{{ item.name }}/.my.cnf
+            mode=0600 owner={{ item.name }} group={{ item.name }}
+  with_items: users
+
+- name: Remove anonymous MySQL users
+  mysql_user: name='' host={{ item }} state=absent
+  with_items:
+   - localhost
+   - "{{ ansible_fqdn }}"
+
+- name: Remove the test database
+  mysql_db: name=test state=absent
+
+- name: Create databases
+  mysql_db: name={{ item.name }} state=present
+  register: dbcreate
+  with_items: mysql.databases
+  when: mysql.databases | lower() != 'none'
+
+- name: Create the database users for each client IP
+  mysql_user: 
+    name={{ mysql.user.name }}
+    password={{ mysql.user.pass | default("correct horse battery staple") }}
+    priv={{ mysql.user.priv | default("*.*:ALL") }}
+    host={{ hostvars[item]['ansible_default_ipv4']['address'] | default("localhost") }}
+    state=present
+  with_items: groups[mysql.client_inv]
+  when: mysql.user.name is defined
+
+- name: Python-MySQL Bindings on Client
+  apt:
+    name={{ item }}
+    cache_valid_time={{ apt.cachetime }}
+    update_cache=yes
+  with_items:
+    - mysql-client
+    - python-mysqldb
+  delegate_to: "{{ groups[mysql.client_inv][0] }}"
+  when: dbcreate is defined and dbcreate.changed
+  tags: [ 'packages' ]
+
+- name: Install Schema for New DB
+  mysql_db:
+    name={{ item.db }}
+    state=import
+    target={{ item.item.schema }}
+    login_user={{ mysql.user.name }}
+    login_password={{ mysql.user.pass }}
+    login_host={{ ansible_default_ipv4.address }}
+  with_items: dbcreate.results
+  delegate_to: "{{ groups[mysql.client_inv][0] }}"
+  when: dbcreate is defined and dbcreate.changed and item.item.schema is defined
