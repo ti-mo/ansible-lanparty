@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+
+server {
+  listen          *:80;
+  server_name     {{ cloudinit_domain }};
+
+  # Shipping *.access.log to LogStash will make this storm
+  #access_log      /var/log/nginx/elasticsearch.access.log;
+  #error_log       /var/log/nginx/elasticsearch.error.log;
+
+  location / {
+    root {{ cloudinit_dir }};
+
+    # Access Control
+    {% for n in trusted_networks -%}
+    allow {{ n }};
+    {% endfor -%}
+    deny all;
+  }
+}

@@ -16,7 +16,7 @@
     state: "{{ item.1.state | default('present') }}"
   with_subelements:
     - users
-    - keys
+    - sshkeys
   when: item.0.state|default('present') == 'present'
   tags: [ 'keys' ]
 

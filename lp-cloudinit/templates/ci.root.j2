@@ -1,0 +1,5 @@
+#cloud-config
+# {{ ansible_managed }}
+datasource:
+  NoCloudNet:
+    seedfrom: http://{{ cloudinit_domain }}/

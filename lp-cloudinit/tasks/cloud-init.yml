@@ -1,0 +1,28 @@
+---
+- name: Cloud-Init | Install directory
+  file:
+    path: "{{ cloudinit_dir }}"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Cloud-Init | Render Root
+  template:
+    src: ci.root.j2
+    dest: "{{ cloudinit_dir }}/index.html"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Cloud-Init | Render Userdata
+  template:
+    src: ci.userdata.j2
+    dest: "{{ cloudinit_dir }}/user-data"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Cloud-Init | Render Metadata
+  template:
+    src: ci.metadata.j2
+    dest: "{{ cloudinit_dir }}/meta-data"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"

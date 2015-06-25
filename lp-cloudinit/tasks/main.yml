@@ -1,0 +1,7 @@
+---
+- include: cloud-init.yml
+  tags: [ 'keys', 'cloud-init' ]
+
+- include: install.yml
+  tags: [ 'nginx', 'cloud-init' ]
+

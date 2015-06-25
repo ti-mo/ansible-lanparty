@@ -1,0 +1,3 @@
+---
+cloudinit_dir: /var/www/cloud
+cloudinit_domain: cloud.party.lan

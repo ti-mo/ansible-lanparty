@@ -13,7 +13,7 @@
   tags: [ 'packages' ]
 
 - name: LibreNMS Git Checkout
-  git: 
+  git:
     repo=https://github.com/librenms/librenms
     depth=1
     dest={{ observium.install_dir }}
@@ -54,20 +54,20 @@
 - name: Apache VirtualHost
   template:
     src=vhost.j2
-    dest=/etc/apache2/sites-available/librenms
+    dest=/etc/apache2/sites-available/librenms.conf
   notify: reload apache
 
 - name: VirtualHost Symlink
   file:
-    src=/etc/apache2/sites-available/librenms
-    dest=/etc/apache2/sites-enabled/librenms
+    src=/etc/apache2/sites-available/librenms.conf
+    dest=/etc/apache2/sites-enabled/librenms.conf
     state=link
   notify: reload apache
 
 - name: Default VirtualHost
   file:
-    src=/etc/apache2/sites-available/default
-    dest=/etc/apache2/sites-enabled/000-default
+    src=/etc/apache2/sites-available/000-default.conf
+    dest=/etc/apache2/sites-enabled/000-default.conf
     state=link
   notify: reload apache
 

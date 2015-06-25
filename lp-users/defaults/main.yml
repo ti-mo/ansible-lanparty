@@ -6,7 +6,7 @@
 #     shell: /bin/bash
 #     state: present
 #     password: ''
-#     keys:
+#     sshkeys:
 #       - name: id_rsa
 #         state: present
 #
@@ -22,5 +22,5 @@ users:
     uid:
     shell:
     password:
-    keys:
+    sshkeys:
       - name:

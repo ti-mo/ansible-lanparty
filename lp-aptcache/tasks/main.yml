@@ -1,5 +1,5 @@
 ---
-- include: reprepo.yml
+- include: reprepro.yml
   tags: [ 'repo', 'reprepro' ]
 
 - name: Apt Cache | Install APT-Cacher-NG Package

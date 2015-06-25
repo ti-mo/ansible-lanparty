@@ -1,3 +1,5 @@
 ---
-nginx:
-  disable_default: false
+nginx_disable_default: false
+
+www_user: www-data
+www_group: www-data

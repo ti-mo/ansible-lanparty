@@ -1,0 +1,13 @@
+---
+- name: Cloud-Init | Render Nginx Site
+  template:
+    src: ci.nginx.j2
+    dest: /etc/nginx/sites-available/cloud-init
+  notify: reload nginx
+
+- name: Cloud-Init | Enable Nginx Site
+  file:
+    src: /etc/nginx/sites-available/cloud-init
+    dest: /etc/nginx/sites-enabled/cloud-init
+    state: link
+  notify: restart nginx
