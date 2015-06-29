@@ -1,9 +1,13 @@
 ---
+- name: Nginx | Stop and disable Apache
+  service:
+    name: apache2
+    state: stopped
+    enabled: false
+
 - name: Nginx | Install Nginx
   apt:
     name: nginx
-    cache_valid_time: "{{ apt.cachetime }}"
-    update_cache: yes
   tags: [ 'packages' ]
 
 - name: Nginx | Render Configuration
