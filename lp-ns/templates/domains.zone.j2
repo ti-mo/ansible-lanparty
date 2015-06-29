@@ -1,15 +1,27 @@
 ; {{ ansible_managed }}
+; $ORIGIN is hard to manage in template, leave it to BIND
+$TTL  86400
+@       IN      SOA     {{ ns.auth }}.    {{ ns.hostmaster }}. (
+                            1   ; Serial
+                       604800   ; Refresh
+                        86400   ; Retry
+                      2419200   ; Expire
+                        86400 ) ; Negative Cache TTL
 ;
-$TTL	86400
-@ 			IN 			SOA 		{{ ns.auth }}. 		{{ lp.soa_contact }}. (
-														1   ; Serial
-											 604800   ; Refresh
-												86400   ; Retry
-											2419200   ; Expire
-												86400 ) ; Negative Cache TTL
-;
-@				IN 			NS  		{{ ns.auth }}.
+@       IN      NS      {{ ns.auth }}.
 
-{% for r in item.records %}
-{{ r[0] }}	IN	{{ r[1] }}	{{ r[2] }}
+{% for rr in item.records | default([]) %}
+{{ rr[0] }}  IN  {{ rr[1] }}  {{ rr[2] }}
+{% endfor %}
+
+{% for del in item.delegates | default([]) %}
+{# Glue record must be part of the parent domain! #}
+{% for glue in del.resolvers %}
+{{ del.name }}.   IN    A    {{ glue }}
+{% endfor %}
+{% endfor %}
+
+{% for del in item.delegates | default([]) %}
+$ORIGIN {{ del.name }}.
+@       IN      NS      {{ del.name }}.
 {% endfor %}

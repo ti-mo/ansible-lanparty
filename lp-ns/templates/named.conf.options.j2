@@ -1,24 +1,16 @@
 // {{ ansible_managed }}
-//
+
 options {
     directory "/var/cache/bind";
 
     // Exchange port between DNS servers
     query-source address * port *;
 
-    // forward only;
-    forwarders {
-        {% for fw in ns.forwarders %}
-        {{ fw }};
-        {% endfor %}
-    };
-
     // Conform to RFC1035
     auth-nxdomain no;
 
     // Listen on local interfaces only(IPV4)
     listen-on-v6 { none; };
-    listen-on { 127.0.0.1; {{ ansible_eth0.ipv4.address }}; };
 
     // Do not transfer the zone information to the secondary DNS
     allow-transfer { none; };

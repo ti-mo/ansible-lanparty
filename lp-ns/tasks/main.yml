@@ -1,27 +1,25 @@
 ---
 - name: BIND Name Server
   apt:
-    name=bind9
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: bind9
   tags: [ 'packages' ]
 
 - name: BIND RNDC Key
   template:
-    src=rndc.key.j2
-    dest=/etc/bind/rndc.key
+    src: rndc.key.j2
+    dest: /etc/bind/rndc.key
   notify: restart bind
 
 - name: BIND RNDC Key Configuration
   template:
-    src=rndc.j2
-    dest=/etc/bind/rndc.conf
+    src: rndc.j2
+    dest: /etc/bind/rndc.conf
   notify: reload bind
 
 - name: BIND9 Configuration Files
   template:
-    src={{ item }}.j2
-    dest=/etc/bind/{{ item }}
+    src: "{{ item }}.j2"
+    dest: "/etc/bind/{{ item }}"
   notify: reload bind
   with_items:
     - named.conf
@@ -42,15 +40,15 @@
 # aren't being included by named.conf
 - name: Clean up local BIND9 Configuration
   file:
-    state=absent
-    path=/etc/bind/named.conf.{{ item }}
+    state: absent
+    path: "/etc/bind/named.conf.{{ item }}"
   with_items:
     - local
     - default-zones
 
 - name: BIND9 Service
   service:
-    name=bind9
-    state=started
-    enabled=true
+    name: bind9
+    state: started
+    enabled: true
   tags: [ 'services' ]
