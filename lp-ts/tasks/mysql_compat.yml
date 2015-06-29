@@ -1,27 +1,27 @@
 ---
 - name: MySQL Client Package
   apt:
-    name=libmysqlclient18
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: libmysqlclient18
   tags: [ 'packages' ]
 
 - name: MariaDB Client Library Discovery
   stat:
-    path=/usr/lib/x86_64-linux-gnu/libmariadb.so.2
-    follow=no
+    path: /usr/lib/x86_64-linux-gnu/libmariadb.so.2
+    follow: no
   register: mdb
 
 - name: MariaDB Compatibility Symlink
   file:
-    src=/usr/lib/x86_64-linux-gnu/libmysqlclient.so.18.0.0
-    dest=/usr/lib/x86_64-linux-gnu/libmariadb.so.2
-    state=link
+    src: /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18.0.0
+    dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.2
+    state: link
   when: not mdb.stat.exists or mdb.stat.islnk
 
 - name: Legacy libmysqlclient15_off.deb package
   get_url:
-    url=http://archive.debian.org/debian/pool/main/m/mysql-dfsg-5.0/libmysqlclient15off_5.0.51a-24+lenny5_amd64.deb
-    dest={{ ts.install_dir }}/tarballs/libmysqlclient15off_amd64.deb
+    url: http://archive.debian.org/debian/pool/main/m/mysql-dfsg-5.0/libmysqlclient15off_5.0.51a-24+lenny5_amd64.deb
+    dest: "{{ ts.install_dir }}/tarballs/libmysqlclient15off_amd64.deb"
+
 - name: Install libmysqlclient15_off.deb package
-  apt: deb={{ ts.install_dir }}/tarballs/libmysqlclient15off_amd64.deb
+  apt:
+    deb: "{{ ts.install_dir }}/tarballs/libmysqlclient15off_amd64.deb"

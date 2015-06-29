@@ -1,32 +1,36 @@
 ---
-- name: TeamSpeak3 Configuration
+- name: TS3 | TeamSpeak3 Configuration
   template:
-    src=ts3server.ini.j2
-    dest={{ ts.install_dir }}/ts3server.ini
+    src: ts3server.ini.j2
+    dest: "{{ ts.install_dir }}/ts3server.ini"
 
-- name: MySQL Client Configuration
+- name: TS3 | MySQL Client Configuration
   template:
-    src=ts3db.ini.j2
-    dest={{ ts.install_dir }}/ts3db_{{ ts.db_driver }}.ini
+    src: ts3db.ini.j2
+    dest: "{{ ts.install_dir }}/ts3db_{{ ts.db_driver }}.ini"
 
-- name: File Permissions
+- name: TS3 | File Permissions
   file:
-    path={{ ts.install_dir }}
-    owner={{ ts.user }}
-    group={{ ts.user }}
-    recurse=yes
+    path: "{{ ts.install_dir }}"
+    owner: "{{ ts.user }}"
+    group: "{{ ts.user }}"
+    recurse: yes
 
-- name: TS3 Init Wrapper
+- name: TS3 | Remove legacy init.d script
+  file:
+    path: /etc/init.d/teamspeak3
+    state: absent
+
+- name: TS3 | TS3 systemd Unit
   template:
-    src=ts3init.j2
-    dest=/etc/init.d/teamspeak3
-    mode=744
-  tags: [ 'services' ]
+    src: ts3unit.j2
+    dest: /etc/systemd/system/teamspeak3.service
+    mode: 755
+  tags: [ 'services', 'units' ]
 
-- name: TeamSpeak3 Service
+- name: TS3 | TeamSpeak3 Service
   service:
-    name=teamspeak3
-    state=started
-    enabled=true
-    pattern=ts3server_linux_amd64
+    name: teamspeak3
+    state: started
+    enabled: true
   tags: [ 'services' ]
