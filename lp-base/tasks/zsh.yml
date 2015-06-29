@@ -2,8 +2,6 @@
 - name: ZSH | Install ZSH
   apt:
     name: zsh
-    cache_valid_time: "{{ apt.cachetime }}"
-    update_cache: yes
   tags: [ 'packages' ]
 
 - name: ZSH | Oh-My-ZSH

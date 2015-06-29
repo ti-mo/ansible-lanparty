@@ -1,34 +1,31 @@
 ---
 - name: Monitoring Agent | Install xinetd and Net-SNMP
   apt:
-    name={{ item }}
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: "{{ item }}"
   with_items:
     - xinetd
     - snmpd
   tags: [ 'packages' ]
 
-# Observium Agent witn xinetd and Check_MK
 - name: Monitoring Agent | Check_MK Agent
   template:
-    src=agent/check_mk_agent.j2
-    dest=/usr/bin/check_mk_agent
-    mode=u+x
+    src: agent/check_mk_agent.j2
+    dest: /usr/bin/check_mk_agent
+    mode: u+x
 
 - name: Monitoring Agent | Check_MK xinetd
   template:
-    src=agent/check_mk_xinetd.j2
-    dest=/etc/xinetd.d/check_mk
+    src: agent/check_mk_xinetd.j2
+    dest: /etc/xinetd.d/check_mk
   notify: restart xinetd
 
 # This calls to add the host to Observium
 # Changes to this resource marks a new installation
 - name: Monitoring Agent | Create Directories
   file:
-    recurse=true
-    path={{ item }}
-    state=directory
+    recurse: true
+    path: "{{ item }}"
+    state: directory
   with_items:
     - /usr/lib/check_mk_agent/plugins
     - /usr/lib/check_mk_agent/local
@@ -36,12 +33,11 @@
 
 - name: Monitoring Agent | Agent Plugins
   template:
-    src: agent/{{ item }}.j2
-    dest: /usr/lib/check_mk_agent/local/{{ item }}
+    src: "agent/{{ item }}.j2"
+    dest: "/usr/lib/check_mk_agent/local/{{ item }}"
   with_items:
     - apache
 
-# SNMPd
 - name: Monitoring Agent | SNMPd Default Options
   lineinfile:
     dest: /etc/default/snmpd
@@ -67,10 +63,8 @@
     state: started
     enabled: true
 
-####
-# Auto-add host to Observium
 - name: Monitoring Agent | Add host to Observium
-  command: "php {{ observium.install_dir}}/addhost.php {{ ansible_fqdn }} {{ snmp_comm.0 }} v2c && /opt/observium/poller-wrapper.py 16"
+  command: "php {{ observium.install_dir}}/addhost.php {{ ansible_fqdn }} {{ snmp_comms.0 }} v2c && /opt/observium/poller-wrapper.py 16"
   args:
     chdir: "{{ observium.install_dir }}"
   delegate_to: "{{ groups.observium.0 }}"

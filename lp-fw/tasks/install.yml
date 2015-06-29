@@ -1,9 +1,7 @@
 ---
 - name: Netfilter Management Packages
   apt:
-    name={{ item }}
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: "{{ item }}"
   with_items:
     [ 'iptables', 'iptables-persistent', 'conntrack',
       'conntrackd', 'netstat-nat', 'iptstate', 'ipset' ]
@@ -11,22 +9,26 @@
 
 - name: Custom sysctl init
   template:
-    src=sysctl-init.j2
-    dest=/etc/init.d/netfilter-sysctl
-    mode=0755
+    src: sysctl-init.j2
+    dest: /etc/init.d/netfilter-sysctl
+    mode: 0755
 
 - name: Custom netfilter-sysctl service
   service:
-    name=netfilter-sysctl
-    state=started
-    enabled=true
+    name: netfilter-sysctl
+    state: started
+    enabled: true
 
 - name: Runtime Disable RP Filter
   sysctl:
-    name=net.ipv4.conf.all.rp_filter value=0
-    sysctl_set=yes state=present reload=yes
+    name: net.ipv4.conf.all.rp_filter
+    value: 0
+    sysctl_set: yes
+    reload: yes
 
 - name: Runtime Log Martians
   sysctl:
-    name=net.ipv4.conf.all.log_martians value=1
-    sysctl_set=yes state=present reload=yes
+    name: net.ipv4.conf.all.log_martians
+    value: 1
+    sysctl_set: yes
+    reload: yes

@@ -1,5 +1,12 @@
 ---
 - name: reload apache
   service:
-    name=apache2
-    state=reloaded
+    name: apache2
+    state: reloaded
+
+- name: fix permissions
+  file:
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
+    path: "{{ observium.install_dir }}"
+    recurse: true

@@ -1,19 +1,17 @@
 ---
 - name: Install RSyslog
   apt:
-    name=rsyslog
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: rsyslog
   tags: [ 'packages' ]
 
 - name: RSyslog Configuration
   template:
-    src=rsyslog/rsyslog.conf.j2
-    dest=/etc/rsyslog.conf
+    src: rsyslog/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
   notify: restart rsyslog
 
 - name: RSyslog Service
   service:
-    name=rsyslog
-    state=started
-    enabled=true
+    name: rsyslog
+    state: started
+    enabled: true

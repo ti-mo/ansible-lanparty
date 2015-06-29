@@ -6,7 +6,7 @@
   debug: msg='WARNING, dhclient configuration altered, dhclient should ne restarted manually through ifupdown'
 
 - name: restore iptables
-  service: name=netfilter-persistent state=reloaded
+  service: name=netfilter-persistent state=restarted
 
 - name: reload tc
   service: name=tc state=reloaded

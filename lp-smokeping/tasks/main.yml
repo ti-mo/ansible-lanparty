@@ -1,13 +1,13 @@
 ---
 - name: Smokeping Directory
   file:
-    path=/etc/smokeping/config.d
-    state=directory
+    path: /etc/smokeping/config.d
+    state: directory
 
 - name: Render Smokeping Configs
   template:
-    src={{ item }}.j2
-    dest=/etc/smokeping/config.d/{{ item | title }}
+    src: "{{ item }}.j2"
+    dest: "/etc/smokeping/config.d/{{ item | title }}"
   with_items:
     - alerts
     - database
@@ -20,9 +20,7 @@
 
 - name: Install Smokeping
   apt:
-    name={{ item }}
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: "{{ item }}"
   with_items:
     - smokeping
     - sendmail
@@ -32,6 +30,6 @@
 
 - name: Smokeping Service
   service:
-    name=smokeping
-    state=started
-    enabled=true
+    name: smokeping
+    state: started
+    enabled: true

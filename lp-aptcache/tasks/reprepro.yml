@@ -2,8 +2,6 @@
 - name: Apt Cache | Install Reprepro
   apt:
     name: reprepro
-    cache_valid_time: "{{ apt.cachetime }}"
-    update_cache: yes
   tags: [ 'packages' ]
 
 - name: Apt Cache | Create Subdirs

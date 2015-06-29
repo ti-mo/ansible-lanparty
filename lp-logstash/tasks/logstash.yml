@@ -1,9 +1,7 @@
 ---
 - name: Install LogStash
   apt:
-    name={{ item }}
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: "{{ item }}"
   with_items:
     - logstash
     - logstash-contrib
@@ -11,14 +9,14 @@
 
 - name: Render LogStash Configurations
   template:
-    src=logstash/{{ item }}.j2
-    dest=/etc/logstash/conf.d/{{ item }}.conf
+    src: "logstash/{{ item }}.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}.conf"
   notify: restart logstash
   with_items:
     - syslog
 
 - name: LogStash Service
   service:
-    name=logstash
-    state=started
-    enabled=true
+    name: logstash
+    state: started
+    enabled: true

@@ -1,9 +1,7 @@
 ---
 - name: Install ElasticSearch
   apt:
-    name={{ item }}
-    cache_valid_time={{ apt.cachetime }}
-    update_cache=yes
+    name: "{{ item }}"
   with_items:
     - elasticsearch
     - openjdk-7-jre-headless
@@ -11,19 +9,19 @@
 
 - name: Set Heap Size
   lineinfile:
-    line='ES_HEAP_SIZE={{ (ansible_memtotal_mb | int * 0.75) | round | int }}m'
-    regexp='^\#?\s?ES_HEAP_SIZE'
-    dest=/etc/default/elasticsearch
+    line: "ES_HEAP_SIZE={{ (ansible_memtotal_mb | int * 0.75) | round | int }}m"
+    regexp: '^\#?\s?ES_HEAP_SIZE'
+    dest: /etc/default/elasticsearch
   notify: restart es
 
 - name: Render ES Configuration
   template:
-    src=es.yml.j2
-    dest=/etc/elasticsearch/elasticsearch.yml
+    src: es.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
   notify: restart es
 
 - name: ElasticSearch Service
   service:
-    name=elasticsearch
-    state=started
-    enabled=true
+    name: elasticsearch
+    state: started
+    enabled: true

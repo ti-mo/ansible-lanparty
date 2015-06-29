@@ -9,8 +9,6 @@
   apt:
     name: "{{ item }}"
     state: latest
-    cache_valid_time: "{{ apt.cachetime }}"
-    update_cache: yes
   with_items:
     [ 'iproute2', 'iptables', 'netfilter-persistent', 'iptables-persistent',
       'conntrack', 'conntrackd', 'netstat-nat', 'iptstate', 'ipset',

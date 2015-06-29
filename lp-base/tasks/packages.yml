@@ -52,8 +52,8 @@
 - name: Global | Basic Package Installation
   apt:
     name: "{{ item }}"
-    cache_valid_time: "{{ apt.cachetime }}"
     update_cache: yes
+    cache_valid_time: "{{ apt.cachetime }}"
   with_items:
     [ 'sudo', 'rsyslog', 'open-vm-tools',
       'iputils-arping', 'tcpdump', 'ethtool',
