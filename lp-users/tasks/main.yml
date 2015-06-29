@@ -2,7 +2,6 @@
 - name: Users | User Management
   user:
     name: "{{ item.name }}"
-    uid: "{{ item.uid }}"
     state: "{{ item.state | default('present') }}"
     password: "{{ item.password | default('')}}"
     shell: "{{ item.shell | default('/bin/bash') }}"
