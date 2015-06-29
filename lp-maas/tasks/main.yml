@@ -1,0 +1,10 @@
+---
+- name: Assert | MaaS runs on Ubuntu only
+  assert:
+    that: "ansible_distribution == 'Ubuntu'"
+
+- include: maas.yml
+  tags: [ 'maas' ]
+
+- include: nginx.yml
+  tags: [ 'nginx', 'proxy' ]

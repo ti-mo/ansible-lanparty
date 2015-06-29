@@ -1,0 +1,10 @@
+---
+- name: restart clusterd
+  service:
+    name: maas-clusterd
+    state: restarted
+
+- name: restart regiond
+  service:
+    name: maas-regiond
+    state: restarted

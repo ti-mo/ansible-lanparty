@@ -1,0 +1,33 @@
+---
+- name: MaaS | Add MaaS PPA
+  apt_repository:
+    repo: "ppa:{{ maas_ppa }}"
+    update_cache: yes
+  tags: [ 'repo', 'ppa' ]
+
+- name: MaaS | Install Metapackage
+  apt:
+    name: maas
+
+# TODO: Requires more configuration steps
+
+- name: MaaS | Region Controller MaaS URL
+  lineinfile:
+    dest: /etc/maas/maas_local_settings.py
+    line: "DEFAULT_MAAS_URL = \"http://{{ maas_domain }}/MAAS\""
+    regexp: '^\#?\w?DEFAULT_MAAS_URL'
+  notify: restart regiond
+
+- name: MaaS | Cluster Controller MaaS URL
+  lineinfile:
+    dest: /etc/maas/maas_cluster.conf
+    line: "MAAS_URL=\"http://{{ maas_domain }}/MAAS\""
+    regexp: '^\#?\w?MAAS_URL'
+  notify: restart clusterd
+
+- name: MaaS | Provisioning Server MaaS URL
+  lineinfile:
+    dest: /etc/maas/pserv.yaml
+    line: "  generator: http://{{ maas_domain }}/MAAS/api/1.0/pxeconfig/"
+    regexp: '^  generator'
+  notify: restart clusterd

@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+server {
+  server_name   {{ maas_domain }};
+
+  access_log    {{ maas_logdir }}/nginx/access.log;
+  error_log     {{ maas_logdir }}/nginx/error.log;
+
+  location /MAAS/static/ {
+    alias /usr/share/maas/web/static/;
+  }
+
+  location / {
+    return 301 $scheme://{{ maas_domain }}/MAAS;
+  }
+
+  location /MAAS {
+    proxy_pass http://localhost:5240/MAAS;
+    proxy_buffering off;
+  }
+}

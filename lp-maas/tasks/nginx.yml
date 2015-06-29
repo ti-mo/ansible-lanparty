@@ -1,0 +1,24 @@
+---
+- name: MaaS | Nginx Log Directory
+  file:
+    path: "{{ maas_logdir }}/nginx"
+    state: directory
+
+- name: MaaS | Render Nginx Vhost
+  template:
+    src: maas.nginx.j2
+    dest: /etc/nginx/sites-available/maas
+  notify: reload nginx
+  tags: [ 'maasnginx' ]
+
+- name: MaaS | Enable Nginx Vhost
+  file:
+    src: /etc/nginx/sites-available/maas
+    dest: /etc/nginx/sites-enabled/maas
+    state: link
+  notify: reload nginx
+
+- name: MaaS | Nginx Service
+  service:
+    name: nginx
+    state: started

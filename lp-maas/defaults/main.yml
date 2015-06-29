@@ -1,0 +1,6 @@
+---
+maas_ppa: maas-maintainers/testing
+
+maas_domain: maas.party.lan
+
+maas_logdir: /var/log/maas
