@@ -14,14 +14,14 @@
 - name: MaaS | Region Controller MaaS URL
   lineinfile:
     dest: /etc/maas/maas_local_settings.py
-    line: "DEFAULT_MAAS_URL = \"http://{{ maas_domain }}/MAAS\""
+    line: "DEFAULT_MAAS_URL = 'http://{{ maas_domain }}/MAAS'"
     regexp: '^\#?\w?DEFAULT_MAAS_URL'
   notify: restart regiond
 
 - name: MaaS | Cluster Controller MaaS URL
   lineinfile:
     dest: /etc/maas/maas_cluster.conf
-    line: "MAAS_URL=\"http://{{ maas_domain }}/MAAS\""
+    line: "MAAS_URL='http://{{ maas_domain }}/MAAS'"
     regexp: '^\#?\w?MAAS_URL'
   notify: restart clusterd
 
