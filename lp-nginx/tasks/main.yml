@@ -9,6 +9,22 @@
   apt:
     name: nginx
   tags: [ 'packages' ]
+  when: nginx_openresty == false
+
+- name: Nginx | Install OpenResty
+  apt:
+    name: openresty
+  tags: [ 'packages' ]
+  when: nginx_openresty
+
+- name: Nginx | Create Config Directories
+  file:
+    state: directory
+    path: /etc/nginx/{{ item }}
+  with_items:
+    - conf.d
+    - sites-enabled
+    - sites-available
 
 - name: Nginx | Render Configuration
   template:
