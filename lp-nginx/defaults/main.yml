@@ -2,5 +2,7 @@
 nginx_disable_default: false
 nginx_openresty: false
 
+nginx_pid: /var/run/nginx.pid
+
 www_user: www-data
 www_group: www-data
