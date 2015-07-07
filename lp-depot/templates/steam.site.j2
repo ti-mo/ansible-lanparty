@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+server {
+  # DNS entries:
+  # lancache-steam cs.steampowered.com *.cs.steampowered.com content1.steampowered.com
+  # content2.steampowered.com content3.steampowered.com content4.steampowered.com
+  # content5.steampowered.com content6.steampowered.com content7.steampowered.com
+  # content8.steampowered.com *.hsar.steampowered.com.edgesuite.net
+  # clientconfig.akamai.steamstatic.com
+
+  listen lancache-steam default;
+  server_name steam _;
+
+  access_log /data/www/logs/lancache-steam-access.log main buffer=128k flush=1m;
+  error_log /data/www/logs/lancache-steam-error.log;
+
+  include lancache/node-steam;
+}

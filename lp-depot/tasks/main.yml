@@ -1,1 +1,27 @@
 ---
+- name: Depot | Ensure Spoof Zone Definitions in NS config
+  assert:
+    that:
+      "ns.spoof.services.{{ item }}.domains" | iterable
+  with_items: depot_sites
+
+- name: Depot | Render Configuration Fragments
+  template:
+    src: "depot.conf.j2"
+    dest: "/etc/nginx/conf.d/depot.conf"
+  notify: reload nginx
+
+- name: Depot | Render Site Templates
+  template:
+    src: "{{ item }}.site.j2"
+    dest: "/etc/nginx/sites-available/depot-{{ item }}"
+  with_items: depot_sites
+  notify: reload nginx
+
+- name: Depot | Enable Sites
+  file:
+    state: link
+    src: "/etc/nginx/sites-available/depot-{{ item }}"
+    dest: "/etc/nginx/sites-enabled/depot-{{ item }}"
+  with_items: depot_sites
+  notify: reload nginx
