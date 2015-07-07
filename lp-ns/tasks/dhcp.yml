@@ -1,53 +1,53 @@
 ---
-- name: DHCP - Config directory
+- name: DHCP | Config directory
   file:
-    state=directory
-    path={{ ns.dhcp.confdir }}
+    state: directory
+    path: "{{ ns.dhcp.confdir }}"
 
-- name: DHCP - Zone Configuration
+- name: DHCP | Zone Configuration
   template:
-    src=dhcp.conf.j2
-    dest={{ ns.dhcp.confdir }}/dhcp.conf
+    src: conf/dhcp.conf.j2
+    dest: "{{ ns.dhcp.confdir }}/dhcp.conf"
   notify: reload bind
 
-- name: DHCP - Forward Zone Files
+- name: DHCP | Forward Zone Files
   copy:
-    src=files/zones/dhcp.zone
-    dest={{ ns.dhcp.confdir }}/{{ item }}.db
-    force=no
+    src: files/zones/dhcp.zone
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.db"
+    force: no
   with_items: ns.dhcp.fzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Forward Zone Variable Replacement
+- name: DHCP | Forward Zone Variable Replacement
   replace:
-    dest={{ ns.dhcp.confdir }}/{{ item }}.db
-    regexp='^\$ZONE'
-    replace={{ item }}
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.db"
+    regexp: '^\$ZONE'
+    replace: "{{ item }}"
   with_items: ns.dhcp.fzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Reverse Zone Files
+- name: DHCP | Reverse Zone Files
   copy:
-    src=files/zones/dhcp.zone
-    dest={{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db
-    force=no
+    src: files/zones/dhcp.zone
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db"
+    force: no
   with_items: ns.dhcp.rzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Reverse Zone Variable Replacement
+- name: DHCP | Reverse Zone Variable Replacement
   replace:
-    dest={{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db
-    regexp='^\$ZONE'
-    replace={{ item }}.in-addr.arpa
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db"
+    regexp: '^\$ZONE'
+    replace: "{{ item }}.in-addr.arpa"
   with_items: ns.dhcp.rzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Owner of dynamic DNS zones
+- name: DHCP | Owner of dynamic DNS zones
   file:
-    path={{ ns.dhcp.confdir }}
-    owner=bind
-    group=bind
+    path: "{{ ns.dhcp.confdir }}"
+    owner: bind
+    group: bind

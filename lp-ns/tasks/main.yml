@@ -18,13 +18,9 @@
 
 - name: BIND9 Configuration Files
   template:
-    src: "{{ item }}.j2"
-    dest: "/etc/bind/{{ item }}"
+    src: conf/named.conf.j2
+    dest: /etc/bind/named.conf
   notify: reload bind
-  with_items:
-    - named.conf
-    - named.conf.options
-    - named.conf.zones
 
 - include: zones.yml
   tags: [ 'zones' ]
@@ -33,7 +29,7 @@
   tags: [ 'dhcp' ]
 
 - include: spoof.yml
-  tags: [ 'spoof' ]
+  tags: [ 'spoof', 'depot' ]
 
 # Make sure we clean this up to avoid confusion
 # and/or accidental manual edits to files that
