@@ -1,12 +1,12 @@
 // {{ ansible_managed }}
-// {{ item.name }} service spoof zone
-{% for domain in item.domains %}
+// {{ item.key }} service spoof zone
+{% for domain in item.value.domains %}
 // - {{ domain }}
 {% endfor %}
 
-{% for domain in item.domains %}
+{% for domain in item.value.domains %}
 zone "{{ domain }}." IN {
         type master;
-        file "{{ ns.spoof.confdir }}/{{ item.name }}.db";
+        file "{{ ns.spoof.confdir }}/{{ item.key }}.db";
 };
 {% endfor %}

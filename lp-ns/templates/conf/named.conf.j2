@@ -1,11 +1,11 @@
 // {{ ansible_managed }}
 
-// Managing acls
+// Access Control
 acl internals {
-    127.0.0.0/8;
-    {% for net in ns.allowed %}
-    {{ net }};
-    {% endfor %}
+  127.0.0.0/8;
+{% for net in ns.allowed %}
+  {{ net }};
+{% endfor %}
 };
 
 // Resolver Zones
@@ -15,8 +15,8 @@ include "{{ ns.domains.confdir }}/domains.conf";
 include "{{ ns.dhcp.confdir }}/dhcp.conf";
 
 // Spoof Zones
-{% for svc in ns.spoof.services %}
-include "{{ ns.spoof.confdir }}/{{ svc.name }}.conf";
+{% for name, svc in ns.spoof.services.iteritems() %}
+include "{{ ns.spoof.confdir }}/{{ name }}.conf";
 {% endfor %}
 
 // TSIG key used for the dynamic update

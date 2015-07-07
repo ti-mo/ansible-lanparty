@@ -10,5 +10,5 @@ $TTL    86400
 ;
 @       IN      NS      {{ ns.auth }}.
 
-@       IN      A       {{ item.dest }}
-*       IN      A       {{ item.dest }}
+@       IN      A       {{ item.value.dest }}
+*       IN      A       {{ item.value.dest }}
