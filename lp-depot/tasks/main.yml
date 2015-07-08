@@ -2,13 +2,36 @@
 - name: Depot | Ensure Spoof Zone Definitions in NS config
   assert:
     that:
-      "ns.spoof.services.{{ item }}.domains" | iterable
+      "ns.spoof.services.{{ item }}.domains is iterable"
   with_items: depot_sites
 
-- name: Depot | Render Configuration Fragments
+- name: Depot | Log Directories
+  file:
+    state: directory
+    path: "{{ depot_logdir }}/{{ item }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    recurse: true
+  with_items: depot_sites
+
+- name: Depot | Render Global Parameters
   template:
-    src: "depot.conf.j2"
-    dest: "/etc/nginx/conf.d/depot.conf"
+    src: depot.conf.j2
+    dest: /etc/nginx/conf.d/depot.conf
+  notify: reload nginx
+
+- name: Depot | Config Directory
+  file:
+    state: directory
+    path: /etc/nginx/depot
+
+- name: Depot | Render Proxy Parameters
+  template:
+    src: "{{ item }}.conf.j2"
+    dest: "/etc/nginx/depot/{{ item }}.conf"
+  with_items:
+    - proxy-cache
+    - proxy-pass
   notify: reload nginx
 
 - name: Depot | Render Site Templates

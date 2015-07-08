@@ -1,18 +1,42 @@
 # {{ ansible_managed }}
 
 server {
-  # DNS entries:
-  # lancache-steam cs.steampowered.com *.cs.steampowered.com content1.steampowered.com
-  # content2.steampowered.com content3.steampowered.com content4.steampowered.com
-  # content5.steampowered.com content6.steampowered.com content7.steampowered.com
-  # content8.steampowered.com *.hsar.steampowered.com.edgesuite.net
-  # clientconfig.akamai.steamstatic.com
+  listen 80;
+  server_name {{ ns.spoof.services.steam.domains | join(" ") }} _;
 
-  listen lancache-steam default;
-  server_name steam _;
+  access_log {{ depot_logdir }}/steam/depot-steam-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/steam/depot-steam-error.log;
 
-  access_log /data/www/logs/lancache-steam-access.log main buffer=128k flush=1m;
-  error_log /data/www/logs/lancache-steam-error.log;
+  resolver {{ depot_resolvers | join(" ") }};
 
-  include lancache/node-steam;
+  location /depot/ {
+    # Cache location
+    proxy_cache installs;
+    proxy_cache_key "$server_name$uri";
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+
+    # Ignore upstream Expires header choose use our own
+    proxy_ignore_headers Expires;
+  }
+
+  # Store a copy of Steam's CDN manifest
+  location /serverlist/ {
+    proxy_store {{ depot_path }}/steam$uri/servers.txt;
+    proxy_store_access user:rw group:rw all:r;
+
+    include depot/proxy-pass.conf;
+  }
+
+  location / {
+    # Cache location
+    proxy_cache other;
+    proxy_cache_key "$server_name$request_uri";
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
 }
