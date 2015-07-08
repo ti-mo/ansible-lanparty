@@ -1,9 +1,12 @@
 ---
 - name: restore iptables
-  service: name=iptables-persistent state=reloaded
+  service: name=netfilter-persistent state=reloaded
 
 - name: restore ipset
   service: name=ipset state=restarted
 
 - name: warn interfaces
   debug: msg='WARNING, /etc/network/interfaces has been modified. Please restart interfaces manually.'
+
+- name: reload daemons
+  shell: systemctl daemon-reload

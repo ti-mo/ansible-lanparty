@@ -227,4 +227,9 @@ COMMIT
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
+
+# Routes to SNAT
+{% for s, d in fw_snat %}
+-A POSTROUTING -s {{ s }} -d {{ d }} -j MASQUERADE
+{% endfor %}
 COMMIT

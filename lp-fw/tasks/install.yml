@@ -7,26 +7,37 @@
       'conntrackd', 'netstat-nat', 'iptstate', 'ipset' ]
   tags: [ 'packages' ]
 
-- name: Custom sysctl init
-  template:
-    src: sysctl-init.j2
-    dest: /etc/init.d/netfilter-sysctl
-    mode: 0755
+- name: Install | Remove custom netfilter-sysctl
+  file:
+    path: /etc/init.d/netfilter-sysctl
+    state: absent
 
-- name: Custom netfilter-sysctl service
+- name: Install | Custom netfilter-sysctl service
   service:
     name: netfilter-sysctl
+    state: stopped
+    enabled: false
+
+- name: Install | Netfilter unit w/ sysctl reload
+  template:
+    src: sysctl-unit.j2
+    dest: /etc/systemd/system/netfilter-persistent.service
+  notify: reload daemons
+
+- name: Install | Custom netfilter-sysctl service
+  service:
+    name: netfilter-persistent
     state: started
     enabled: true
 
-- name: Runtime Disable RP Filter
+- name: Install | Runtime Disable RP Filter
   sysctl:
     name: net.ipv4.conf.all.rp_filter
     value: 0
     sysctl_set: yes
     reload: yes
 
-- name: Runtime Log Martians
+- name: Install | Runtime Log Martians
   sysctl:
     name: net.ipv4.conf.all.log_martians
     value: 1
