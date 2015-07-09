@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+# Te zien met Logstash/RSyslog
+log_format depot '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$upstream_cache_status" "$host" "$http_range"';
+
+# Hash Cache Definitions
+proxy_cache_path  {{ depot_path }}/installs levels=2:2 keys_zone=installs:500m inactive=120d max_size=972800m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
+proxy_cache_path  {{ depot_path }}/other levels=2:2 keys_zone=other:100m inactive=72h max_size=10240m;
+proxy_temp_path   {{ depot_path }}/tmp;
+

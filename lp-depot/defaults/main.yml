@@ -1,0 +1,10 @@
+---
+depot_sites:
+  - steam
+
+depot_resolvers:
+  - 8.8.8.8
+  - 4.2.2.2
+
+depot_path: /media/cache
+depot_logdir: /var/log/depot

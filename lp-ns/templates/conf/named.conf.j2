@@ -1,0 +1,81 @@
+// {{ ansible_managed }}
+
+// Access Control
+acl internals {
+  127.0.0.0/8;
+{% for net in ns.allowed %}
+  {{ net }};
+{% endfor %}
+};
+
+// Resolver Zones
+include "{{ ns.domains.confdir }}/domains.conf";
+
+// DHCP Zones
+include "{{ ns.dhcp.confdir }}/dhcp.conf";
+
+// Spoof Zones
+{% for name, svc in ns.spoof.services.iteritems() %}
+include "{{ ns.spoof.confdir }}/{{ name }}.conf";
+{% endfor %}
+
+// TSIG key used for the dynamic update
+include "/etc/bind/rndc.key";
+
+// Configure the communication channel for Administrative BIND9 with rndc
+// By default, they key is in the rndc.key file and is used by rndc and bind9
+// on the localhost
+controls {
+    inet 127.0.0.1 port 953 allow { {{ trusted_networks | join('; ') }}; };
+};
+
+// BIND Options
+options {
+    directory "/var/cache/bind";
+
+    // Exchange port between DNS servers
+    query-source address * port *;
+
+    // Conform to RFC1035
+    auth-nxdomain no;
+
+    // Listen on local interfaces only(IPV4)
+    listen-on-v6 { none; };
+
+    // Do not transfer the zone information to the secondary DNS
+    allow-transfer { none; };
+
+    // Accept requests for internal network only
+    allow-query { internals; };
+
+    // Allow recursive queries to the local hosts
+    allow-recursion { internals; };
+
+    // Do not make public version of BIND
+    version none;
+};
+
+// ---------------------------------------------------
+// Prime the server with knowledge of the root servers
+// Be authoritative for the localhost forward and reverse zones,
+// and for broadcast zones as per RFC 1912
+zone "." {
+    type hint;
+    file "/etc/bind/db.root";
+};
+zone "localhost" {
+    type master;
+    file "/etc/bind/db.local";
+};
+zone "127.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.127";
+};
+zone "0.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.0";
+};
+zone "255.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.255";
+};

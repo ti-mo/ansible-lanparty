@@ -1,53 +1,35 @@
 ---
-- name: DHCP - Config directory
+- name: BIND-DHCP | Config directory
   file:
-    state=directory
-    path={{ ns.dhcp.confdir }}
+    state: directory
+    path: "{{ ns.dhcp.confdir }}"
 
-- name: DHCP - Zone Configuration
+- name: BIND-DHCP | Zone Configuration
   template:
-    src=dhcp.conf.j2
-    dest={{ ns.dhcp.confdir }}/dhcp.conf
+    src: conf/dhcp.conf.j2
+    dest: "{{ ns.dhcp.confdir }}/dhcp.conf"
   notify: reload bind
 
-- name: DHCP - Forward Zone Files
-  copy:
-    src=files/zones/dhcp.zone
-    dest={{ ns.dhcp.confdir }}/{{ item }}.db
-    force=no
+- name: BIND-DHCP | Forward Zone Files
+  template:
+    force: no # Don't overwrite zone file!
+    src: zones/domains.zone.j2
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.db"
   with_items: ns.dhcp.fzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Forward Zone Variable Replacement
-  replace:
-    dest={{ ns.dhcp.confdir }}/{{ item }}.db
-    regexp='^\$ZONE'
-    replace={{ item }}
-  with_items: ns.dhcp.fzones
-  notify: reload bind
-  tags: [ 'zones' ]
-
-- name: DHCP - Reverse Zone Files
-  copy:
-    src=files/zones/dhcp.zone
-    dest={{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db
-    force=no
+- name: BIND-DHCP | Reverse Zone Files
+  template:
+    force: no # Don't overwrite zone file!
+    src: zones/domains.zone.j2
+    dest: "{{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db"
   with_items: ns.dhcp.rzones
   notify: reload bind
   tags: [ 'zones' ]
 
-- name: DHCP - Reverse Zone Variable Replacement
-  replace:
-    dest={{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db
-    regexp='^\$ZONE'
-    replace={{ item }}.in-addr.arpa
-  with_items: ns.dhcp.rzones
-  notify: reload bind
-  tags: [ 'zones' ]
-
-- name: DHCP - Owner of dynamic DNS zones
+- name: BIND-DHCP | Owner of dynamic DNS zones
   file:
-    path={{ ns.dhcp.confdir }}
-    owner=bind
-    group=bind
+    path: "{{ ns.dhcp.confdir }}"
+    owner: bind
+    group: bind
