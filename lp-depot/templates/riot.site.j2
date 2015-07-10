@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name {{ ns.spoof.services.riot.domains | join(" ") }} _;
+
+  access_log {{ depot_logdir }}/riot/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/riot/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }};
+
+  location / {
+    # Cache location
+    proxy_cache riot;
+    proxy_cache_key "$server_name$request_uri";
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+}

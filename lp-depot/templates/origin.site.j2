@@ -11,7 +11,7 @@ server {
 
   location / {
     # Cache Location
-    proxy_cache installs;
+    proxy_cache origin;
 
     # Cache Settings
     proxy_ignore_headers Expires Cache-Control;
