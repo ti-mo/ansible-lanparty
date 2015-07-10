@@ -1,0 +1,37 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name {{ ns.spoof.services.twitch.domains | join(" ") }} _;
+
+  access_log {{ twitch_logdir }}/cache-access.log depot buffer=128k flush=1m;
+  error_log {{ twitch_logdir }}/cache-error.log;
+
+  resolver {{ twitch_resolvers | join(" ") }};
+
+  location / {
+    # Cache Location
+    proxy_cache twitch;
+
+    # Cache Settings
+    proxy_cache_key "$server_name$uri";
+    proxy_cache_valid 200 302 404 2m;
+
+    # Upstream Configuration
+    proxy_next_upstream error timeout http_404;
+    proxy_pass http://$host$request_uri;
+    proxy_redirect off;
+    proxy_ignore_client_abort on;
+    proxy_ignore_headers Expires Cache-Control;
+
+    # Upstream request headers
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # Debug Headers
+    add_header X-Upstream-Status $upstream_status;
+    add_header X-Upstream-Response-Time $upstream_response_time;
+    add_header X-Upstream-Cache-Status $upstream_cache_status;
+  }
+}

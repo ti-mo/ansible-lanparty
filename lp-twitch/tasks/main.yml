@@ -1,0 +1,32 @@
+---
+- name: Twitch | Ensure Spoof Zone Definitions in NS config
+  assert:
+    that:
+      "ns.spoof.services.twitch.domains is iterable"
+
+- name: Twitch | Log Directories
+  file:
+    state: directory
+    path: "{{ twitch_logdir }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    recurse: true
+
+- name: Twitch | Render Site Template
+  template:
+    src: twitch.site.j2
+    dest: /etc/nginx/sites-available/twitch
+  notify: reload nginx
+
+- name: Twitch | Render Configuration
+  template:
+    src: twitch.conf.j2
+    dest: /etc/nginx/conf.d/twitch.conf
+  notify: reload nginx
+
+- name: Twitch | Enable Site
+  file:
+    state: link
+    src: /etc/nginx/sites-available/twitch
+    dest: /etc/nginx/sites-enabled/twitch
+  notify: reload nginx
