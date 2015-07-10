@@ -1,0 +1,30 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name {{ ns.spoof.services.origin.domains | join(" ") }} _;
+
+  access_log {{ depot_logdir }}/origin/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/origin/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }};
+
+  location / {
+    # Cache Location
+    proxy_cache installs;
+
+    # Cache Settings
+    proxy_ignore_headers Expires Cache-Control;
+    proxy_cache_key "$server_name$uri $http_range";
+    proxy_cache_valid 206 90d;
+
+    # Some downloads are very large so we cache based on range to keep
+    # single downloads quick and hence ensure interactivity is good.
+    proxy_set_header Range $http_range;
+    proxy_set_header If-Range $http_if_range;
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+}

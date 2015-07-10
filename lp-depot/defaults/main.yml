@@ -1,6 +1,8 @@
 ---
 depot_sites:
   - steam
+  - blizzard
+  - origin
 
 depot_resolvers:
   - 8.8.8.8

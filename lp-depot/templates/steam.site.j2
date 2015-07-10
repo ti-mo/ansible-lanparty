@@ -4,14 +4,16 @@ server {
   listen 80;
   server_name {{ ns.spoof.services.steam.domains | join(" ") }} _;
 
-  access_log {{ depot_logdir }}/steam/depot-steam-access.log depot buffer=128k flush=1m;
-  error_log {{ depot_logdir }}/steam/depot-steam-error.log;
+  access_log {{ depot_logdir }}/steam/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/steam/depot-error.log;
 
   resolver {{ depot_resolvers | join(" ") }};
 
   location /depot/ {
     # Cache location
     proxy_cache installs;
+
+    # Cache Settings
     proxy_cache_key "$server_name$uri";
 
     # Use proxy_cache method
@@ -20,14 +22,6 @@ server {
 
     # Ignore upstream Expires header choose use our own
     proxy_ignore_headers Expires;
-  }
-
-  # Store a copy of Steam's CDN manifest
-  location /serverlist/ {
-    proxy_store {{ depot_path }}/steam$uri/servers.txt;
-    proxy_store_access user:rw group:rw all:r;
-
-    include depot/proxy-pass.conf;
   }
 
   location / {
