@@ -1,18 +1,23 @@
 ---
-- name: Render IPSet Config
+- name: IPSet | Render IPSet Config
   template:
-    src=ipset.j2
-    dest=/etc/ipset.conf
+    src: ipset.j2
+    dest: /etc/ipset.conf
   notify: restore ipset
 
-- name: Install IPSet init script
-  template:
-    src=ipset-init.j2
-    dest=/etc/init.d/ipset
-    mode=0755
+- name: Install | Remove custom netfilter-sysctl
+  file:
+    path: /etc/init.d/ipset
+    state: absent
 
-- name: IPSet Service
+- name: IPSet | Install systemd unit
+  template:
+    src: ipset-unit.j2
+    dest: /etc/systemd/system/ipset.service
+  notify: reload daemons
+
+- name: IPSet | Start Service
   service:
-    name=ipset
-    state=started
-    enabled=true
+    name: ipset
+    state: started
+    enabled: true

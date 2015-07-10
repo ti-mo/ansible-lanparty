@@ -1,6 +1,6 @@
 ---
 - name: restore iptables
-  service: name=netfilter-persistent state=reloaded
+  service: name=netfilter-persistent state=restarted
 
 - name: restore ipset
   service: name=ipset state=restarted

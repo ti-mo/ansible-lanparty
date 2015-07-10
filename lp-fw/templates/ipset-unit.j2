@@ -1,0 +1,15 @@
+[Unit]
+Description=ipset loader
+DefaultDependencies=no
+Before=network.target
+Requires=systemd-modules-load.service local-fs.target
+After=systemd-modules-load.service local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c "/sbin/ipset -! restore < /etc/ipset.conf"
+ExecStop=/sbin/ipset destroy
+
+[Install]
+WantedBy=multi-user.target

@@ -2,8 +2,8 @@
 Description=netfilter persistent configuration
 DefaultDependencies=no
 Before=network.target
-Requires=systemd-modules-load.service local-fs.target
-After=systemd-modules-load.service local-fs.target
+Requires=systemd-modules-load.service local-fs.target ipset.service
+After=systemd-modules-load.service local-fs.target ipset.service
 
 [Service]
 Type=oneshot

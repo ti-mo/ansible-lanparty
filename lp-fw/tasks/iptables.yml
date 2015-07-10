@@ -1,14 +1,32 @@
 ---
 - name: IPTables Rules
   template:
-    src=iptables.j2
-    dest="{{ iptables.path }}"
+    src: iptables.j2
+    dest: "{{ iptables.path }}"
   notify: restore iptables
   tags: [ 'iptables' ]
 
-# Don't use state=started, this only needs to run once on boot
-- name: NetFilter Service
+
+- name: Install | Remove custom netfilter-sysctl
+  file:
+    path: /etc/init.d/netfilter-sysctl
+    state: absent
+
+- name: Install | Custom netfilter-sysctl service
   service:
-    name=netfilter-persistent
-    enabled=true
+    name: netfilter-sysctl
+    state: stopped
+    enabled: false
+
+- name: Install | Netfilter unit w/ sysctl reload
+  template:
+    src: sysctl-unit.j2
+    dest: /etc/systemd/system/netfilter-persistent.service
+  notify: reload daemons
+
+- name: Install | Custom netfilter-sysctl service
+  service:
+    name: netfilter-persistent
+    state: started
+    enabled: true
   tags: [ 'services' ]
