@@ -11,7 +11,7 @@ server {
 
   location /depot/ {
     # Cache location
-    proxy_cache installs;
+    proxy_cache steam;
 
     # Cache Settings
     proxy_cache_key "$server_name$uri";

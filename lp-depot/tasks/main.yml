@@ -48,3 +48,8 @@
     dest: "/etc/nginx/sites-enabled/depot-{{ item }}"
   with_items: depot_sites
   notify: reload nginx
+
+- name: Depot | Install Logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/nginx-depot

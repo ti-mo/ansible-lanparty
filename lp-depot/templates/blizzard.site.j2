@@ -11,7 +11,7 @@ server {
 
   location / {
     # Cache Location
-    proxy_cache installs;
+    proxy_cache blizzard;
 
     # Cache Settings
     proxy_cache_key "$server_name$request_uri $http_range";

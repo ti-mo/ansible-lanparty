@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+
+{% for s in depot_sites %}
+{{ depot_logdir }}/{{ s }}/*.log
+{% endfor %}
+{
+  size {{ depot_logrotate_size }}
+  weekly
+  missingok
+  rotate 15
+  compress
+  notifempty
+  create 0640 www-data www-data
+  sharedscripts
+  prerotate
+  if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+    run-parts /etc/logrotate.d/httpd-prerotate; \
+  fi \
+  endscript
+
+  # Nginx package should do this
+  #  postrotate
+  #    invoke-rc.d nginx rotate >/dev/null 2>&1
+  #  endscript
+}
