@@ -17,6 +17,7 @@
     src: twitch.site.j2
     dest: /etc/nginx/sites-available/twitch
   notify: reload nginx
+  tags: [ 'twitch-site' ]
 
 - name: Twitch | Render Configuration
   template:
@@ -30,3 +31,8 @@
     src: /etc/nginx/sites-available/twitch
     dest: /etc/nginx/sites-enabled/twitch
   notify: reload nginx
+
+- name: Twitch | Install Logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/nginx-twitch

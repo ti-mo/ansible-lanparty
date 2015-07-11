@@ -16,6 +16,7 @@ server {
     # Cache Settings
     proxy_cache_key "$server_name$uri";
     proxy_cache_valid 200 302 404 2m;
+    proxy_cache_lock on;
 
     # Upstream Configuration
     proxy_next_upstream error timeout http_404;
@@ -33,5 +34,30 @@ server {
     add_header X-Upstream-Status $upstream_status;
     add_header X-Upstream-Response-Time $upstream_response_time;
     add_header X-Upstream-Cache-Status $upstream_cache_status;
+  }
+
+  location ~ \.m3u8$ {
+    # Quality Re-writes
+    replace_filter '^#EXT-X-MEDIA:\N*?,NAME="({{ twitch_quality_filter | default([]) | join("|") }})",\N*?$\n#EXT-X-STREAM-INF:\N*?$\n^http\N*?$\n' '' gi;
+{% for r in twitch_quality_rename | default([]) %}
+    replace_filter 'NAME="{{ r.0 }}"' 'NAME="{{ r.1 }}"' gi;
+{% endfor %}
+    replace_filter_types application/vnd.apple.mpegurl;
+
+    # Cache Location
+    proxy_cache twitch;
+
+    # Cache Settings
+    proxy_cache_key "$server_name$uri";
+    proxy_cache_valid 200 302 404 4s;
+    proxy_cache_lock on;
+
+    proxy_pass http://$host$request_uri;
+    proxy_redirect off;
+    proxy_ignore_client_abort on;
+
+    # Debug Headers
+    add_header X-Qualities-Stripped "High-Medium-Low";
+    add_header X-Qualities-Modified "Source,Zanzi";
   }
 }

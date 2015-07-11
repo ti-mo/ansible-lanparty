@@ -1,7 +1,16 @@
 ---
 twitch_logdir: /var/log/twitch
 twitch_cachedir: /tmp/twitch
+twitch_logrotate_size: 100M
 
 twitch_resolvers:
   - 8.8.8.8
   - 4.2.2.2
+
+twitch_quality_rename:
+  - [ 'high', 'Epic' ]
+
+twitch_quality_filter:
+  - low
+  - medium
+  - source
