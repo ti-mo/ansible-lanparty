@@ -15,6 +15,7 @@
   apt:
     name: openresty
     force: yes
+    state: latest
   tags: [ 'packages' ]
   when: nginx_openresty
 
@@ -40,9 +41,27 @@
   notify: reload nginx
   when: nginx_disable_default
 
+- name: Nginx | Enable Service
+  service:
+    name: nginx
+    enabled: true
+  tags: [ 'services' ]
+
 - name: Nginx | Start Service
   service:
     name: nginx
     state: started
     enabled: true
+  when: start_nginx | default(true)
   tags: [ 'services' ]
+
+- name: Nginx | Install Logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/nginx
+    mode: 0644
+
+- name: Nginx | Enable Hourly Logrotate
+  template:
+    src: logrotate.hourly.j2
+    dest: /etc/cron.hourly/logrotate
