@@ -1,0 +1,29 @@
+---
+- name: Config | Render app_user.yml
+  template:
+    src: ebot.app_user.j2
+    dest: "{{ ebot_web_install_dir }}/config/app_user.yml"
+    owner: "{{ www_user}}"
+    group: "{{ www_group }}"
+  register: chconf
+
+- name: Config | Render databases.yml
+  template:
+    src: ebot.databases.j2
+    dest: "{{ ebot_web_install_dir }}/config/databases.yml"
+    owner: "{{ www_user}}"
+    group: "{{ www_group }}"
+  register: chdb
+
+- name: Config | Clear Symfony Cache
+  command: php symfony cc
+  args:
+    chdir: "{{ ebot_web_install_dir }}"
+  when: chconf.changed or chdb.changed
+
+- name: Config | Install Symfony database
+  command: php symfony doctrine:insert-sql
+  args:
+    chdir: "{{ ebot_web_install_dir }}"
+  when: chdb.changed
+  ignore_errors: true

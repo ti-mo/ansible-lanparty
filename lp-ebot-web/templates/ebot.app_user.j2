@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+  log_match: {{ ebot_web_install_dir }}/logs/log_match
+  log_match_admin: {{ ebot_web_install_dir }}/logs/log_match_admin
+
+  demo_path: {{ ebot_web_install_dir }}/demos
+  demo_download: true
+
+  ebot_ip: {{ hostvars[groups[ebot_inventory_group][0]]['ansible_default_ipv4']['address'] }}
+  ebot_port: 12360
+
+  # Either 'lan' or 'net'
+  # Displays the server IP or the GO TV IP
+  # 'net' only displays started matche on the homepage
+  mode: lan
+
+  # set to 0 if you don't want a refresh
+  refresh_time: 30

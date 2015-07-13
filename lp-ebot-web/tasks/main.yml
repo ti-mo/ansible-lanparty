@@ -1,0 +1,11 @@
+---
+- name: Setup | Check mysql.apps definition
+  assert:
+    that: "mysql.apps.ebot is defined"
+    msg: Define the ebot app in mysql.apps
+
+- include: install.yml
+  tags: [ 'ebot-web' ]
+
+- include: config.yml
+  tags: [ 'ebot-web', 'config' ]

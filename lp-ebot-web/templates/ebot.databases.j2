@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+all:
+  doctrine:
+    class: sfDoctrineDatabase
+    param:
+      dsn: 'mysql:host={{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }};dbname={{ mysql.apps.ebot.db }}'
+      username: {{ mysql.apps.ebot.user }}
+      password: {{ mysql.apps.ebot.pass }}
