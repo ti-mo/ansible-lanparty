@@ -1,0 +1,29 @@
+# Playbook is largely copied from bennojoy's mysql playbook
+# Star and contribute patches at https://github.com/bennojoy/mysql
+---
+- name: Install | MySQL Packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python-mysqldb
+    - mysql-server
+  notify: enable mysqld
+  tags: [ 'packages' ]
+
+- name: Install | Render the my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /etc/mysql/my.cnf
+  notify: restart mysql
+  tags: [ 'configuration' ]
+
+- name: Install | Create /etc/mysql/conf.d
+  file:
+    path: /etc/mysql/conf.d
+    state: directory
+  notify: restart mysql
+
+- name: Install | MySQL Service
+  service:
+    name: mysql
+    state: started

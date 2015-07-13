@@ -38,16 +38,16 @@ log_bin                 = mysql-bin
 expire_logs_days        = 10
 max_binlog_size         = 100M
 
-{% if mysql.databases is iterable and mysql.databases is not string %}
-{% for i in mysql.databases %}
-{% if i.replicate | default(1) %}
-binlog_do_db = {{ i.name }}
+{% if mysql.apps.iteritems() is iterable %}
+{% for _, a in mysql.apps.iteritems() %}
+{% if a.replicate | default(1) %}
+binlog_do_db = {{ a.db }}
 {% endif %}
 {% endfor %}
 
-{% for i in mysql.databases %}
+{% for i in mysql.apps.iteritems() %}
 {% if not i.replicate | default(1) %}
-binlog_ignore_db = {{ i.name }}
+binlog_ignore_db = {{ a.db }}
 {% endif %}
 {% endfor %}
 {% endif %}
