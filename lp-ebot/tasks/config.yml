@@ -1,0 +1,14 @@
+---
+- name: Config | PHP Timezone
+  lineinfile:
+    line: 'date.timezone = Europe/Brussels'
+    dest: /etc/php5/cli/php.ini
+    regexp: '^\;?\s?date.timezone'
+
+- name: Config | Render eBot Config
+  template:
+    src: config.j2
+    dest: "{{ ebot_install_dir }}/config/config.ini"
+    owner: ebot
+    group: ebot
+  notify: restart ebot

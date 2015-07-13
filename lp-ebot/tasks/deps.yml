@@ -1,0 +1,46 @@
+---
+- name: Deps | Install PHP / NodeJS
+  apt:
+    name: "{{ item }}"
+    force: true
+  with_items:
+    - php5
+    - php5-mysql
+    - php5-json
+    - php5-dev
+    - php-pear
+    - nodejs
+    - npm
+
+- name: Deps | Install Composer
+  get_url:
+    url: https://getcomposer.org/composer.phar
+    dest: /usr/local/bin/composer
+    mode: 0755
+
+- name: Deps | Node Libraries
+  npm:
+    name: "{{ item }}"
+    production: yes
+    path: "{{ ebot_install_dir }}"
+  with_items:
+    - websocket
+    - formidable
+    - archiver
+    - socket.io
+
+- name: Deps | PECL pthreads
+  pear:
+    name: pecl/pthreads
+
+- name: Deps | pthreads Extension
+  lineinfile:
+    create: true
+    line: "extension=pthreads.so"
+    dest: /etc/php5/mods-available/pthreads.ini
+
+- name: Deps | Enable pthreads Extension
+  file:
+    state: link
+    src: /etc/php5/mods-available/pthreads.ini
+    dest: /etc/php5/cli/conf.d/04-pthreads.ini

@@ -1,0 +1,45 @@
+---
+- name: Install | eBot User
+  user:
+    name: ebot
+    system: true
+
+- name: Install | Git Checkout
+  git:
+    repo: https://github.com/ti-mo/eBot-CSGO.git
+    version: threads
+    dest: "{{ ebot_install_dir }}"
+  register: ebotgit
+
+- name: Install | Set Owner
+  file:
+    path: "{{ ebot_install_dir }}"
+    recurse: true
+    owner: ebot
+    group: ebot
+  when: ebotgit.changed
+
+- name: Install | Set Install Directory Perms
+  file:
+    path: "{{ ebot_install_dir }}"
+    owner: ebot
+    group: ebot
+    mode: 0755
+  when: ebotgit.changed
+
+- name: Install | Composer Dependencies
+  composer:
+    working_dir: "{{ ebot_install_dir }}"
+  tags: [ 'composer' ]
+
+- name: Install | Systemd Unit File
+  template:
+    src: ebot.unit.j2
+    dest: /lib/systemd/system/ebot.service
+  notify: reload daemons
+
+- name: Install | eBot Service
+  service:
+    name: ebot
+    enabled: true
+    state: started

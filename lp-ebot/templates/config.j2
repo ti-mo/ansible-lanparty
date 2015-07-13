@@ -1,0 +1,54 @@
+; {{ ansible_managed }}
+
+[BDD]
+MYSQL_IP = "{{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}"
+MYSQL_PORT = "{{ mysql.port }}"
+MYSQL_USER = "{{ mysql.apps.ebot.user }}"
+MYSQL_PASS = "{{ mysql.apps.ebot.pass }}"
+MYSQL_BASE = "{{ mysql.apps.ebot.db }}"
+
+[Config]
+BOT_IP = "0.0.0.0"
+BOT_PORT = 12360
+MANAGE_PLAYER = 1
+DELAY_BUSY_SERVER = 120
+NB_MAX_MATCHS = 0
+PAUSE_METHOD = "nextRound" ; nextRound or instantConfirm or instantNoConfirm
+
+[Match]
+LO3_METHOD = "restart" ; restart or csay or esl
+KO3_METHOD = "restart" ; restart or csay or esl
+DEMO_DOWNLOAD = true ; true or false :: whether gotv demos will be downloaded from the gameserver after matchend or not
+
+[MAPS]
+MAP[] = "de_dust2_se"
+MAP[] = "de_nuke_se"
+MAP[] = "de_inferno_se"
+MAP[] = "de_mirage_ce"
+MAP[] = "de_train_se"
+MAP[] = "de_cache"
+MAP[] = "de_season"
+MAP[] = "de_dust2"
+MAP[] = "de_nuke"
+MAP[] = "de_inferno"
+MAP[] = "de_train"
+MAP[] = "de_mirage"
+
+[WORKSHOP IDs]
+WORKSHOP["de_dust2_se"] = "125488374"
+WORKSHOP["de_nuke_se"] = "125498553"
+WORKSHOP["de_inferno_se"] = "125499116"
+WORKSHOP["de_mirage_ce"] = "123769103"
+WORKSHOP["de_train_se"] = "125498231"
+WORKSHOP["de_cache"] = "163589843"
+WORKSHOP["de_season"] = "125689191"
+WORKSHOP["de_dust2"] = "125438255"
+WORKSHOP["de_nuke"] = "125439125"
+WORKSHOP["de_inferno"] = "125438669"
+WORKSHOP["de_mirage"] = "152508932"
+WORKSHOP["de_train"] = "125438372"
+
+[Settings]
+COMMAND_STOP_DISABLED = false
+RECORD_METHOD = "matchstart" ; matchstart or knifestart
+DELAY_READY = true

@@ -1,0 +1,8 @@
+---
+- name: restart ebot
+  service:
+    name: ebot
+    state: restarted
+
+- name: reload daemons
+  shell: systemctl daemon-reload

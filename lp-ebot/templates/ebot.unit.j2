@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=eBot Daemon
+
+[Service]
+User=ebot
+TimeoutStartSec=300
+WorkingDirectory={{ ebot_install_dir }}
+ExecStart=/usr/bin/php bootstrap.php
+
+[Install]
+WantedBy=multi-user.target
