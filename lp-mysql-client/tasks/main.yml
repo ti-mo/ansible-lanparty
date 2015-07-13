@@ -1,0 +1,58 @@
+---
+- name: Setup | Check mysql.apps definition
+  assert:
+    that: "mysql.apps is iterable"
+    msg: Define at least one application in mysql.apps
+
+- name: Setup | Checl mysql.backend_group definition
+  assert:
+    that: "mysql.backend_group is defined"
+    msg: Define a MySQL backend inventory group in mysql.backend_group
+
+- name: Setup | Create DB users with IP
+  mysql_user:
+    name: "{{ item.value.user }}"
+    password: "{{ item.value.pass }}"
+    priv: "{{ item.value.priv | default('*.*:ALL') }}"
+    host: "{{ ansible_default_ipv4.address }}"
+    state: present
+  delegate_to: "{{ groups[mysql.backend_group][0] }}"
+  with_dict: mysql.apps
+
+- name: Setup | Create DB users with Hostname
+  mysql_user:
+    name: "{{ item.value.user }}"
+    password: "{{ item.value.pass }}"
+    priv: "{{ item.value.priv | default('*.*:ALL') }}"
+    host: "{{ ansible_fqdn }}"
+    state: present
+  delegate_to: "{{ groups[mysql.backend_group][0] }}"
+  with_dict: mysql.apps
+
+# The following is preserved as an example, maybe for future use
+# While it can serve as a generic DB schema installer, it's a little
+# dangerous and a work-around for lazy developers (no DB migration
+# framework) It also doesn't fit the new lp-mysql-client architecture.
+# Creating DB users from the front-end as opposed to the server itself.
+
+# - name: Python-MySQL Bindings on Client
+#   apt:
+#     name: "{{ item }}"
+#   with_items:
+#     - mysql-client
+#     - python-mysqldb
+#   delegate_to: "{{ groups[mysql.client_inv][0] }}"
+#   when: dbcreate is defined and dbcreate.changed
+#   tags: [ 'packages' ]
+#
+# - name: Install Schema for New DB
+#   mysql_db:
+#     name: "{{ item.db }}"
+#     state: import
+#     target: "{{ item.item.schema }}"
+#     login_user: "{{ mysql.user.name }}"
+#     login_password: "{{ mysql.user.pass }}"
+#     login_host: "{{ ansible_default_ipv4.address }}"
+#   with_items: dbcreate.results
+#   delegate_to: "{{ groups[mysql.client_inv][0] }}"
+#   when: dbcreate is defined and dbcreate.changed and item.item.schema is defined
