@@ -1,7 +1,7 @@
 [config]
-host={{ hostvars[groups['teamspeak-mysql'][0]]['ansible_default_ipv4']['address'] }}
+host={{ hostvars[groups[mysql.apps.teamspeak.backend_group][0]]['ansible_default_ipv4']['address'] }}
 port={{ mysql.port }}
-username={{ mysql.user.name }}
-password={{ mysql.user.pass }}
-database={{ mysql.databases.0.name }}
+username={{ mysql.apps.teamspeak.user }}
+password={{ mysql.apps.teamspeak.pass }}
+database={{ mysql.apps.teamspeak.db }}
 socket=

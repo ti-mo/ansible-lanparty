@@ -8,10 +8,10 @@ $config['mydomain'] = "{{ domains.lan }}";
 $config['title_image'] = "images/{{ observium.title_image }}";
 
 ### Database config
-$config['db_host'] = "{{ hostvars[groups['observium-mysql'][0]]['ansible_default_ipv4']['address'] }}";
-$config['db_user'] = "{{ mysql.user.name }}";
-$config['db_pass'] = "{{ mysql.user.pass }}";
-$config['db_name'] = "{{ mysql.databases.0.name }}";
+$config['db_host'] = "{{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}";
+$config['db_user'] = "{{ mysql.apps.observium.user }}";
+$config['db_pass'] = "{{ mysql.apps.observium.pass }}";
+$config['db_name'] = "{{ mysql.apps.observium.db }}";
 
 ### Memcached config - We use this to store realtime usage
 $config['memcached']['enable']  = FALSE;

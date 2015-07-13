@@ -64,7 +64,7 @@
     enabled: true
 
 - name: Monitoring Agent | Add host to Observium
-  command: "php {{ observium.install_dir}}/addhost.php {{ ansible_fqdn }} {{ snmp_comms.0 }} v2c && /opt/observium/poller-wrapper.py 16"
+  command: "php {{ observium.install_dir }}/addhost.php {{ ansible_fqdn }} {{ snmp_comms.0 }} v2c && {{ observium.install_dir }}/poller-wrapper.py 16"
   args:
     chdir: "{{ observium.install_dir }}"
   delegate_to: "{{ groups.observium.0 }}"
