@@ -1,0 +1,50 @@
+---
+- name: Install | Add i386 Architecture
+  lineinfile:
+    dest: /var/lib/dpkg/arch
+    line: "i386"
+    regexp: "i386"
+    insertafter: "amd64"
+  register: archrc
+
+- name: Install | Update APT Cache for i386
+  apt:
+    update_cache: true
+  when: archrc.changed
+
+- name: Install | lib32 Compatibility
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - lib32gcc1
+    - libcurl3:i386
+
+- name: Install | Steam User
+  user:
+    name: "{{ steamcmd_user }}"
+    home: "{{ steamcmd_path }}"
+    createhome: true
+    system: true
+
+- name: Install | SteamCMD Path
+  file:
+    path: "{{ steamcmd_path }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    state: directory
+
+- name: Install | Download SteamCMD
+  get_url:
+    dest: "{{ steamcmd_path }}/{{ steamcmd_filename }}"
+    url: "{{ steamcmd_url }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  register: steamrc
+
+- name: Install | Extract SteamCMD
+  unarchive:
+    copy: no
+    src: "{{ steamcmd_path }}/{{ steamcmd_filename }}"
+    dest: "{{ steamcmd_path }}"
+    creates: "{{ steamcmd_path }}/steamcmd.sh"
+  become_user: "{{ steamcmd_user }}"

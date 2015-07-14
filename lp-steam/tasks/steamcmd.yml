@@ -1,0 +1,22 @@
+---
+- name: SteamCMD | First Run
+  command: ./steamcmd.sh +quit
+  args:
+    chdir: "{{ steamcmd_path }}"
+  become_user: "{{ steamcmd_user }}"
+  when: steamrc.changed
+
+- name: SteamCMD | Install and Update Games
+  command: "./steamcmd.sh +login anonymous +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} +quit"
+  args:
+    chdir: "{{ steamcmd_path }}"
+  with_dict: steam_games
+  tags: [ 'install' ]
+
+- name: SteamCMD | Install and Update Games
+  command: "./steamcmd.sh +login anonymous +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} validate +quit"
+  args:
+    chdir: "{{ steamcmd_path }}"
+  with_dict: steam_games
+  when: steam_update | default(false)
+  tags: [ 'update' ]

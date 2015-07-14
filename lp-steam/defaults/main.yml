@@ -1,0 +1,15 @@
+---
+steamcmd_user: steam
+steamcmd_createhome: no
+
+steamcmd_path: /usr/local/steamcmd
+
+steamcmd_filename: steamcmd_linux.tar.gz
+steamcmd_url: http://media.steampowered.com/installer/{{ steamcmd_filename }}
+
+steam_games:
+  csgo:
+    id: 740
+    fullname: "Counter-Strike: Global Offensive"
+
+steam_validate: false
