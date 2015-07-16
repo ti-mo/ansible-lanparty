@@ -1,0 +1,5 @@
+---
+bgp_announce_install_dir: /usr/local/bgpanel-announce
+bgp_announce_git: https://gitlab.com/zanzilan/bgpanel-announce.git
+bgp_domain: bgp.example.com
+bgp_apikey: apikey

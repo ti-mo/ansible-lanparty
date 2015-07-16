@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Announce gameserver to BGPanel webservice
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/php {{ bgp_announce_install_dir }}/announce.php
+
+[Install]
+WantedBy=multi-user.target
