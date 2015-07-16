@@ -9,6 +9,13 @@
     that: "mysql.backend_group is defined"
     msg: Define a MySQL backend inventory group in mysql.backend_group
 
+- name: Setup | Create Database
+  mysql_db:
+    name: "{{ item.value.db }}"
+    state: present
+  delegate_to: "{{ groups[mysql.backend_group][0] }}"
+  with_dict: mysql.apps
+
 - name: Setup | Create DB users with IP
   mysql_user:
     name: "{{ item.value.user }}"
