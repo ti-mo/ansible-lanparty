@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+server {
+    server_name   {{ bgp_domain }};
+
+    access_log    {{ bgp_log_dir }}/access.log;
+    error_log     {{ bgp_log_dir }}/error.log;
+
+    root          {{ bgp_install_dir }};
+    index         index.php;
+
+    location ~* \.php$ {
+        fastcgi_pass   unix:/var/run/php5-fpm.sock;
+        try_files      $uri =404;
+        include        fastcgi.conf;
+    }
+
+    location ~ /\.ht {
+            deny  all;
+    }
+}

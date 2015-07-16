@@ -1,0 +1,17 @@
+---
+- name: Dependencies | PHP5 Extensions
+  apt:
+    name: "{{ item }}"
+    force: yes
+  with_items:
+    - php5-fpm
+    - php5-curl
+    - php5-gd
+    - php5-json
+    - php5-mysql
+  notify: restart php
+
+- name: Dependencies | PHP-FPM Service
+  service:
+    name: php5-fpm
+    state: started

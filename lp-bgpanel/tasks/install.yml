@@ -1,0 +1,73 @@
+---
+- name: Install | Check for SSH keys
+  assert:
+    that:
+      - "'{{ lookup('file', 'files/keys/bgpanel/bgpanel.key') }}' is string"
+      - "'{{ lookup('file', 'files/keys/bgpanel/bgpanel.pub') }}' is string"
+
+- name: Install | Create Directories
+  file:
+    state: directory
+    path: "{{ bgp_install_dir }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Install | Git Checkout
+  git:
+    repo: "{{ bgp_git }}"
+    dest: "{{ bgp_install_dir }}"
+    update: yes
+  become_user: "{{ www_user }}"
+  ignore_errors: true
+
+- name: Install | Create Directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    recurse: true
+  with_items:
+    - "{{ bgp_install_dir }}/.ssh"
+    - "{{ bgp_log_dir }}"
+
+- name: Install | Private SSH Key
+  copy:
+    src: files/keys/bgpanel/bgpanel.key
+    dest: "{{ bgp_install_dir }}/.ssh/bgpanel.key"
+    mode: 0600
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Install | Render Configuration
+  template:
+    src: bgp.conf.j2
+    dest: "{{ bgp_install_dir }}/configuration.php"
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+
+- name: Install | Nginx Site
+  template:
+    src: bgp.site.j2
+    dest: /etc/nginx/sites-available/bgpanel
+  notify: reload nginx
+
+- name: Install | Enable Nginx Site
+  file:
+    src: /etc/nginx/sites-available/bgpanel
+    dest: /etc/nginx/sites-enabled/bgpanel
+    state: link
+  notify: reload nginx
+
+- name: Install | Cron Job
+  cron:
+    name: "bgpanel"
+    user: "{{ www_user }}"
+    minute: "*/1"
+    job: "/usr/bin/php -q {{ bgp_install_dir }}/admin/cron.php > /dev/null 2>&1"
+  register: cronrc
+
+- name: Install | Smoke Test Cron Job
+  command: "/usr/bin/php -q {{ bgp_install_dir }}/admin/cron.php > /dev/null 2>&1"
+  become_user: "{{ www_user }}"
+  when: cronrc.changed

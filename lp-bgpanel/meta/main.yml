@@ -1,0 +1,4 @@
+---
+dependencies:
+  - { role: lp-nginx }
+  - { role: lp-mysql-client }

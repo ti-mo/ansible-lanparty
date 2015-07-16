@@ -1,0 +1,82 @@
+<?php
+  # {{ ansible_managed }}
+
+  // <DO NOT CHANGE>
+  define('LICENSE', 'GNU GENERAL PUBLIC LICENSE - Version 3, 29 June 2007');
+  // </DO NOT CHANGE>
+
+  /**
+   * HTTP Root variable to make includes work from all pages in the hierarchy
+   */
+  define('HTTPROOT', "{{ bgp_install_dir }}");
+
+  // Announcer API Key
+  define('APIKEY', "{{ bgp_apikey }}");
+
+  // DBHOST is the MySQL Database Hostname
+  define('DBHOST', '{{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}');
+
+  // DBNAME is the MySQL Database Name
+  define('DBNAME', '{{ mysql.apps.bgpanel.db }}');
+
+  // DBUSER is the MySQL Database Username
+  define('DBUSER', '{{ mysql.apps.bgpanel.user }}');
+
+  // DBPASSWORD is the MySQL Database Password
+  define('DBPASSWORD', '{{ mysql.apps.bgpanel.pass }}');
+
+  // DBPREFIX is the MySQL Table Prefix
+  define('DBPREFIX', 'bgp_');
+
+  // Private key to log on to the game servers with
+  define('CRYPT_KEY_PRIV', file_get_contents(HTTPROOT . "/.ssh/bgpanel.key"));
+
+  /**
+   * CRON Configuration
+   * Sets the period (in seconds) between two crons
+   */
+  define('CRONDELAY', 60); // Default: "600"
+
+  /**
+   * Add include paths
+   */
+  set_include_path(get_include_path() . PATH_SEPARATOR . HTTPROOT . '/libs/phpseclib');
+
+  /**
+   * DATE Configuration
+   * Sets the default timezone used by all date/time functions
+   * @link: http://php.net/manual/en/timezones.php
+   */
+  date_default_timezone_set('Europe/Brussels'); // Default: "Europe/London"
+
+  /**
+   * LOCALE Configuration
+   *
+   * Sets the default language
+   *
+   * en_EN  =>  English
+   * es_ES  =>  Spanish
+   * fr_FR  =>  French
+   * nl_NL  =>  Dutch
+   * pl_PL  =>  Polish
+   * ru_RU  =>  Russian
+   */
+  // <DO NOT CHANGE>
+  define('PROJECT_DIR', realpath(dirname(__FILE__)));
+  define('LOCALE_DIR', PROJECT_DIR . '/locale');
+  // </DO NOT CHANGE>
+  define('DEFAULT_LOCALE', 'en_EN'); // Default: "en_EN"
+
+  /**
+   * ERROR Handling
+   * Sets which PHP errors are reported
+   * @link: http://php.net/manual/en/function.error-reporting.php
+   *
+   * Turn off all error reporting:
+   * error_reporting(0);
+   *
+   * Report all PHP errors:
+   * error_reporting(E_ALL);
+   */
+  error_reporting(E_ERROR);
+?>

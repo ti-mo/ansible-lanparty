@@ -1,0 +1,6 @@
+---
+bgp_domain: bgp.example.com
+bgp_install_dir: /var/www/bgpanel
+bgp_log_dir: /var/log/nginx/bgpanel
+bgp_git: https://gitlab.com/zanzilan/bgpanel.git
+bgp_apikey: apikey
