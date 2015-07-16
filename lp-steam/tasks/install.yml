@@ -5,6 +5,7 @@
     line: "i386"
     regexp: "i386"
     insertafter: "amd64"
+    create: yes
   register: archrc
 
 - name: Install | Update APT Cache for i386
