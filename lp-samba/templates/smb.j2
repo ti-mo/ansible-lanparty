@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+
+[global]
+  workgroup = {{ samba_workgroup|default('WORKGROUP') }}
+  username map = /etc/samba/smbusers
+  netbios name = {{ ansible_hostname }}
+  security = {{ samba_security | default('user') }}
+
+{% for share in samba_shares %}
+[{{ share.name }}]
+  path = {{ share.path }}
+  browsable = {{ share.browsable | default('yes') }}
+  writable = {{ share.writable | default('yes') }}
+  guest ok = {{ share.guest | default('no') }}
+{% endfor %}

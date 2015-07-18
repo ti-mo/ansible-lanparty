@@ -1,0 +1,7 @@
+# UNIX to Samba user mapping
+# {{ ansible_managed }}
+{% for user in users %}
+{% if user.smbuser is defined %}
+{{ user.name }} = "{{ user.smbuser }}"
+{% endif %}
+{% endfor %}
