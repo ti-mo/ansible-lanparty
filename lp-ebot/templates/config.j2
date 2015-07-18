@@ -8,7 +8,7 @@ MYSQL_PASS = "{{ mysql.apps.ebot.pass }}"
 MYSQL_BASE = "{{ mysql.apps.ebot.db }}"
 
 [Config]
-BOT_IP = "0.0.0.0"
+BOT_IP = "{{ ansible_default_ipv4.address }}"
 BOT_PORT = 12360
 MANAGE_PLAYER = 1
 DELAY_BUSY_SERVER = 120
@@ -40,13 +40,6 @@ WORKSHOP["de_nuke_se"] = "125498553"
 WORKSHOP["de_inferno_se"] = "125499116"
 WORKSHOP["de_mirage_ce"] = "123769103"
 WORKSHOP["de_train_se"] = "125498231"
-WORKSHOP["de_cache"] = "163589843"
-WORKSHOP["de_season"] = "125689191"
-WORKSHOP["de_dust2"] = "125438255"
-WORKSHOP["de_nuke"] = "125439125"
-WORKSHOP["de_inferno"] = "125438669"
-WORKSHOP["de_mirage"] = "152508932"
-WORKSHOP["de_train"] = "125438372"
 
 [Settings]
 COMMAND_STOP_DISABLED = false
