@@ -1,5 +1,5 @@
 ---
-steamcmd_user: steam
+steamcmd_user: game
 steamcmd_createhome: no
 
 steamcmd_path: /usr/local/steamcmd
@@ -13,3 +13,8 @@ steam_games:
     fullname: "Counter-Strike: Global Offensive"
 
 steam_validate: false
+
+steam_rcon: steamrcon
+steam_svpassword: steamwar
+
+steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip

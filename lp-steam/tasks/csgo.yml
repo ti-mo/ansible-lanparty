@@ -1,0 +1,27 @@
+---
+- name: CSGO | Install Autoexec
+  template:
+    src: autoexec.j2
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/autoexec.cfg"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+
+- name: CSGO | Install esl5on5
+  template:
+    src: esl5on5.j2
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/esl5on5.cfg"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+
+- name: CSGO | Download CSay
+  get_url:
+    url: "{{ steam_csay_url }}"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
+
+- name: CSGO | Install CSay
+  unarchive:
+    copy: no
+    creates: "{{ steamcmd_path }}/games/csgo/csgo/addons/CSay.so"
+    src: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/"
+  become_user: "{{ steamcmd_user }}"

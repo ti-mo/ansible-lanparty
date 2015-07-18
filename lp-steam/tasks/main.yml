@@ -1,3 +1,4 @@
 ---
 - include: install.yml
 - include: steamcmd.yml
+- include: csgo.yml

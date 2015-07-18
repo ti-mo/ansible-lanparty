@@ -13,19 +13,18 @@
     update_cache: true
   when: archrc.changed
 
-- name: Install | lib32 Compatibility
+- name: Install | (lib32) Packages
   apt:
     name: "{{ item }}"
   with_items:
     - lib32gcc1
     - libcurl3:i386
+    - unzip
 
 - name: Install | Steam User
   user:
     name: "{{ steamcmd_user }}"
-    home: "{{ steamcmd_path }}"
     createhome: true
-    system: true
 
 - name: Install | SteamCMD Path
   file:
