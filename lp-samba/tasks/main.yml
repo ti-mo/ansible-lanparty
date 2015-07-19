@@ -1,5 +1,5 @@
 ---
-- name: Check for existing Samba shared
+- name: Check for existing Samba shares
   assert:
     that: "samba_shares is iterable"
     msg: Define at least one Samba share in samba_shares
@@ -8,6 +8,13 @@
   apt:
     name: samba
     state: latest
+
+- name: Install | Samba User
+  user:
+    name: samba
+    group: sambashare
+    system: true
+    createhome: false
 
 - name: Install | Samba Configuration
   template:
