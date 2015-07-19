@@ -63,7 +63,7 @@
   cron:
     name: "bgpanel"
     user: "{{ www_user }}"
-    minute: "*/1"
+    minute: "*/2"
     job: "/usr/bin/php -q {{ bgp_install_dir }}/admin/cron.php > /dev/null 2>&1"
   register: cronrc
 
