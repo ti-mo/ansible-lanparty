@@ -1,2 +1,19 @@
 ---
 ebot_install_dir: /usr/local/ebot
+ebot_event_name: eBot
+
+ebot_maps:
+  - de_cache
+  - de_season
+  - de_dust2
+  - de_nuke
+  - de_inferno
+  - de_train
+  - de_mirage
+
+ebot_workshop_maps:
+  - [ de_dust2_se, 125488374 ]
+  - [ de_nuke_se, 125498553 ]
+  - [ de_inferno_se, 125499116 ]
+  - [ de_mirage_ce, 123769103 ]
+  - [ de_train_se, 125498231 ]

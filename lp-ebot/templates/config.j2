@@ -14,6 +14,7 @@ MANAGE_PLAYER = 1
 DELAY_BUSY_SERVER = 120
 NB_MAX_MATCHS = 0
 PAUSE_METHOD = "nextRound" ; nextRound or instantConfirm or instantNoConfirm
+EVENT_NAME = "{{ ebot_event_name }}"
 
 [Match]
 LO3_METHOD = "restart" ; restart or csay or esl
@@ -21,25 +22,17 @@ KO3_METHOD = "restart" ; restart or csay or esl
 DEMO_DOWNLOAD = true ; true or false :: whether gotv demos will be downloaded from the gameserver after matchend or not
 
 [MAPS]
-MAP[] = "de_dust2_se"
-MAP[] = "de_nuke_se"
-MAP[] = "de_inferno_se"
-MAP[] = "de_mirage_ce"
-MAP[] = "de_train_se"
-MAP[] = "de_cache"
-MAP[] = "de_season"
-MAP[] = "de_dust2"
-MAP[] = "de_nuke"
-MAP[] = "de_inferno"
-MAP[] = "de_train"
-MAP[] = "de_mirage"
+{% for m in ebot_maps %}
+MAP[] = "{{ m }}"
+{% endfor %}
+{% for wm in ebot_workshop_maps %}
+MAP[] = "{{ wm.0 }}"
+{% endfor %}
 
 [WORKSHOP IDs]
-WORKSHOP["de_dust2_se"] = "125488374"
-WORKSHOP["de_nuke_se"] = "125498553"
-WORKSHOP["de_inferno_se"] = "125499116"
-WORKSHOP["de_mirage_ce"] = "123769103"
-WORKSHOP["de_train_se"] = "125498231"
+{% for wm in ebot_workshop_maps %}
+WORKSHOP["{{ wm.0 }}"] = "{{ wm.1 }}"
+{% endfor %}
 
 [Settings]
 COMMAND_STOP_DISABLED = false
