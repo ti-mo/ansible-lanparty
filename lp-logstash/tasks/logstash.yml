@@ -1,5 +1,5 @@
 ---
-- name: Install LogStash
+- name: Install | LogStash Packages
   apt:
     name: "{{ item }}"
   with_items:
@@ -7,15 +7,16 @@
     - logstash-contrib
   tags: [ 'packages' ]
 
-- name: Render LogStash Configurations
+- name: Install | Render Configurations
   template:
     src: "logstash/{{ item }}.j2"
     dest: "/etc/logstash/conf.d/{{ item }}.conf"
   notify: restart logstash
   with_items:
     - syslog
+    - syslog_http
 
-- name: LogStash Service
+- name: Install | LogStash Service
   service:
     name: logstash
     state: started
