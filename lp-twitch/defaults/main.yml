@@ -14,3 +14,9 @@ twitch_quality_filter:
   - low
   - medium
   - source
+
+lumberjack_files:
+  twitch:
+    files:
+      - "{{ twitch_logdir }}/*.log"
+    type: nginx-access
