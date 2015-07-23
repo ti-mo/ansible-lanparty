@@ -1,0 +1,10 @@
+---
+- name: Install | Lumberjack Packages
+  apt:
+    name: logstash-forwarder
+
+- name: Install | Ensure Service
+  service:
+    name: logstash-forwarder
+    state: started
+    enabled: true
