@@ -12,3 +12,9 @@ depot_resolvers:
 depot_path: /media/cache
 depot_logdir: /var/log/depot
 depot_logrotate_size: 200M
+
+lumberjack_files:
+  depot:
+    files:
+      - "{{ depot_logdir }}/*/*.log"
+    type: nginx-access
