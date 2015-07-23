@@ -4,7 +4,6 @@
     name: "{{ item }}"
   with_items:
     - logstash
-    - logstash-contrib
   tags: [ 'packages' ]
 
 - name: Install | Render Configurations
@@ -15,6 +14,19 @@
   with_items:
     - syslog
     - syslog_http
+
+- name: Install | PKI Directory
+  file:
+    state: directory
+    path: /etc/logstash/pki
+
+- name: Install | LogStash Private Keys
+  copy:
+    dest: /etc/logstash/pki/{{ item }}
+    src: files/keys/logstash/{{ item }}
+  with_items:
+    - logstash-forwarder.crt
+    - logstash-forwarder.key
 
 - name: Install | LogStash Service
   service:

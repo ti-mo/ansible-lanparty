@@ -21,10 +21,13 @@ filter {
 }
 
 output {
-  elasticsearch {
-    protocol => "node"
-    port => "{{ elasticsearch.tcp_port }}"
-    host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
-    cluster => "{{ elasticsearch.cluster }}"
+  if [type] == "syslog" {
+    elasticsearch {
+      protocol => "node"
+      index => "logstash-%{+YYYY.MM.dd.HH}"
+      port => "{{ elasticsearch.tcp_port }}"
+      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
+      cluster => "{{ elasticsearch.cluster }}"
+    }
   }
 }
