@@ -10,6 +10,11 @@
   netbios name = {{ ansible_hostname }}
   security = {{ samba_security | default('user') }}
 
+  load printers = no
+  printing = bsd
+  printcap name = /dev/null
+  disable spoolss = yes
+
 {% for share in samba_shares %}
 [{{ share.name }}]
   path = {{ share.path }}
