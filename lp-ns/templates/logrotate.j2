@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{{ bind_logdir }}/*.log
+{
+  size 10M
+  weekly
+  missingok
+  rotate 15
+  compress
+  notifempty
+  create 0644 bind bind
+  sharedscripts
+  prerotate
+    rndc reload &> /dev/null
+  endscript
+}

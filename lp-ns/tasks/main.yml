@@ -42,6 +42,25 @@
     - local
     - default-zones
 
+- name: Main | Force IPv4 Operation
+  lineinfile:
+    dest: /etc/default/bind9
+    line: 'OPTIONS="-4 -u bind"'
+    regexp: "^OPTIONS"
+  notify: restart bind
+
+- name: Main | Log Directory
+  file:
+    state: directory
+    path: "{{ bind_logdir }}"
+    owner: bind
+    group: bind
+
+- name: Main | Install Logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/bind
+
 - name: BIND9 Service
   service:
     name: bind9
