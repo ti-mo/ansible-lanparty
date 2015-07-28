@@ -3,6 +3,7 @@
 input {
   syslog {
     port => {{ logstash.ports.syslog }}
+    type => syslog
   }
 }
 
@@ -13,7 +14,6 @@ filter {
       add_field => [ "received_at", "%{@timestamp}" ]
       add_field => [ "received_from", "%{host}" ]
     }
-    syslog_pri { }
     date {
       match => [ "syslog_timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
     }
@@ -24,7 +24,7 @@ output {
   if [type] == "syslog" {
     elasticsearch {
       protocol => "node"
-      index => "logstash-%{+YYYY.MM.dd.HH}"
+      index => "syslog-%{+YYYY.MM.dd.HH}"
       port => "{{ elasticsearch.tcp_port }}"
       host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
       cluster => "{{ elasticsearch.cluster }}"

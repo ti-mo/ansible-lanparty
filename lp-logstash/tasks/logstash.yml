@@ -13,7 +13,7 @@
   notify: restart logstash
   with_items:
     - syslog
-    - syslog_http
+    - lumberjack
 
 - name: Install | PKI Directory
   file:

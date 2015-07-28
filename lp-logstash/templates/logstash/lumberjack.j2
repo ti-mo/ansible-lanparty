@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+
+input {
+  lumberjack {
+    port => {{ logstash.ports.lumberjack }}
+    ssl_certificate => "/etc/logstash/pki/logstash-forwarder.crt"
+    ssl_key => "/etc/logstash/pki/logstash-forwarder.key"
+  }
+}
+
+filter {
+  if [type] == "nginx-access" {
+    grok {
+      match => { "message" => "%{IP:remote_addr:ip} - %{USERNAME:remote_user} \[%{HTTPDATE:date_local}\] %{QS:request} %{NUMBER:status:int} %{NUMBER:body_bytes_sent:int} %{QS:http_referer} %{QS:http_user_agent} %{QS:upstream_cache_status} %{QS:domain} %{QS:http_range}" }
+      add_field => [ "received_at", "%{@timestamp}" ]
+      add_field => [ "received_from", "%{host}" ]
+    }
+  }
+
+  if [type] == "bind-query" {
+    grok {
+      match => { "message" => "%{MONTHDAY:day}-%{MONTH:month}-%{YEAR:year} %{TIME:time} queries: info: client %{IP:srcip:ip}#%{DATA:srcport} \(%{DATA:hostname}\): query: %{DATA:hostname2} %{DATA:querytype3} %{DATA:querytype} %{DATA:querytype2} \(%{IP:dstip:ip}\)" }
+      add_field => [ "timestamp", "%{day}-%{month}-%{year} %{time}" ]
+    }
+  }
+}
+
+output {
+  if [type] == "nginx-access" {
+    elasticsearch {
+      protocol => "node"
+      index => "nginx-%{+YYYY.MM.dd.HH}"
+      port => "{{ elasticsearch.tcp_port }}"
+      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
+      cluster => "{{ elasticsearch.cluster }}"
+    }
+  }
+
+  if [type] == "bind-query" {
+    elasticsearch {
+      protocol => "node"
+      index => "bind-%{+YYYY.MM.dd.HH}"
+      port => "{{ elasticsearch.tcp_port }}"
+      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
+      cluster => "{{ elasticsearch.cluster }}"
+    }
+  }
+}
