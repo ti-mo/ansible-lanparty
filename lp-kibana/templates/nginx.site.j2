@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+# Nginx proxy for Kibana
+
+server {
+  server_name     {{ kibana_domain }};
+
+  location / {
+    proxy_pass http://localhost:{{ kibana_port }};
+    proxy_buffering off;
+
+    # Access Control
+    {% for n in trusted_networks -%}
+    allow {{ n }};
+    {% endfor -%}
+    deny all;
+  }
+}
