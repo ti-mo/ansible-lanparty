@@ -62,6 +62,7 @@
     name: snmpd
     state: started
     enabled: true
+  ignore_errors: true
 
 - name: Monitoring Agent | Add host to Observium
   command: "php {{ observium.install_dir }}/addhost.php {{ ansible_fqdn }} {{ snmp_comms.0 }} v2c && {{ observium.install_dir }}/poller-wrapper.py 16"
