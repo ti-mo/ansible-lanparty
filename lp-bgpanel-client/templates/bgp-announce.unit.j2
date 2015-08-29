@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 [Unit]
 Description=Announce gameserver to BGPanel webservice
-After=network.target
+After=network.target network-online.target
 
 [Service]
 Type=oneshot
