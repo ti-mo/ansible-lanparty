@@ -4,12 +4,12 @@ ebot_event_name: eBot
 
 ebot_maps:
   - de_cache
-  - de_season
   - de_dust2
-  - de_nuke
   - de_inferno
   - de_train
   - de_mirage
+  - de_overpass
+  - de_cbble
 
 ebot_workshop_maps:
   - [ de_dust2_se, 125488374 ]
