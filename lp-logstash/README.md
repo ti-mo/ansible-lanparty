@@ -10,6 +10,7 @@ LogStash Book
 [LogStash Indexes](https://ruin.io/2015/multiple-elasticsearch-indices-logstash/)
 [DigitalOcean - ELK Part 1](https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-4-on-ubuntu-14-04)
 [DigitalOcean - ELK Part 2](https://www.digitalocean.com/community/tutorials/adding-logstash-filters-to-improve-centralized-logging)
+[GeoIP Usage in LogStash](https://www.digitalocean.com/community/tutorials/how-to-map-user-location-with-geoip-and-elk-elasticsearch-logstash-and-kibana)
 
 Generating SSL Certs
 --------------------
