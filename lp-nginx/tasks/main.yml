@@ -4,6 +4,7 @@
     name: apache2
     state: stopped
     enabled: false
+  ignore_errors: true
 
 - name: Nginx | Install Nginx
   apt:
