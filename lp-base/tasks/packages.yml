@@ -5,6 +5,12 @@
     dest: /etc/apt/apt.conf.d/69apt-cacher-ng
   when: omit_apt_cache is not defined
 
+- name: Global | Remove APT Proxy
+  file:
+    path: /etc/apt/apt.conf.d/69apt-cacher-ng
+    state: absent
+  when: omit_apt_cache is defined and omit_apt_cache
+
 - name: Debian | Remove Default sources.list
   file:
     path: /etc/apt/sources.list
