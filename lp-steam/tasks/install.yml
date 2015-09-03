@@ -28,6 +28,7 @@
   with_items:
     - libcurl3
     - unzip
+    - screen
 
 - name: Install | Steam User
   user:
