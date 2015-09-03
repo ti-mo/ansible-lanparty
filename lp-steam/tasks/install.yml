@@ -7,11 +7,12 @@
     insertafter: "amd64"
     create: yes
   register: archrc
+  when: ansible_architecture != 'i386'
 
 - name: Install | Update APT Cache for i386
   apt:
     update_cache: true
-  when: archrc.changed
+  when: archrc is defined and archrc.changed
 
 - name: Install | (lib32) Packages
   apt:
@@ -19,6 +20,13 @@
   with_items:
     - lib32gcc1
     - libcurl3:i386
+  when: ansible_architecture != 'i386'
+
+- name: Install | Packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - libcurl3
     - unzip
 
 - name: Install | Steam User
