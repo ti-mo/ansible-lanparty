@@ -70,3 +70,4 @@
     chdir: "{{ observium.install_dir }}"
   delegate_to: "{{ groups.observium.0 }}"
   when: addhost.changed
+  ignore_errors: true
