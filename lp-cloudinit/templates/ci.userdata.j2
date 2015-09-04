@@ -1,15 +1,19 @@
 #cloud-config
 groups:
-  - admin
+{% for u in users %}
+ - {{ u.name }}
+{% endfor %}
 
 users:
-  - name: admin
-    primary-group: admin
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    lock-passwd: true
-    ssh-authorized-keys:
 {% for u in users %}
+  - name: "{{ u.name }}"
+    primary-group: "{{ u.name }}"
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    lock-passwd: "false"
+{% if u.sshkeys %}
+    ssh-authorized-keys:
 {% for k in u.sshkeys %}
       - {{ lookup('file', 'files/keys/' + u.name + '/' + k.name + '.pub') }}
 {% endfor %}
+{% endif %}
 {% endfor %}
