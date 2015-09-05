@@ -12,7 +12,7 @@
 
 - name: QLive | Server Homedirs
   file:
-    path: "{{ steamcmd_path }}/.quakelive/{{ item.gameport }}/baseq3"
+    path: "{{ steamcmd_path }}/.quakelive/{{ item.id }}/baseq3"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
     state: directory
@@ -22,7 +22,7 @@
 - name: QLive | Admin SteamIDs
   lineinfile:
     line: "{{ item.1 }}|admin"
-    dest: "{{ steamcmd_path }}/.quakelive/{{ item.0.gameport }}/baseq3/access.txt"
+    dest: "{{ steamcmd_path }}/.quakelive/{{ item.0.id }}/baseq3/access.txt"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
     create: true
@@ -33,7 +33,7 @@
 - name: QLive | Server Config
   template:
     src: qlive/server.j2
-    dest: "{{ steamcmd_path }}/games/ql/baseq3/server_{{ item.gameport }}.cfg"
+    dest: "{{ steamcmd_path }}/games/ql/baseq3/server_{{ item.id }}.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
   with_items: ql_server_instances
@@ -67,7 +67,7 @@
 - name: QLive | Server Environment Vars
   template:
     src: qlive/systemd-env.j2
-    dest: "{{ steamcmd_path }}/games/ql/env/env_{{ item.gameport }}"
+    dest: "{{ steamcmd_path }}/games/ql/env/env_{{ item.id }}"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
   with_items: ql_server_instances
@@ -81,7 +81,7 @@
 
 - name: QLive | Start and enable gameserver
   service:
-    name: "qlive@{{ item.gameport }}"
+    name: "qlive@{{ item.id }}"
     enabled: true
     state: started
   with_items: ql_server_instances

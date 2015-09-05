@@ -4,7 +4,7 @@ Description=Quake Live Gameserver
 After=network.target network-online.target
 
 [Service]
-ExecStart={{ steamcmd_path }}/games/ql/qzeroded.x86 +set net_strict 1 +set net_port %I +set fs_homepath {{ steamcmd_path }}/.quakelive/%I +set zmq_rcon_enable 1 +set zmq_rcon_port $RCONPORT +set zmq_stats_enable 1 +set zmq_stats_port %I +set sv_mapPoolFile "$MAPPOOL" +exec server_%I.cfg
+ExecStart={{ steamcmd_path }}/games/ql/qzeroded.x86 +set net_strict 1 +set net_port $GAMEPORT +set fs_homepath {{ steamcmd_path }}/.quakelive/%I +set zmq_rcon_enable 1 +set zmq_rcon_port $RCONPORT +set zmq_stats_enable 1 +set zmq_stats_port %I +set sv_mapPoolFile "$MAPPOOL" +exec server_%I.cfg
 User={{ steamcmd_user }}
 EnvironmentFile={{ steamcmd_path }}/games/ql/env/env_%I
 WorkingDirectory={{ steamcmd_path }}/games/ql
