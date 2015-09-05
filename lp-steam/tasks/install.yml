@@ -20,6 +20,7 @@
   with_items:
     - lib32gcc1
     - libcurl3:i386
+    - libstdc++6:i386
   when: ansible_architecture != 'i386'
 
 - name: Install | Packages

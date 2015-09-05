@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+LD_LIBRARY_PATH="linux32"
+RCONPORT="{{ item.gameport + 1000 }}"
+MAPPOOL="mappool_{{ item.rules }}.txt"

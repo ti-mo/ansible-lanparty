@@ -1,4 +1,7 @@
 ---
+# Used for servernames, change this per node
+steam_server_id: 1
+
 steamcmd_user: game
 steamcmd_createhome: no
 
@@ -7,10 +10,10 @@ steamcmd_path: /usr/local/steamcmd
 steamcmd_filename: steamcmd_linux.tar.gz
 steamcmd_url: http://media.steampowered.com/installer/{{ steamcmd_filename }}
 
-steam_games:
-  csgo:
-    id: 740
-    fullname: "Counter-Strike: Global Offensive"
+steam_games: { }
+  # csgo:
+    # id: 740
+    # fullname: "Counter-Strike: Global Offensive"
 
 steam_validate: false
 
@@ -18,3 +21,37 @@ steam_rcon: steamrcon
 steam_svpassword: steamwar
 
 steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
+
+# --- CS:GO
+csgo_server_instances:
+  - gameport: 27015
+    tvport: 27020
+
+# --- Quake
+ql_admin_ids: []
+
+ql_priv_password: privateparts
+
+ql_tags:
+  - lp
+
+ql_server_instances:
+  - id: 1
+    tags: duel
+    slots: 4
+    config: grand
+    gameport: 27960
+
+ql_rules:
+  public:
+    rules:
+      timelimit: 100
+      fraglimit: 0
+      mercylimit: 100
+      teamsize: 8
+    maps:
+      - dreadfulplace|tdm
+      - grimdungeons|tdm
+      - limbus|tdm
+      - purgatory|tdm
+      - ragnarok|tdm

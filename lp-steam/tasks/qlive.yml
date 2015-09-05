@@ -1,0 +1,87 @@
+---
+- name: QLive | Install ZeroMQ Libraries
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - libzmq3-dev
+    - python-pip
+
+- name: QLive | Python ZeroMQ bindings
+  pip:
+    name: pyzmq
+
+- name: QLive | Server Homedirs
+  file:
+    path: "{{ steamcmd_path }}/.quakelive/{{ item.gameport }}/baseq3"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    state: directory
+    recurse: true
+  with_items: ql_server_instances
+
+- name: QLive | Admin SteamIDs
+  lineinfile:
+    line: "{{ item.1 }}|admin"
+    dest: "{{ steamcmd_path }}/.quakelive/{{ item.0.gameport }}/baseq3/access.txt"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+    create: true
+  with_nested:
+    - ql_server_instances
+    - ql_admin_steamids
+
+- name: QLive | Server Config
+  template:
+    src: qlive/server.j2
+    dest: "{{ steamcmd_path }}/games/ql/baseq3/server_{{ item.gameport }}.cfg"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_items: ql_server_instances
+  tags: [ 'config' ]
+
+- name: QLive | Rulesets
+  template:
+    src: qlive/rules.j2
+    dest: "{{ steamcmd_path }}/games/ql/baseq3/rules_{{ item.key }}.cfg"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_dict: ql_rules
+  tags: [ 'rules' ]
+
+- name: QLive | Map Pools
+  template:
+    src: qlive/mappool.j2
+    dest: "{{ steamcmd_path }}/games/ql/baseq3/mappool_{{ item.key }}.txt"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_dict: ql_rules
+  tags: [ 'maps' ]
+
+- name: QLive | Environment Vars Directory
+  file:
+    state: directory
+    path: "{{ steamcmd_path }}/games/ql/env"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+
+- name: QLive | Server Environment Vars
+  template:
+    src: qlive/systemd-env.j2
+    dest: "{{ steamcmd_path }}/games/ql/env/env_{{ item.gameport }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_items: ql_server_instances
+  tags: [ 'config' ]
+
+- name: QLive | systemd unit
+  template:
+    src: qlive/systemd-unit.j2
+    dest: /lib/systemd/system/qlive@.service
+  tags: [ 'systemd' ]
+
+- name: QLive | Start and enable gameserver
+  service:
+    name: "qlive@{{ item.gameport }}"
+    enabled: true
+    state: started
+  with_items: ql_server_instances

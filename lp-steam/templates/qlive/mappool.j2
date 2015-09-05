@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+{% if item.value.maps is defined %}
+{% for map in item.value.maps %}
+{{ map }}
+{% endfor %}
+{% endif %}

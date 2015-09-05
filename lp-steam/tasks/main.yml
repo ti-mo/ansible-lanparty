@@ -1,4 +1,9 @@
 ---
 - include: install.yml
 - include: steamcmd.yml
+
 - include: csgo.yml
+  when: steam_games.csgo is defined
+
+- include: qlive.yml
+  when: steam_games.ql is defined

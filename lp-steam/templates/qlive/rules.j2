@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+{% if item.value.rules is defined %}
+{% for rule, value in item.value.rules.iteritems() %}
+{{ rule }} {{ value }}
+{% endfor %}
+{% endif %}
