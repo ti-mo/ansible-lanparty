@@ -4,6 +4,8 @@
 
 - include: csgo.yml
   when: steam_games.csgo is defined
+  tags: [ 'csgo' ]
 
 - include: qlive.yml
   when: steam_games.ql is defined
+  tags: [ 'qlive' ]
