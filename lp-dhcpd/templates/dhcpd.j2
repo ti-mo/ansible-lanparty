@@ -89,6 +89,10 @@ subnet {{ nattrs.address }} netmask {{ nattrs.mask }} {
     option routers {{ nattrs.router }};
     option subnet-mask {{ nattrs.mask }};
 
+{% if nattrs.option43 is defined %}
+    option vendor-encapsulated-options "{{ nattrs.option43 }}";
+{% endif %}
+
 {% for pool in nattrs.pools %}
     pool {
 {% if nattrs.classes %}
