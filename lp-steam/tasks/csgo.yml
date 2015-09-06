@@ -1,10 +1,11 @@
 ---
-- name: CSGO | Install Autoexec
+- name: CSGO | Install Server Configs
   template:
-    src: csgo/autoexec.j2
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/autoexec.cfg"
+    src: csgo/server.j2
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/server_{{ item.id }}.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
+  with_items: csgo_server_instances
 
 - name: CSGO | Install esl5on5
   template:
@@ -25,3 +26,25 @@
     src: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
     dest: "{{ steamcmd_path }}/games/csgo/csgo/"
   become_user: "{{ steamcmd_user }}"
+
+- name: CSGO | Environment Vars Directory
+  file:
+    state: directory
+    path: "{{ steamcmd_path }}/games/csgo/env"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+
+- name: CSGO | Server Environment Vars
+  template:
+    src: csgo/systemd-env.j2
+    dest: "{{ steamcmd_path }}/games/csgo/env/env_{{ item.id }}"
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_items: csgo_server_instances
+  tags: [ 'config' ]
+
+- name: CSGO | systemd unit
+  template:
+    src: csgo/systemd-unit.j2
+    dest: /lib/systemd/system/csgo@.service
+  tags: [ 'systemd' ]

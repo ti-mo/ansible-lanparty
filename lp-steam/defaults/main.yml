@@ -24,8 +24,10 @@ steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
 
 # --- CS:GO
 csgo_server_instances:
-  - gameport: 27015
-    tvport: 27020
+  - id: 1
+    slots: 12
+    rules: grand
+    gameport: 27015
 
 # --- Quake
 ql_admin_ids: []
@@ -39,7 +41,7 @@ ql_server_instances:
   - id: 1
     tags: duel
     slots: 4
-    config: grand
+    rules: grand
     gameport: 27960
 
 ql_rules:

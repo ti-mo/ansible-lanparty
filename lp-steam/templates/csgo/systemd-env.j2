@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+GAMEPORT="{{ item.gameport }}"
+TVPORT="{{ item.gameport + 100 }}"
+SLOTS="{{ item.slots }}"
+LD_LIBRARY_PATH="{{ steamcmd_path }}/games/csgo:{{ steamcmd_path }}/games/csgo/bin"
