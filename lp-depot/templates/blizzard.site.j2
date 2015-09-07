@@ -2,7 +2,7 @@
 
 server {
   listen 80;
-  server_name {{ ns.spoof.services.blizzard.domains | join(" ") }} _;
+  server_name {{ ns.spoof.services.blizzard.domains | join(" ") }};
 
   access_log {{ depot_logdir }}/blizzard/depot-access.log depot buffer=128k flush=1m;
   error_log {{ depot_logdir }}/blizzard/depot-error.log;
