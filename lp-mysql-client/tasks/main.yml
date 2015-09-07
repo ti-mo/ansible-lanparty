@@ -4,7 +4,7 @@
     that: "mysql.apps is iterable"
     msg: Define at least one application in mysql.apps
 
-- name: Setup | Checl mysql.backend_group definition
+- name: Setup | Check mysql.backend_group definition
   assert:
     that: "mysql.backend_group is defined"
     msg: Define a MySQL backend inventory group in mysql.backend_group
