@@ -1,8 +1,14 @@
 // {{ ansible_managed }}
 
 hostname "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
+tv_title "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
 
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
+
+{% if item.gotv is defined and item.gotv  %}
+tv_enable 1
+tv_autorecord 1
+{% endif %}
 
 exec esl5on5.cfg

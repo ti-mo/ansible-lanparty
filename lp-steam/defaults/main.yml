@@ -26,6 +26,7 @@ steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
 csgo_server_instances:
   - id: 1
     slots: 12
+    gotv: true
     rules: grand
     gameport: 27015
 

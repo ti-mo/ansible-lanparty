@@ -1,5 +1,6 @@
 # {{ ansible_managed }}
 GAMEPORT="{{ item.gameport }}"
 TVPORT="{{ item.gameport + 100 }}"
-SLOTS="{{ item.slots }}"
+SLOTS="{{ item.slots | default('12') }}"
+TICK="{{ item.tickrate | default('128') }}"
 LD_LIBRARY_PATH="{{ steamcmd_path }}/games/csgo:{{ steamcmd_path }}/games/csgo/bin"
