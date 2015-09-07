@@ -65,5 +65,6 @@
       'iputils-arping', 'tcpdump', 'ethtool',
       'dnsutils', 'git', 'htop', 'hping3',
       'zsh', 'curl', 'ntpdate', 'mailutils',
-      'python-mysqldb', 'ntp' ]
+      'python-mysqldb', 'ntp', 'vlan',
+      'ifenslave', 'bridge-utils' ]
   tags: [ 'packages' ]

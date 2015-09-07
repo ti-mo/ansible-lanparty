@@ -1,10 +1,9 @@
 ---
-# Package-related Tasks
-- include: packages.yml
-  tags: [ 'packages' ]
-
 - include: system.yml
   tags: [ 'system' ]
+
+- include: packages.yml
+  tags: [ 'packages' ]
 
 - include: time.yml
   tags: [ 'time' ]

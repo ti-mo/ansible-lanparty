@@ -29,6 +29,7 @@
     regexp: "^\\#?GRUB_TIMEOUT"
     line: "GRUB_TIMEOUT={{ grub_timeout | default(1) }}"
   notify: make grub
+  when: ansible_virtualization_type != 'lxc'
   tags: [ 'grub' ]
 
 - name: System | IP Kernel Parameters
@@ -39,4 +40,5 @@
     state: present
     reload: yes
   with_items: kern.params
+  when: ansible_virtualization_type != 'lxc'
   tags: [ 'kernel' ]
