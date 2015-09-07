@@ -12,7 +12,7 @@
 
 - name: MariaDB Compatibility Symlink
   file:
-    src: /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18.0.0
+    src: /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18.1.0
     dest: /usr/lib/x86_64-linux-gnu/libmariadb.so.2
     state: link
   when: not mdb.stat.exists or mdb.stat.islnk
