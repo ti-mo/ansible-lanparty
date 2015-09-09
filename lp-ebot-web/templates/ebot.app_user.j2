@@ -3,7 +3,7 @@
   log_match: {{ ebot_web_install_dir }}/logs/log_match
   log_match_admin: {{ ebot_web_install_dir }}/logs/log_match_admin
 
-  demo_path: {{ ebot_web_install_dir }}/demos
+  demo_path: {{ ebot_web_demo_path }}
   demo_download: true
 
   ebot_ip: {{ hostvars[groups[ebot_inventory_group][0]]['ansible_default_ipv4']['address'] }}
