@@ -4,28 +4,33 @@
     name: ebot
     system: true
 
+- name: Install | Add www-data to eBot group
+  user:
+    name: www-data
+    groups: ebot
+    system: true
+
+- name: Install | Ensure Installation Directory
+  file:
+    state: directory
+    path: "{{ ebot_install_dir }}"
+    recurse: true
+    owner: ebot
+    group: ebot
+
 - name: Install | Git Checkout
   git:
     repo: https://github.com/ti-mo/eBot-CSGO.git
     version: threads
     dest: "{{ ebot_install_dir }}"
-  register: ebotgit
+  become_user: ebot
 
-- name: Install | Set Owner
+- name: Install | Demo Folder Permissions
   file:
-    path: "{{ ebot_install_dir }}"
-    recurse: true
+    path: "{{ ebot_install_dir }}/demos"
     owner: ebot
     group: ebot
-  when: ebotgit.changed
-
-- name: Install | Set Install Directory Perms
-  file:
-    path: "{{ ebot_install_dir }}"
-    owner: ebot
-    group: ebot
-    mode: 0755
-  when: ebotgit.changed
+    mode: 2755
 
 - name: Install | Composer Dependencies
   composer:
