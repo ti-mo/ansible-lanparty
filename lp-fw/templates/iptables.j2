@@ -229,7 +229,7 @@ COMMIT
 :POSTROUTING ACCEPT [0:0]
 
 # Routes to SNAT
-{% for s, d in fw_snat %}
+{% for s, d in fw_snat | default([]) %}
 -A POSTROUTING -s {{ s }} -d {{ d }} -j MASQUERADE
 {% endfor %}
 COMMIT
