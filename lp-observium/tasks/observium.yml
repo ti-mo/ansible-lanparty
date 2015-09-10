@@ -15,6 +15,7 @@
     repo: https://github.com/librenms/librenms
     depth: 1
     dest: "{{ observium.install_dir }}"
+  become_user: "{{ observium.user }}"
   register: perms
   notify: fix permissions
 
