@@ -19,6 +19,7 @@
   command: php symfony cc
   args:
     chdir: "{{ ebot_web_install_dir }}"
+  ignore_errors: true
   when: chconf.changed or chdb.changed
 
 - name: Config | Install Symfony database
