@@ -7,7 +7,7 @@
   with_items:
     - python-mysqldb
     - mysql-server
-  notify: enable mysqld
+  notify: enable mysql
   tags: [ 'packages' ]
 
 - name: Install | Render the my.cnf
