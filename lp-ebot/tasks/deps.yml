@@ -18,17 +18,6 @@
     dest: /usr/local/bin/composer
     mode: 0755
 
-- name: Deps | Node Libraries
-  npm:
-    name: "{{ item }}"
-    production: yes
-    path: "{{ ebot_install_dir }}"
-  with_items:
-    - websocket
-    - formidable
-    - archiver
-    - socket.io
-
 - name: Deps | PECL pthreads
   pear:
     name: pecl/pthreads

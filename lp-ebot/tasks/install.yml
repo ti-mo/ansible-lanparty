@@ -32,6 +32,17 @@
     group: ebot
     mode: 2755
 
+- name: Install | Node Libraries
+  npm:
+    name: "{{ item }}"
+    production: yes
+    path: "{{ ebot_install_dir }}"
+  with_items:
+    - websocket
+    - formidable
+    - archiver
+    - socket.io
+
 - name: Install | Composer Dependencies
   composer:
     working_dir: "{{ ebot_install_dir }}"
