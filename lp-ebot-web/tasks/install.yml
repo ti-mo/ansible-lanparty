@@ -2,6 +2,7 @@
 - name: Install | PHP Packages
   apt:
     name: "{{ item }}"
+    force: yes
   with_items:
     - php5-fpm
     - php5-mysql
@@ -39,3 +40,4 @@
     src: /etc/nginx/sites-available/ebot-web
     dest: /etc/nginx/sites-enabled/ebot-web
     state: link
+  notify: reload nginx
