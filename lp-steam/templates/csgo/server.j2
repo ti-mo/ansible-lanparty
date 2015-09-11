@@ -1,14 +1,16 @@
 // {{ ansible_managed }}
 
-hostname "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
-tv_title "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
+hostname "{{ lp.name }} {{ item.rules | capitalize }} {{ steam_server_id }}.{{ item.id }}"
 
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
 
 {% if item.gotv is defined and item.gotv  %}
-tv_enable 1
-tv_autorecord 1
+tv_enable "1"
+tv_title "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.id }}"
+tv_name "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.id }}"
+tv_password "{{ csgo_gotv_password | default('stream') }}"
+tv_maxclients "{{ csgo_gotv_maxclients | default(4) }}"
 {% endif %}
 
 exec esl5on5.cfg

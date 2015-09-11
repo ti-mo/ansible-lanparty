@@ -30,6 +30,13 @@ csgo_server_instances:
     rules: grand
     gameport: 27015
 
+csgo_authkey: ""
+csgo_workshop_collection: ""
+csgo_workshop_startmap: ""
+
+csgo_gotv_password: stream
+csgo_gotv_maxclients: 4
+
 # --- Quake
 ql_admin_ids: []
 

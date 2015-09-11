@@ -6,7 +6,7 @@ After=network.target network-online.target
 [Service]
 User={{ steamcmd_user }}
 EnvironmentFile={{ steamcmd_path }}/games/csgo/env/env_%I
-ExecStart={{ steamcmd_path }}/games/csgo/srcds_linux -game csgo -usercon -console +ip 0.0.0.0 +port $GAMEPORT +tv_port $TVPORT +game_type 0 +game_mode 1 -tickrate $TICK +exec server_%I.cfg -maxplayers_override $SLOTS +map de_dust2
+ExecStart={{ steamcmd_path }}/games/csgo/srcds_linux -game csgo -usercon -console +ip 0.0.0.0 +port $GAMEPORT +tv_port $TVPORT +tv_enable 1 +game_type 0 +game_mode 1 -tickrate $TICK +servercfgfile server_%I.cfg -maxplayers_override $SLOTS -authkey "$AUTHKEY" +host_workshop_collection "$WS_COLLECTION" +workshop_start_map "$WS_START_MAP"
 
 [Install]
 WantedBy=multi-user.target
