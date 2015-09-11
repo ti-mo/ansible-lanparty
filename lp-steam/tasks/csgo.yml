@@ -48,3 +48,10 @@
     src: csgo/systemd-unit.j2
     dest: /lib/systemd/system/csgo@.service
   tags: [ 'systemd' ]
+
+- name: CSGO | Enable and Start
+  service:
+    name: "csgo@{{ item.id }}"
+    enabled: true
+    state: started
+  with_items: csgo_server_instances
