@@ -3,6 +3,7 @@
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
+:UDPFLOOD - [0:0]
 
 # Input Filtering
 -A INPUT -i lo -j ACCEPT
@@ -20,6 +21,11 @@
 {% for r in fw_exempt %}
 -A FORWARD -s {{ r }} -j ACCEPT
 {% endfor %}
+
+# Stop UDP flooding ?
+-A FORWARD -p udp -m conntrack --ctstate NEW -j UDPFLOOD
+-A UDPFLOOD -m recent --set --rsource --name UDPFLOOD
+-A UDPFLOOD -m recent --update --rsource --name UDPFLOOD --seconds 10 --hitcount 10 -j DROP
 
 # Source hosts to block
 {% for h in fw_block.hosts %}
