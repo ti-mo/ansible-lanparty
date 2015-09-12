@@ -41,7 +41,13 @@
     - websocket
     - formidable
     - archiver
-    - socket.io
+
+- name: Install | Compatible socket.io version
+  npm:
+    name: socket.io
+    production: yes
+    path: "{{ ebot_install_dir }}"
+    version: 0.9.12
 
 - name: Install | Composer Dependencies
   composer:
