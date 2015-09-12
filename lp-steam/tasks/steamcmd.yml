@@ -7,7 +7,7 @@
   when: steamrc.changed
 
 - name: SteamCMD | Install Games
-  command: "./steamcmd.sh +login {{ steam_account }} +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} +quit"
+  command: "./steamcmd.sh +login {{ steam_account }} {{ steam_password }} +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} +quit"
   args:
     chdir: "{{ steamcmd_path }}"
   become_user: "{{ steamcmd_user }}"
@@ -15,7 +15,7 @@
   tags: [ 'install', 'steamcmd' ]
 
 - name: SteamCMD | Update Games
-  command: "./steamcmd.sh +login {{ steam_account }} +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} validate +quit"
+  command: "./steamcmd.sh +login {{ steam_account }} {{ steam_password }} +force_install_dir ./games/{{ item.key }} +app_update {{ item.value.id }} validate +quit"
   args:
     chdir: "{{ steamcmd_path }}"
   become_user: "{{ steamcmd_user }}"
