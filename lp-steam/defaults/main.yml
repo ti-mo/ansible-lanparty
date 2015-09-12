@@ -5,6 +5,8 @@ steam_server_id: 1
 steamcmd_user: game
 steamcmd_createhome: no
 
+steam_account: anonymous
+
 steamcmd_path: /usr/local/steamcmd
 
 steamcmd_filename: steamcmd_linux.tar.gz
