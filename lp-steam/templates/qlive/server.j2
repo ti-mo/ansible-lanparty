@@ -3,8 +3,6 @@
 set sv_hostname "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
 set sv_tags "{{ item.rules }},{{ ql_tags | default([]) | join(',') }},{{ item.tags | default([]) | join(',') }}"
 set sv_maxClients "{{ item.slots }}"
-set sv_privateClients "2"
-set sv_privatePassword "{{ ql_priv_password }}"
 
 set zmq_rcon_enable "1"
 set zmq_rcon_port "{{ item.gameport + 1000 }}"

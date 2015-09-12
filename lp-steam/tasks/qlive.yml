@@ -1,15 +1,4 @@
 ---
-- name: QLive | Install ZeroMQ Libraries
-  apt:
-    name: "{{ item }}"
-  with_items:
-    - libzmq3-dev
-    - python-pip
-
-- name: QLive | Python ZeroMQ bindings
-  pip:
-    name: pyzmq
-
 - name: QLive | Server Homedirs
   file:
     path: "{{ steamcmd_path }}/.quakelive/{{ item.id }}/baseq3"
