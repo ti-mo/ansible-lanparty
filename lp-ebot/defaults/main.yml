@@ -9,14 +9,9 @@ ebot_maps:
   - de_train
   - de_mirage
   - de_overpass
-  - de_cbble
+  - de_cobblestone
 
 ebot_workshop_maps:
-  - [ de_dust2_se, 125488374 ]
-  - [ de_nuke_se, 125498553 ]
-  - [ de_inferno_se, 125499116 ]
-  - [ de_mirage_ce, 123769103 ]
-  - [ de_train_se, 125498231 ]
   - [ de_dust2, 125438255 ]
   - [ de_inferno, 125438669 ]
   - [ de_train, 125438372 ]

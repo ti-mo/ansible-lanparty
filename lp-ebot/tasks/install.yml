@@ -30,7 +30,7 @@
     path: "{{ ebot_install_dir }}/demos"
     owner: ebot
     group: ebot
-    mode: 2755
+    mode: 0755
 
 - name: Install | Node Libraries
   npm:
