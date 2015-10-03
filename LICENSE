@@ -1,0 +1,28 @@
+End-user License Agreement
+===
+ansible-lanparty is a collection of roles for the Ansible configuration
+management toolkit. All of its rights are reserved to their respective owners
+and may be changed or revoked at any point in time without notice by the core
+maintainers. This repository is NOT free software. However, due to its nature
+and its inability to be employed in binary form, it is implicitly open-source.
+
+It contains code contributed by multiple parties, a list of which can be found
+at the bottom of the document. It is provided AS-IS, WITHOUT ANY EXPRESSION OF
+WARRANTY, WITHOUT ANY PROMISE OF SUPPORT OR UPDATES. It CANNOT BE SHARED WITHOUT
+EXPLICIT PERMISSION FROM ITS AUTHORS.
+
+Unlimited usage and modification is granted to non-profit organizations ONLY,
+all restrictions above still apply. Usage for commercial organizations is only
+allowed following explicit permission from the authors, including monetary
+compensation.
+
+Contributors
+===
+- Bruno Gysels
+- Robrecht Plaisier
+- Timo Beckers
+
+Resources
+===
+- Multiplay Labs
+- Churchnerd
