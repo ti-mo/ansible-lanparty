@@ -70,10 +70,13 @@ class "{{ pool.name }}" {
             (pick(binary-to-ascii(16, 8, ":", suffix(option agent.remote-id, 6)), "0") = "{{ pool.remote }}"){% endif %});
 {% endif %}
 }
-
+{% else %}
+{% if pool.remote is defined %}
+class "{{ pool.name }}" { match if (pick(binary-to-ascii(16, 8, ":", suffix(option agent.remote-id, 6)), "0") = "{{ pool.remote }}"); }
 {% else %}
 {% set swname = pool.name ~ "-SW" %}
 class "{{ pool.name }}" { match if substring(option agent.remote-id, 2,{{ swname | length }}) = "{{ swname | upper }}"; }
+{% endif %}
 {% endif %}
 {% endif %}
 {% endfor %}
