@@ -9,7 +9,7 @@ ebot_maps:
   - de_train
   - de_mirage
   - de_overpass
-  - de_cobblestone
+  - de_cbble
 
 ebot_workshop_maps:
   - [ de_dust2, 125438255 ]
