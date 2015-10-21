@@ -5,6 +5,10 @@ hostname "{{ lp.name }} {{ item.rules | capitalize }} {{ steam_server_id }}.{{ i
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
 
+// Expose serverquery info
+host_players_show 2
+host_info_show 2
+
 {% if item.gotv is defined and item.gotv  %}
 tv_enable "1"
 tv_title "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.id }}"
