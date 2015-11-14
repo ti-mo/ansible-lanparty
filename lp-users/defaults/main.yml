@@ -1,26 +1,17 @@
 ---
-# User toevoegen kan in `users` volgens het patroon hieronder.
+# Add users using the following pattern
 #
-#   - name: newuser
+#   newuser:
 #     uid: 2000
 #     shell: /bin/bash
 #     state: present
 #     password: ''
-#     sshkeys:
-#       - name: id_rsa
-#         state: present
 #
-# _name, uid en keys zijn mandatory_
+# <All attributes are optional>
 #
-# * name en uid moeten uniek zijn in de hele omgeving
-# * keys worden toegevoegd als files/keys/<user>/<keyname>.pub
-# * shell moet een absoluut path zijn en de binary moet reeds geïnstalleerd zijn
-# * password moet gehashed zijn met bv. `mkpasswd --method=SHA-512`
-# * state kan worden gebruikt om users en keys te verwijderen/revoken (`absent`)
-users:
-  - name:
-    uid:
-    shell:
-    password:
-    sshkeys:
-      - name:
+# * the hash key (username) must be unique
+# * put the users' public SSH keys into files/keys/newuser
+# * 'shell' must be an absolute path and the binary must be present
+# * 'password' expects a hashed value acquired by eg. `mkpasswd --method=SHA-512`
+# * 'state' can be used to remove users from the environment (present/absent)
+users: { }

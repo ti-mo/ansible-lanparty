@@ -1,31 +1,31 @@
 ---
 - name: Users | User Management
   user:
-    name: "{{ item.name }}"
-    state: "{{ item.state | default('present') }}"
-    password: "{{ item.password | default('')}}"
-    shell: "{{ item.shell | default('/bin/bash') }}"
+    name: "{{ item.key }}"
+    state: "{{ item.value.state | default('present') }}"
+    password: "{{ item.value.password | default('')}}"
+    shell: "{{ item.value.shell | default('/bin/bash') }}"
     update_password: always
-  with_items: users
+  with_dict: users
 
+# Playbook now uses 'exclusive'
+# This will clobber any missing keys on the target host
 - name: Users | Public authorized_keys
   authorized_key:
-    user: "{{ item.0.name }}"
-    key: "{{ lookup('file', 'files/keys/' + item.0.name + '/' + item.1.name + '.pub') }}"
-    state: "{{ item.1.state | default('present') }}"
-  with_subelements:
-    - users
-    - sshkeys
-  when: item.0.state|default('present') == 'present'
+    exclusive: yes
+    user: "{{ item.key }}"
+    key: "{{ lookup('file', 'files/keys/' + item.key) }}"
+  with_dict: users
+  ignore_errors: true
   tags: [ 'keys' ]
 
 - name: Users | Sudoers
   lineinfile:
     dest: /etc/sudoers
-    regexp: "^{{ item.name }} ALL="
-    line: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
+    regexp: "^{{ item.key }} ALL="
+    line: "{{ item.key }} ALL=(ALL) NOPASSWD:ALL"
     validate: "visudo -cf %s"
-  with_items: users
+  with_dict: users
   tags: [ 'sudo' ]
 
 - name: Users | PermitRootLogin without-password
