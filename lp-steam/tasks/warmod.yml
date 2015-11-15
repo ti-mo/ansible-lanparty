@@ -1,0 +1,39 @@
+---
+- name: Warmod | Install MM:Source
+  get_url:
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/mmsource-linux.tar.gz"
+    url: "{{ csgo_mm_url }}"
+  become_user: "{{ steamcmd_user }}"
+
+- name: Warmod | Unpack MM:Source
+  unarchive:
+    copy: no
+    src: "{{ steamcmd_path }}/games/csgo/csgo/addons/mmsource-linux.tar.gz"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo"
+    creates: "{{ steamcmd_path}}/games/csgo/csgo/addons/metamod"
+  become_user: "{{ steamcmd_user }}"
+
+- name: Warmod | Ensure metamod.vdf missing
+  file:
+    path: "{{ steamcmd_path }}/games/csgo/csgo/addons/metamod.vdf"
+    state: absent
+
+- name: Warmod | Install SourceMod
+  get_url:
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod-linux.tar.gz"
+    url: "{{ csgo_sm_url }}"
+  become_user: "{{ steamcmd_user }}"
+
+- name: Warmod | Unpack SourceMod
+  unarchive:
+    copy: no
+    src: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod-linux.tar.gz"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo"
+    creates: "{{ steamcmd_path}}/games/csgo/csgo/addons/sourcemod"
+  become_user: "{{ steamcmd_user }}"
+
+- name: Warmod | Install WarMod
+  get_url:
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/plugins/warmod.smx"
+    url: "{{ csgo_wm_url }}"
+  become_user: "{{ steamcmd_user }}"

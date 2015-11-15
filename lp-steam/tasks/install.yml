@@ -47,8 +47,7 @@
   get_url:
     dest: "{{ steamcmd_path }}/{{ steamcmd_filename }}"
     url: "{{ steamcmd_url }}"
-    owner: "{{ steamcmd_user }}"
-    group: "{{ steamcmd_user }}"
+  become_user: "{{ steamcmd_user }}"
   register: steamrc
 
 - name: Install | Extract SteamCMD

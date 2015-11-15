@@ -1,5 +1,10 @@
 // {{ ansible_managed }}
 
+{% if item.warmod is defined and item.warmod %}
+// Enable CSGO Warmod by loading MetaMod
+plugin_load addons/metamod/bin/server
+{% endif %}
+
 hostname "{{ lp.name }} {{ item.rules | capitalize }} {{ steam_server_id }}.{{ item.id }}"
 
 rcon_password "{{ steam_rcon }}"

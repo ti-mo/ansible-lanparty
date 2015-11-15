@@ -31,6 +31,16 @@ csgo_server_instances:
     gotv: true
     rules: grand
     gameport: 27015
+    warmod: true
+
+csgo_warmod: true
+csgo_mm_version: 1.10.6
+csgo_mm_url: http://sourcemod.gameconnect.net/files/mmsource-{{ csgo_mm_version }}-linux.tar.gz
+
+csgo_sm_version: 1.7.3-git5275
+csgo_sm_url: http://www.sourcemod.net/smdrop/1.7/sourcemod-{{ csgo_sm_version }}-linux.tar.gz
+
+csgo_wm_url: http://warmod.bitbucket.org/plugins/warmod.smx
 
 csgo_authkey: ""
 csgo_workshop_collection: ""

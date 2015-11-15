@@ -1,4 +1,8 @@
 ---
+- include: warmod.yml
+  when: csgo_warmod is defined and csgo_warmod
+  tags: warmod
+
 - name: CSGO | Install Server Configs
   template:
     src: csgo/server.j2
