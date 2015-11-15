@@ -31,3 +31,33 @@ $ ./srcds_run -usercon -console +ip 0.0.0.0
 ```
 
 Even running a VAC-enabled LAN server is possible using these parameters (by adding sv_lan 0), which would definitely be recommended for larger events.
+
+Conditionally loading MetaMod
+---
+We've investigated ways to conditionally load MetaMod and SourceMod on a per-instance basis.
+This can be done by ensuring addons/metamod.vdf is absent from the installation and loading MetaMod at runtime using something like `plugin_load addons/metamod/bin/server` in the configuration.
+
+However, this works unreliably when SourceTV is enabled. Upon joining the server or changing maps, something like the following stack trace would come up:
+
+```
+...
+close(54)                               = 0
+munmap(0xf34ad000, 4096)                = 0
+stat64("/usr/local/steamcmd/games/csgo/csgo/addons/sourcemod/bin/sourcemod_mm_i486.so", {st_mode=S_IFREG|0700, st_size=9836, ...}) = 0
+getdents(51, /* 0 entries */, 32768)    = 0
+close(51)                               = 0
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x74} ---
+...
+```
+
+_None of this behaviour manifests itself when addons/metamod.vdf is in place._
+
+After hours of trial and error, we've concluded that having an empty MetaMod instance in memory at all times is acceptable and should not impact the server's stability and/or memory consumption.
+
+Conditionally loading SourceMod
+---
+The alternative to disabling SourceMod per instance is setting the `mm_basedir` cvar to a bogus path, preventing MetaMod from picking up on installed MetaMod plugins.
+
+This is a much safer option and does not require files to be manually deleted after installing a package.
+
+Also, this approach works with SourceTV.

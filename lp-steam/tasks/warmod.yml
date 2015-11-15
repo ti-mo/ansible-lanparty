@@ -1,5 +1,5 @@
 ---
-- name: Warmod | Install MM:Source
+- name: Warmod | Download MM:Source
   get_url:
     dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/mmsource-linux.tar.gz"
     url: "{{ csgo_mm_url }}"
@@ -13,12 +13,7 @@
     creates: "{{ steamcmd_path}}/games/csgo/csgo/addons/metamod"
   become_user: "{{ steamcmd_user }}"
 
-- name: Warmod | Ensure metamod.vdf missing
-  file:
-    path: "{{ steamcmd_path }}/games/csgo/csgo/addons/metamod.vdf"
-    state: absent
-
-- name: Warmod | Install SourceMod
+- name: Warmod | Download SourceMod
   get_url:
     dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod-linux.tar.gz"
     url: "{{ csgo_sm_url }}"
@@ -32,8 +27,17 @@
     creates: "{{ steamcmd_path}}/games/csgo/csgo/addons/sourcemod"
   become_user: "{{ steamcmd_user }}"
 
-- name: Warmod | Install WarMod
+- name: Warmod | Download WarMod
   get_url:
     dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/plugins/warmod.smx"
     url: "{{ csgo_wm_url }}"
   become_user: "{{ steamcmd_user }}"
+
+- name: Warmod | SourceMod Configuration
+  template:
+    src: "csgo/sourcemod/{{ item }}.j2"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/configs/{{ item }}.cfg"
+  become_user: "{{ steamcmd_user }}"
+  with_items:
+    - admin_overrides
+    - adminmenu_custom

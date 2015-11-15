@@ -1,0 +1,63 @@
+"Commands"
+{
+  "Match Admin"
+  {
+    "Pause"
+    {
+      "cmd"     "sm_@1pause"
+      "execute" "server"
+      "1"
+      {
+        "type"  "list"
+        "title" "Pause Game"
+        "1"     ""
+        "1."    "Pause"
+        "2"     "un"
+        "2."    "Unpause"
+      }
+    }
+    "Swap Teams"
+    {
+      "cmd"     "aswap"
+      "execute" "player"
+    }
+    "Bullet Markers"
+    {
+      "cmd"     "sv_showimpacts @1"
+      "execute" "server"
+      "1"
+      {
+        "type"    "list"
+        "title"   "Bullet Markers"
+        "1"       "0"
+        "1."      "Off"
+        "2"       "1"
+        "2."      "Client & Server"
+        "3"       "2"
+        "3."      "Client Only"
+        "4"       "3"
+        "4."      "Server Only"
+      }
+    }
+    "Restart & Set Money"
+    {
+      "cmd"     "mp_startmoney @1; mp_restartgame 2"
+      "execute"   "server"
+      "1"
+      {
+        "type"    "list"
+        "title"   "Startmoney"
+        "1"       "3000"
+        "1."      "$3000"
+        "2"       "5000"
+        "2."      "$5000"
+        "3"       "7000"
+        "3."      "$7000"
+        "4"       "10000"
+        "4."      "$10000"
+        "5"       "800"
+        "5."      "$800"
+      }
+    }
+  }
+}

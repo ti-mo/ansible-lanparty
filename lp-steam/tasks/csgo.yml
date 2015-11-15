@@ -10,6 +10,7 @@
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
   with_items: csgo_server_instances
+  tags: [ 'configs' ]
 
 - name: CSGO | Install esl5on5
   template:
