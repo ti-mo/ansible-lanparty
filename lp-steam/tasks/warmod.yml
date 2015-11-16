@@ -33,11 +33,14 @@
     url: "{{ csgo_wm_url }}"
   become_user: "{{ steamcmd_user }}"
 
-- name: Warmod | SourceMod Configuration
+- name: Warmod | SourceMod Admin Overrides
   template:
-    src: "csgo/sourcemod/{{ item }}.j2"
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/configs/{{ item }}.cfg"
+    src: "csgo/sourcemod/admin_overrides.j2"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/configs/admin_overrides.cfg"
   become_user: "{{ steamcmd_user }}"
-  with_items:
-    - admin_overrides
-    - adminmenu_custom
+
+- name: Warmod | SourceMod Admin Menu
+  template:
+    src: "csgo/sourcemod/adminmenu_custom.j2"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/sourcemod/configs/adminmenu_custom.txt"
+  become_user: "{{ steamcmd_user }}"

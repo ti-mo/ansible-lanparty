@@ -4,43 +4,36 @@
   {
     "Pause"
     {
-      "cmd"     "sm_@1pause"
+      "admin"   "warmod"
+      "cmd"     "sm_pause"
       "execute" "server"
-      "1"
-      {
-        "type"  "list"
-        "title" "Pause Game"
-        "1"     ""
-        "1."    "Pause"
-        "2"     "un"
-        "2."    "Unpause"
-      }
+    }
+    "Unpause"
+    {
+      "admin"   "warmod"
+      "cmd"     "sm_unpause"
+      "execute" "server"
     }
     "Swap Teams"
     {
+      "admin"   "warmod"
       "cmd"     "aswap"
       "execute" "player"
     }
     "Bullet Markers"
     {
+      "admin"   "warmod"
       "cmd"     "sv_showimpacts @1"
       "execute" "server"
       "1"
       {
-        "type"    "list"
-        "title"   "Bullet Markers"
-        "1"       "0"
-        "1."      "Off"
-        "2"       "1"
-        "2."      "Client & Server"
-        "3"       "2"
-        "3."      "Client Only"
-        "4"       "3"
-        "4."      "Server Only"
+        "type"    "onoff"
+        "title"   "Bullet Markers:"
       }
     }
     "Restart & Set Money"
     {
+      "admin"   "warmod"
       "cmd"     "mp_startmoney @1; mp_restartgame 2"
       "execute"   "server"
       "1"
