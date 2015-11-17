@@ -1,0 +1,34 @@
+---
+- name: OVS | Config Sanity Check
+  assert:
+    that:
+      - "openvswitch is defined"
+      - "openvswitch is iterable"
+      - "openvswitch is not string"
+    msg: The 'openvswitch' variable must be defined
+
+- name: OVS | Port Definition Check
+  assert:
+    that:
+      - "item.ports is defined"
+      - "item.ports is iterable"
+      - "item.ports is not string"
+    msg: openvswitch.<item>.ports cannot be missing, empty or string
+  with_items: openvswitch
+
+- name: OVS | Install Packages
+  apt:
+    name: openvswitch-switch
+
+- name: OVS | Create Bridges
+  openvswitch_bridge:
+    bridge: "{{ item.name }}"
+  with_items: openvswitch
+
+- name: OVS | Create Ports
+  openvswitch_port:
+    bridge: "{{ item.0.name }}"
+    port: "{{ item.1 }}"
+  with_subelements:
+    - openvswitch
+    - ports
