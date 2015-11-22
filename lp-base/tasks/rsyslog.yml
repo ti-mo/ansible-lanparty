@@ -1,16 +1,16 @@
 ---
-- name: Install RSyslog
+- name: RSyslog | Install Packages
   apt:
     name: rsyslog
   tags: [ 'packages' ]
 
-- name: RSyslog Configuration
+- name: RSyslog | Render Configuration
   template:
     src: rsyslog/rsyslog.conf.j2
     dest: /etc/rsyslog.conf
   notify: restart rsyslog
 
-- name: RSyslog Service
+- name: RSyslog | Ensure Service
   service:
     name: rsyslog
     state: started

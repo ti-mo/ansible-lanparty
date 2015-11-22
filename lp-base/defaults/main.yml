@@ -1,0 +1,44 @@
+---
+lp:
+  contact: admin@example.lan
+
+apt_cache_valid: 1200
+
+apt:
+  prefs:
+    stable: 500
+    testing: 250
+  sources:
+    stable:
+      - suite: stable contrib
+        site: ftp.be.debian.org/debian
+    testing:
+      - suite: testing contrib
+        site: ftp.be.debian.org/debian
+  security:
+    debian:
+      - suite: stable/updates
+        site: security.debian.org
+  gpg_keys:
+    - url: https://packages.elasticsearch.org/GPG-KEY-elasticsearch
+
+trusted_networks: []
+
+snmp_comms:
+  - public
+
+observium:
+  agent:
+    port: 6556
+    binary: /usr/bin/check_mk_agent
+
+kern:
+  params:
+    - { name: 'net.ipv4.neigh.default.gc_thresh1', value: '2048' }
+    - { name: 'net.ipv4.neigh.default.gc_thresh2', value: '3072' }
+    - { name: 'net.ipv4.neigh.default.gc_thresh3', value: '4096' }
+    - { name: 'net.ipv4.conf.all.arp_accept', value: '0' }
+    - { name: 'net.ipv4.conf.all.arp_ignore', value: '1' }
+    - { name: 'net.ipv4.conf.all.arp_announce', value: '2' }
+    - { name: 'net.ipv4.conf.all.arp_filter', value: '1' }
+    - { name: 'net.ipv4.conf.all.arp_notify', value: '1' }
