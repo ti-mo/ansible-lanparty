@@ -1,4 +1,13 @@
 ---
+- name: Base | Check configuration
+  assert:
+    that:
+      - "domains.lan is defined"
+      - "resolvers is iterable"
+      - "timezone is defined"
+      - "lp.name is defined and lp.rev is defined"
+    msg: Complete the basic configuration first
+
 - include: system.yml
   tags: [ 'system' ]
 
