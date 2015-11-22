@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# The parameters appended by lxc-utils come in the following order:
+# (1) container name, (2) config section name (net), (3) execution context (up),
+# (4) network type (empty/veth/macvlan/phys), (5) host-sided device name (veth-xxx)
+
+# Need exactly 5 parameters to continue
+if ! [[ $# -eq 5 ]]
+then
+  echo "$0: error - expecting exactly 5 parameters"
+  exit 1
+fi
+
+if ! [ -h /sys/class/net/$5 ]
+then
+  echo "$0: error - $5 is not a virtual device"
+  exit 1
+fi
+
+ovs-vsctl --if-exists del-port $5
