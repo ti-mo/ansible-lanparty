@@ -30,3 +30,19 @@
     name: "{{ item.key }}"
     state: started
   with_dict: lxc_containers
+
+- name: lxc | Root .ssh directory
+  file:
+    path: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh"
+    state: directory
+    mode: 0700
+  with_dict: lxc_containers
+  when: item.value.store | default('dir') == 'dir'
+
+- name: lxc | Root authorized_keys
+  template:
+    src: ssh-keys.j2
+    dest: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh/authorized_keys"
+    mode: 0600
+  with_dict: lxc_containers
+  when: item.value.store | default('dir') == 'dir'
