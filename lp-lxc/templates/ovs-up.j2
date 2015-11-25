@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# ansible-lp lxc configuration will prepend two variables:
+# 1. OVS bridge name (br-lp) and 2. vlan id (5)
+
+# The parameters appended by lxc-utils come in the following order:
+# (3) container name, (4) config section name (net), (5) execution context (up),
+# (6) network type (empty/veth/macvlan/phys), (7) host-sided device name (veth-xxx)
+
+# Need exactly 7 parameters to continue
+if ! [[ $# -eq 7 ]]
+then
+  echo "$0: error - expecting exactly 7 parameters"
+  exit 1
+fi
+
+# Check if OVS bridge exists
+ovs-vsctl list-ifaces $1
+if ! [[ $? -eq 0 ]]
+then
+  echo "$0: error - bridge $1 must exist in OpenVSwitch"
+  exit 1
+fi
+
+if ! [ -h /sys/class/net/$7 ]
+then
+  echo "$0: error - $7 is not a virtual device"
+  exit 1
+fi
+
+# Make sure VID is an integer
+if ! [ "$2" -eq "$2" ] 2> /dev/null
+then
+  echo "$0: error - VID ($2) is not an integer"
+  exit 1
+fi
+
+ovs-vsctl --may-exist add-br $1
+ovs-vsctl --if-exists del-port $1 $7
+ovs-vsctl --may-exist add-port $1 $7 tag=$2

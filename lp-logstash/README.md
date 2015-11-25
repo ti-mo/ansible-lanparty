@@ -1,6 +1,5 @@
-Frag-o-Matic LogStash
-=====================
-[Confluence - Logstash (fom-logstash)](http://confluence.fom.be/pages/viewpage.action?pageId=26511133)
+lp-logstash
+===========
 
 LogStash Book
 -------------

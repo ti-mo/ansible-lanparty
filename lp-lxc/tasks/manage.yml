@@ -1,0 +1,48 @@
+---
+- name: lxc | Create Containers
+  lxc_container:
+    name: "{{ item.key }}"
+    template: "{{ item.value.distro | default('debian') }}"
+    template_options: "--release {{ item.value.release | default('jessie') }}"
+    backing_store: "{{ item.value.store | default('dir') }}"
+    vg_name: "{{ lxc_vg | default('lxc') }}"
+    state: started
+  with_dict: lxc_containers
+
+- name: lxc | Render Configurations
+  template:
+    src: lxc-config.j2
+    dest: "/var/lib/lxc/{{ item.key }}/config"
+  register: lxcconfig
+  with_dict: lxc_containers
+
+# lxc restart behaviour is split into start/stop
+# possible bug or race condition in tooling or Ansible module
+- name: lxc | Stop Modified Containers
+  lxc_container:
+    name: "{{ item.item.key }}"
+    state: restarted
+  when: item.changed
+  with_items: lxcconfig.results
+
+- name: lxc | Start All Defined Containers
+  lxc_container:
+    name: "{{ item.key }}"
+    state: started
+  with_dict: lxc_containers
+
+- name: lxc | Root .ssh directory
+  file:
+    path: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh"
+    state: directory
+    mode: 0700
+  with_dict: lxc_containers
+  when: item.value.store | default('dir') == 'dir'
+
+- name: lxc | Root authorized_keys
+  template:
+    src: ssh-keys.j2
+    dest: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh/authorized_keys"
+    mode: 0600
+  with_dict: lxc_containers
+  when: item.value.store | default('dir') == 'dir'

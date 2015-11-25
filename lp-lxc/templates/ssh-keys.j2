@@ -1,0 +1,3 @@
+{% for u, _ in users.iteritems() | default({}) %}
+{{ lookup('file', 'files/keys/' + u) }}"
+{% endfor %}

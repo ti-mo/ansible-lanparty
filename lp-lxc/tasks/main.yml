@@ -1,0 +1,12 @@
+---
+- name: lxc | Interface Sanity Check
+  assert:
+    that:
+      - "item.value.ifaces is defined and item.value.ifaces is iterable"
+  with_dict: lxc_containers
+
+- include: install.yml
+  tags: [ 'install' ]
+
+- include: manage.yml
+  tags: [ 'manage' ]

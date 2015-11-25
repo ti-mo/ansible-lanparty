@@ -1,5 +1,5 @@
 ---
-- name: Netfilter Management Packages
+- name: Install | Management Packages
   apt:
     name: "{{ item }}"
   with_items:

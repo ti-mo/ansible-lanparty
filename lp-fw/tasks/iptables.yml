@@ -1,5 +1,5 @@
 ---
-- name: IPTables Rules
+- name: IPTables | Render Rules
   template:
     src: iptables.j2
     dest: "{{ iptables.path }}"
@@ -7,24 +7,24 @@
   tags: [ 'iptables' ]
 
 
-- name: Install | Remove custom netfilter-sysctl
+- name: IPTables | Remove custom netfilter-sysctl
   file:
     path: /etc/init.d/netfilter-sysctl
     state: absent
 
-- name: Install | Custom netfilter-sysctl service
+- name: IPTables | Custom netfilter-sysctl service
   service:
     name: netfilter-sysctl
     state: stopped
     enabled: false
 
-- name: Install | Netfilter unit w/ sysctl reload
+- name: IPTables | Netfilter unit w/ sysctl reload
   template:
     src: sysctl-unit.j2
     dest: /etc/systemd/system/netfilter-persistent.service
   notify: reload daemons
 
-- name: Install | Custom netfilter-sysctl service
+- name: IPTables | Custom netfilter-sysctl service
   service:
     name: netfilter-persistent
     state: started

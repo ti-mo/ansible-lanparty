@@ -1,0 +1,33 @@
+---
+- name: lxc | Install lxc-dev
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
+    default_release: testing
+  with_items:
+    - lxc-dev
+    - lxc
+
+- name: lxc | Install Dependencies
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
+  with_items:
+    - python-pip
+    - python-dev
+
+- name: lxc | Install OVS scripts
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/lxc/{{ item }}"
+    mode: 0755
+  with_items:
+    - ovs-up
+    - ovs-down
+
+- name: lxc | Python Bindings
+  pip:
+    executable: pip2
+    name: lxc-python2

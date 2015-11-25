@@ -1,0 +1,42 @@
+---
+- name: Install | Packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    [ 'apache2', 'libapache2-mod-php5', 'php5-cli', 'php5-mysql',
+      'php5-gd', 'php5-snmp', 'php-pear', 'php-net-ipv4', 'php-net-ipv6',
+      'snmp', 'graphviz', 'php5-mcrypt', 'mysql-client', 'rrdtool',
+      'fping', 'imagemagick', 'whois', 'mtr-tiny', 'nmap',
+      'ipmitool', 'python-mysqldb' ]
+  tags: [ 'packages' ]
+
+- name: Install | LibreNMS Git Checkout
+  git:
+    repo: https://github.com/librenms/librenms
+    depth: 1
+    dest: "{{ observium.install_dir }}"
+  become_user: "{{ observium.user }}"
+  register: perms
+  notify: fix permissions
+
+- name: Install | Upload Branding
+  copy:
+    src: "files/images/{{ observium.title_image }}"
+    dest: "{{ observium.install_dir }}/html/images"
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
+
+- name: Install | Create Directories
+  file:
+    path: "{{ observium.install_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
+  with_items:
+    - rrd
+    - logs
+
+- name: Install | LibreNMS Cron Job
+  template:
+    src: cron.j2
+    dest: /etc/cron.d/librenms

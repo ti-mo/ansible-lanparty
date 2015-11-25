@@ -1,10 +1,15 @@
 ---
-####
-# Observium
-- include: observium.yml
-  tags: [ 'observium' ]
+- include: install.yml
+  tags: [ 'install' ]
 
-###
-# Weathermap
+- include: config.yml
+  tags: [ 'config' ]
+
 - include: weathermap.yml
   tags: [ 'weathermap' ]
+
+- name: Main | Start Apache
+  service:
+    name: apache2
+    state: started
+    enabled: true

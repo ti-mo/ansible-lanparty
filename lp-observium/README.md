@@ -1,6 +1,5 @@
 Observium (LibreNMS)
 ====================
-[Confluence - Observium (fom-observium)](http://confluence.fom.be/pages/viewpage.action?pageId=26510879)
 
 Searches
 --------

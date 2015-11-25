@@ -1,10 +1,13 @@
 ---
-- name: Smokeping Directory
+- name: Main | Smokeping Directory
   file:
     path: /etc/smokeping/config.d
     state: directory
 
-- name: Render Smokeping Configs
+# Render configs before the package installation
+# Debian autostarts after install, which requires
+# manual intervention to clean up the rrd's it generated
+- name: Main | Render Smokeping Configs
   template:
     src: "{{ item }}.j2"
     dest: "/etc/smokeping/config.d/{{ item | title }}"
@@ -18,7 +21,7 @@
     - targets
   notify: restart smokeping
 
-- name: Install Smokeping
+- name: Main | Install Packages
   apt:
     name: "{{ item }}"
   with_items:
@@ -28,7 +31,7 @@
     - apache2
   tags: [ 'packages' ]
 
-- name: Smokeping Service
+- name: Main | Smokeping Service
   service:
     name: smokeping
     state: started

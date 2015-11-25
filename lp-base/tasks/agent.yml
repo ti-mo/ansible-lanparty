@@ -19,8 +19,6 @@
     dest: /etc/xinetd.d/check_mk
   notify: restart xinetd
 
-# This calls to add the host to Observium
-# Changes to this resource marks a new installation
 - name: Monitoring Agent | Create Directories
   file:
     recurse: true

@@ -1,0 +1,6 @@
+---
+apt:
+  contrib:
+    lumberjack:
+      - suite: stable
+        site: packages.elastic.co/logstashforwarder/debian

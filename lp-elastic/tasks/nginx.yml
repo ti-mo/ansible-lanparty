@@ -1,18 +1,18 @@
 ---
-- name: ElasticSearch Nginx Site Template
+- name: Nginx | Render Site Template
   template:
-    src=nginx.site.j2
-    dest=/etc/nginx/sites-available/elasticsearch
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-available/elasticsearch
   notify: reload nginx
 
-- name: Symlink Nginx Site
+- name: Nginx | Symlink Site
   file:
-    src=/etc/nginx/sites-available/elasticsearch
-    dest=/etc/nginx/sites-enabled/elasticsearch
-    state=link
+    src: /etc/nginx/sites-available/elasticsearch
+    dest: /etc/nginx/sites-enabled/elasticsearch
+    state: link
   notify: reload nginx
 
-- name: ES Password
+- name: Nginx | HTTP Password
   copy:
-    content='{{ lp.user }}:{{ lp.pass_hash }}'
-    dest=/etc/nginx/es_password
+    content: "{{ lp.user }}:{{ lp.pass_hash }}"
+    dest: /etc/nginx/es_password

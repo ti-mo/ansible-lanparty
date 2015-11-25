@@ -1,0 +1,43 @@
+# {{ ansible_managed }}
+{% if item.value.store | default('dir') == 'dir' %}
+lxc.rootfs = /var/lib/lxc/{{ item.key }}/rootfs
+{% elif item.value.store == 'lvm' %}
+lxc.rootfs = /dev/{{ lxc_vg }}/{{ item.key }}
+{% endif %}
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/{{ item.distro | default('debian') }}.common.conf
+
+# Container specific configuration
+lxc.mount = /var/lib/lxc/{{ item.key }}/fstab
+lxc.utsname = {{ item.key }}
+lxc.arch = amd64
+lxc.autodev = 1
+lxc.kmsg = 1
+
+# Network Configuration
+
+{% for n in item.value.ifaces.iteritems() %}
+# Interface {{ n.0 }} - vlan {{ n.1.vlan }}
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.name = {{ n.0 }}
+lxc.network.veth.pair = {{ item.key }}-{{ n.0 }}
+lxc.network.script.up = /etc/lxc/ovs-up {{ lxc_bridge }} {{ n.1.vlan }}
+lxc.network.script.down = /etc/lxc/ovs-down
+
+lxc.network.hwaddr = {{ n.1.hwaddr | default('f0:13:37:d0:0d:xx') }}
+
+{% if n.1.address is defined and n.1.address | ipv4 %}
+lxc.network.ipv4 = {{ n.1.address }}
+{% if n.1.gateway is defined %}
+lxc.network.ipv4.gateway = {{ n.1.gateway }}
+{% endif %}
+{% elif n.1.address is defined and n.1.address | ipv6 %}
+lxc.network.ipv6 = {{ n.1.address }}
+{% if n.1.gateway is defined %}
+lxc.network.ipv6.gateway = {{ n.1.gateway }}
+{% endif %}
+{% endif %}
+
+{% endfor %}

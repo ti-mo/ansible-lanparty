@@ -1,42 +1,43 @@
 ---
-- name: TeamSpeak3 User
+- name: Install | TeamSpeak3 User
   user:
-    name={{ ts.user }}
-    createhome=no
-    system=yes
+    name: "{{ ts.user }}"
+    createhome: no
+    system: yes
 
-- name: Create Installation Directory
+- name: Install | Create Installation Directory
   file:
-    path={{ ts.install_dir }}/tarballs
-    state=directory
-    owner={{ ts.user }}
-    group={{ ts.user }}
+    path: "{{ ts.install_dir }}/tarballs"
+    state: directory
+    owner: "{{ ts.user }}"
+    group: "{{ ts.user }}"
 
-- name: Fetch Tarball
+- name: Install | Fetch Tarball
   get_url:
-    url={{ ts.url }}
-    dest={{ ts.install_dir }}/tarballs/
+    url: "{{ ts.url }}"
+    dest: "{{ ts.install_dir }}/tarballs/"
   register: tarball
 
-- name: Unpack Tarball
+- name: Install | Unpack Tarball
   unarchive:
-    copy=no
-    src='{{ ts.install_dir }}/tarballs/{{ ts.url | basename }}'
-    dest={{ ts.install_dir }}
-    owner={{ ts.user }}
-    group={{ ts.user }}
+    copy: no
+    src: "{{ ts.install_dir }}/tarballs/{{ ts.url | basename }}"
+    dest: "{{ ts.install_dir }}"
+    owner: "{{ ts.user }}"
+    group: "{{ ts.user }}"
   when: tarball.changed
   notify: restart ts3
 
-- name: Check Leading Directory
-  stat: path={{ ts.install_dir }}/{{ ts.leading_dir }}
+- name: Install | Check Leading Directory
+  stat:
+    path: "{{ ts.install_dir }}/{{ ts.leading_dir }}"
   register: p
 
-- name: Install TeamSpeak3 Files
-  shell: rsync -a {{ ts.install_dir }}/{{ ts.leading_dir }}/ {{ ts.install_dir }}/
+- name: Install | Install TeamSpeak3 Files
+  shell: "rsync -a {{ ts.install_dir }}/{{ ts.leading_dir }}/ {{ ts.install_dir }}/"
   when: p.stat.isdir is defined and p.stat.isdir
 
-- name: Remove Leading Directory
+- name: Install | Remove Leading Directory
   file:
-    path={{ ts.install_dir }}/{{ ts.leading_dir }}
-    state=absent
+    path: "{{ ts.install_dir }}/{{ ts.leading_dir }}"
+    state: absent
