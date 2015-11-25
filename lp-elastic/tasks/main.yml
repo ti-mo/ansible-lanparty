@@ -1,5 +1,5 @@
 ---
-- include: elasticsearch.yml
+- include: elastic.yml
   tags: [ 'es', 'elasticsearch' ]
 
 - include: nginx.yml

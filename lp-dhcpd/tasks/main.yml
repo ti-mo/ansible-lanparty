@@ -1,10 +1,10 @@
 ---
-- name: Install isc-dhcp-server
+- name: Main | Install Packages
   apt:
     name: isc-dhcp-server
   tags: [ 'packages' ]
 
-- name: DHCPd Configuration
+- name: Main | Render Configuration
   template:
     src: dhcpd.j2
     dest: /etc/dhcp/dhcpd.conf

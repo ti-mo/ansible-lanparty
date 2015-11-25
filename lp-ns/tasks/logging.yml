@@ -1,0 +1,12 @@
+---
+- name: Logging | Log Directory
+  file:
+    state: directory
+    path: "{{ bind_logdir }}"
+    owner: bind
+    group: bind
+
+- name: Logging | Install Logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/bind

@@ -4,23 +4,8 @@
     name: bind9
   tags: [ 'packages' ]
 
-- name: BIND RNDC Key
-  template:
-    src: rndc.key.j2
-    dest: /etc/bind/rndc.key
-  notify: restart bind
-
-- name: BIND RNDC Key Configuration
-  template:
-    src: rndc.j2
-    dest: /etc/bind/rndc.conf
-  notify: reload bind
-
-- name: BIND9 Configuration Files
-  template:
-    src: conf/named.conf.j2
-    dest: /etc/bind/named.conf
-  notify: reload bind
+- include: config.yml
+  tags: [ 'config' ]
 
 - include: zones.yml
   tags: [ 'zones' ]
@@ -31,35 +16,8 @@
 - include: spoof.yml
   tags: [ 'spoof', 'depot' ]
 
-# Make sure we clean this up to avoid confusion
-# and/or accidental manual edits to files that
-# aren't being included by named.conf
-- name: Clean up local BIND9 Configuration
-  file:
-    state: absent
-    path: "/etc/bind/named.conf.{{ item }}"
-  with_items:
-    - local
-    - default-zones
-
-- name: Main | Force IPv4 Operation
-  lineinfile:
-    dest: /etc/default/bind9
-    line: 'OPTIONS="-4 -u bind"'
-    regexp: "^OPTIONS"
-  notify: restart bind
-
-- name: Main | Log Directory
-  file:
-    state: directory
-    path: "{{ bind_logdir }}"
-    owner: bind
-    group: bind
-
-- name: Main | Install Logrotate
-  template:
-    src: logrotate.j2
-    dest: /etc/logrotate.d/bind
+- include: logging.yml
+  tags: [ 'logging' ]
 
 - name: BIND9 Service
   service:

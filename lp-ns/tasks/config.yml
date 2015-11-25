@@ -1,0 +1,37 @@
+---
+# Make sure we clean this up to avoid confusion
+# and/or accidental manual edits to files that
+# aren't being included by named.conf
+- name: Config | Clean Up Defaults
+  file:
+    state: absent
+    path: "/etc/bind/named.conf.{{ item }}"
+  with_items:
+    - local
+    - default-zones
+
+- name: Config | RNDC Key
+  template:
+    src: rndc.key.j2
+    dest: /etc/bind/rndc.key
+  notify: restart bind
+
+- name: Config | RNDC Key Configuration
+  template:
+    src: rndc.j2
+    dest: /etc/bind/rndc.conf
+  notify: reload bind
+
+- name: Config | Render Configuration
+  template:
+    src: conf/named.conf.j2
+    dest: /etc/bind/named.conf
+  notify: reload bind
+
+- name: Config | Force IPv4 Operation
+  lineinfile:
+    dest: /etc/default/bind9
+    line: 'OPTIONS="-4 -u bind"'
+    regexp: "^OPTIONS"
+  notify: restart bind
+

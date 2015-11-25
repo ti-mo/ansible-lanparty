@@ -1,34 +1,34 @@
 ---
-- name: Check for existing Samba shares
+- name: Main | Check for existing Samba shares
   assert:
     that: "samba_shares is iterable"
     msg: Define at least one Samba share in samba_shares
 
-- name: Install | Samba Packages
+- name: Main | Install Packages
   apt:
     name: samba
     state: latest
 
-- name: Install | Samba User
+- name: Main | Samba User
   user:
     name: samba
     group: sambashare
     system: true
     createhome: false
 
-- name: Install | Samba Configuration
+- name: Main | Render Configuration
   template:
     src: smb.j2
     dest: /etc/samba/smb.conf
   notify: restart smbd
 
-- name: Install | Samba Username Map
+- name: Main | Samba Username Map
   template:
     src: smbusers.j2
     dest: /etc/samba/smbusers
   notify: restart smbd
 
-- name: Install | Samba Service
+- name: Main | Samba Service
   service:
     name: smbd
     state: started
