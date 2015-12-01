@@ -16,6 +16,14 @@
   register: lxcconfig
   with_dict: lxc_containers
 
+- name: lxc | Debian | Render Network Configuration
+  template:
+    src: lxc-eni.j2
+    dest: "/var/lib/lxc/{{ item.key }}/rootfs/etc/network/interfaces"
+  with_dict: lxc_containers
+  when: item.value.store | default('dir') == 'dir' and
+        item.value.distro | default('debian') == 'debian'
+
 # lxc restart behaviour is split into start/stop
 # possible bug or race condition in tooling or Ansible module
 - name: lxc | Stop Modified Containers
