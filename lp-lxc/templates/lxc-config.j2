@@ -13,7 +13,10 @@ lxc.mount = /var/lib/lxc/{{ item.key }}/fstab
 lxc.utsname = {{ item.key }}
 lxc.arch = amd64
 lxc.autodev = 1
-lxc.kmsg = 1
+
+# Always turn this off, Poettering said so :)
+# https://bugzilla.redhat.com/show_bug.cgi?id=1038259
+lxc.kmsg = 0
 
 # Network Configuration
 
