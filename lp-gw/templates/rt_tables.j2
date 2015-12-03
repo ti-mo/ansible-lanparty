@@ -7,6 +7,6 @@
 0     unspec
 
 # Custom Tables
-{% for i, n in fw_rt_tables|dictsort() %}
-{{ n.0 }}   {{ i }}
+{% for i, n in netif.iteritems() %}
+{{ loop.index }}   {{ i }}
 {% endfor %}

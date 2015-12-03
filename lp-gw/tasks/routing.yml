@@ -1,0 +1,5 @@
+---
+- name: Routing | Render rt_tables
+  template:
+    src: rt_tables.j2
+    dest: /etc/iproute2/rt_tables

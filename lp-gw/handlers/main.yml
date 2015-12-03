@@ -5,8 +5,14 @@
 - name: restore ipset
   service: name=ipset state=restarted
 
+- name: reload daemons
+  shell: systemctl daemon-reload
+
+- name: reload tc
+  service: name=tc state=reloaded
+
 - name: warn interfaces
   debug: msg='WARNING, /etc/network/interfaces has been modified. Please restart interfaces manually.'
 
-- name: reload daemons
-  shell: systemctl daemon-reload
+- name: warn dhclient
+  debug: msg='WARNING, dhclient configuration altered, dhclient should ne restarted manually through ifupdown'
