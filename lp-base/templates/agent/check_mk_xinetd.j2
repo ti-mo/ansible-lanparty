@@ -16,12 +16,12 @@
 service check_mk
 {
 	type           = UNLISTED
-	port           = {{ observium.agent.port }}
+	port           = {{ observium_agent_port | default(6556) }}
 	socket_type    = stream
 	protocol       = tcp
 	wait           = no
 	user           = root
-	server         = {{ observium.agent.binary }}
+	server         = {{ observium_agent_binary | default('/usr/bin/check_mk_agent') }}
 
 	# If you use fully redundant monitoring and poll the client
 	# from more then one monitoring servers in parallel you might
