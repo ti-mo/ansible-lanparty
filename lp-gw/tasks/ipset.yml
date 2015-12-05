@@ -5,14 +5,15 @@
     dest: /etc/ipset.conf
   notify: restore ipset
 
-- name: Install | Remove custom netfilter-sysctl
+# Remove legacy init script
+- name: IPSet | Remove custom netfilter-sysctl
   file:
     path: /etc/init.d/ipset
     state: absent
 
 - name: IPSet | Install systemd unit
   template:
-    src: ipset-unit.j2
+    src: units/ipset-unit.j2
     dest: /etc/systemd/system/ipset.service
   notify: reload daemons
 

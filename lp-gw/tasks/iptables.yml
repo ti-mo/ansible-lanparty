@@ -2,10 +2,9 @@
 - name: IPTables | Render Rules
   template:
     src: iptables.j2
-    dest: "{{ iptables.path }}"
+    dest: "{{ iptables_path | default('/etc/iptables/rules.v4') }}"
   notify: restore iptables
   tags: [ 'iptables' ]
-
 
 - name: IPTables | Remove custom netfilter-sysctl
   file:

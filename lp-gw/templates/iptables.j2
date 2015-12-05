@@ -10,7 +10,7 @@
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -p tcp -m tcp --dport ssh -m set --match-set RFC1918 src -j ACCEPT
--A INPUT -p tcp -m tcp --dport {{ observium.agent.port }} -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p tcp -m tcp --dport {{ observium_agent_port | default(6556) }} -m set --match-set RFC1918 src -j ACCEPT
 -A INPUT -p udp -m udp --dport snmp -m set --match-set RFC1918 src -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 
@@ -18,7 +18,7 @@
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
 # Hosts exempt from block rules
-{% for r in fw_exempt %}
+{% for r in gw_whitelist | default([]) %}
 -A FORWARD -s {{ r }} -j ACCEPT
 {% endfor %}
 
@@ -28,39 +28,36 @@
 -A UDPFLOOD -m recent --update --rsource --name UDPFLOOD --seconds 10 --hitcount 10 -j DROP
 
 # Source hosts to block
-{% for h in fw_block.hosts %}
+{% for h in gw_blacklist.hosts | default([]) %}
 -A FORWARD -s {{ h }} -j REJECT
 {% endfor %}
 
 # Destination ports to block
-{% for p in fw_block.ports %}
+{% for p in gw_blacklist.ports | default([]) %}
 -A FORWARD -p tcp -m tcp --dport {{ p }} -m set ! --match-set RFC1918 dst -j REJECT
 -A FORWARD -p udp -m udp --dport {{ p }} -m set ! --match-set RFC1918 dst -j REJECT
 {% endfor %}
 COMMIT
 
 *mangle
-####
-# Default Chains
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
-####
 # Link Selection Chains
-{% for name, ch in fw_ch_ls|dictsort() %}
-:{{ ch }} - [0:0]
-{% endfor %}
+:LS_IN - [0:0]
+:LS_OUT - [0:0]
+:LS_NEW_CONN - [0:0]
+:LS_OPEN_CONN - [0:0]
+:LS_SAVE - [0:0]
 
-####
 # Quality of Service Chains
 {% for name, ch in fw_ch_qos|dictsort() %}
 :{{ ch }} - [0:0]
 {% endfor %}
 
-####
 # Game Chains
 {% for name, ch in fw_ch_game|dictsort() %}
 :{{ ch }} - [0:0]
@@ -74,10 +71,10 @@ COMMIT
 ####
 
 ## Determine Connection State [new/existing]
-# If we need to create a new connection, send to {{ fw_ch_ls.new }} chain, where link selection decision is made
-# If packet belongs to existing connection, send to {{ fw_ch_ls.open }} chain, restoring decision to packet
--A PREROUTING -m conntrack ! --ctstate NEW -j {{ fw_ch_ls.open }}
--A PREROUTING -m conntrack --ctstate NEW -j {{ fw_ch_ls.new }}
+# If we need to create a new connection, send to LS_NEW chain, where link selection decision is made
+# If packet belongs to existing connection, send to LS_OPEN chain, restoring decision to packet
+-A PREROUTING -m conntrack ! --ctstate NEW -j LS_OPEN
+-A PREROUTING -m conntrack --ctstate NEW -j LS_NEW
 
 ########
 # :: FORWARD ::
@@ -118,38 +115,38 @@ COMMIT
 ####
 ## New Connection
 # Check which direction packet came from
-# Send packet through {{ fw_ch_ls.in }} or {{ fw_ch_ls.out }} accordingly
-# Save the decision made in {{ fw_ch_ls.in }} or {{ fw_ch_ls.out }} to the connection
--A {{ fw_ch_ls.new }} -m comment --comment "Inbound Packets" -m set ! --match-set RFC1918 src -j {{ fw_ch_ls.in }}
--A {{ fw_ch_ls.new }} -m comment --comment "Outbound Packets" -m set --match-set RFC1918 src -j {{ fw_ch_ls.out }}
--A {{ fw_ch_ls.new }} -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
+# Send packet through LS_IN or LS_OUT accordingly
+# Save the decision made in LS_IN or LS_OUT to the connection
+-A LS_NEW -m comment --comment "Inbound Packets" -m set ! --match-set RFC1918 src -j LS_IN
+-A LS_NEW -m comment --comment "Outbound Packets" -m set --match-set RFC1918 src -j LS_OUT
+-A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
 
 ## Existing Connection
 # Connection is already known, restore our decision to the packet
--A {{ fw_ch_ls.open }} -m comment --comment "Restore entire LS/QOS decision to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A LS_OPEN -m comment --comment "Restore entire LS/QOS decision to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
 
 ## Incoming packet
 # Mark packet based on WAN link where it came in
 {% for i, m in fw_mark.link|dictsort() %}
--A {{ fw_ch_ls.in }} -i {{ fw_link[i] }} -j MARK --set-xmark {{ m }}/0xf0
+-A LS_IN -i {{ fw_link[i] }} -j MARK --set-xmark {{ m }}/0xf0
 {% endfor %}
 
 ## Dedicated Link Selection Exceptions
 # We might want to overrule the link selection algorithm
 {% for d in fw_dedi %}
--A {{ fw_ch_ls.out }} -m mark --mark 0x0/0xf0 -s {{ d.0 }}{% if d.2 is defined %} -m comment --comment "{{ d.2 }}"{% endif %} -j MARK --set-xmark {{ fw_mark.link[d.1] }}/0xf0
+-A LS_OUT -m mark --mark 0x0/0xf0 -s {{ d.0 }}{% if d.2 is defined %} -m comment --comment "{{ d.2 }}"{% endif %} -j MARK --set-xmark {{ fw_mark.link[d.1] }}/0xf0
 {% endfor %}
 
 ## Outgoing Link Selection
 # Select an ISP based on the packet's source IP
 # Does not clobber the selection made in "Link Selection Exceptions"
 {% for name, r in fw_domain|dictsort(false, 'value') %}
--A {{ fw_ch_ls.out }} -m mark --mark 0x0/0xf0 -m comment --comment "[ {{ name|center(18) }} ]" -s {{ r.0 }} -j MARK --set-xmark {{ fw_mark.link[r.1] }}/0xf0
+-A LS_OUT -m mark --mark 0x0/0xf0 -m comment --comment "[ {{ name|center(18) }} ]" -s {{ r.0 }} -j MARK --set-xmark {{ fw_mark.link[r.1] }}/0xf0
 {% endfor %}
 
 # Default mark if no group matched
 # TODO: Log this
--A {{ fw_ch_ls.out }} -m mark --mark 0x0/0xf0 -j MARK --set-xmark 0x40/0xf0
+-A LS_OUT -m mark --mark 0x0/0xf0 -j MARK --set-xmark 0x40/0xf0
 
 ####
 # Quality of Service Chains
@@ -180,7 +177,7 @@ COMMIT
 {% endif %}
 {% endfor %}
 
-## Trash packets that have default mark after restore in {{ fw_ch_ls.open }} in PREROUTING and QoS selection
+## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
 -A {{ fw_ch_qos.in }} -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ fw_mark.class.trash }}/0xf
 -A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ fw_mark.class.trash }}/0xf
 
