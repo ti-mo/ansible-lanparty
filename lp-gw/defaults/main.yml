@@ -165,12 +165,12 @@ gw_ipsets:
     - 155.133.240.0/23
 
 gw_priorities:
-  prio1: "0x1"
-  prio2: "0x2"
-  crew: "0x3"
-  browse: "0x4"
-  download: "0x5"
-  trash: "0x6"
+  prio1: 1
+  prio2: 2
+  crew: 3
+  browse: 4
+  download: 5
+  trash: 6
 
 gw_dscp:
   prio1: "0x22"
