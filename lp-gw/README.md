@@ -1,13 +1,45 @@
 lp-gw - Internet Gateway
 ===
 
+Interface Configuration
+---
+_/etc/network/interfaces will NOT be managed for LXC containers! Modify the
+interface declarations you gave to lp-lxc instead!_
+
+Interfaces can be defined in the `netif` hash and should be declared on a host
+level. Enabling Ansible's hash merging allows you to define host interface
+templates.
+
+Configuration example below:
+
+```
+netif:
+  lan:                 ## The interface facing our clients
+    addr: 10.1.1.5
+    netmask: 255.255.255.0
+    internal: true     ## Generate routes to `gw_internal_networks`
+    nexthop: 10.1.1.1  ## over 10.1.1.1, useful for hardware core router
+  isp1:                ## Interface in transit network
+    addr: 10.16.61.1
+    netmask: 255.255.255.0
+    route: 1              ## Mark interface as external
+    nexthop: 10.16.61.10  ## Route packets over 10.16.61.10
+  isp2:                ## Directly connected to a modem
+    addr: dhcp         ## Disables routes in routing tables
+    nat: yes           ## Masquerade outgoing packets
+    route: 2
+```
+
 Routing Tables
 ---
-A routing table per interface defined in the `netif` hash is added to `/etc/iproute2/rt_tables` by default. Tables will be added in order and have their indexes set to their position in the hash. Re-ordering the hash will switch up the table IDs, so doing this at runtime with rules in memory will cause issues.
+A routing table per interface defined in the `netif` hash is added to `/etc/iproute2/rt_tables` when the interface's `route` parameter is set. Tables will be added in order and have their indexes set to their position in the hash. Re-ordering the hash will switch up the table IDs, so doing this at runtime with rules in memory will cause issues.
+
+_DHCP interfaces will always add their default gateways to the `main` table,
+adding more than one DHCP interface is not recommended!_
 
 IPsets
 ---
-The role comes with a pre-populated hash of `ipsets` for popular (Game) Service Providers, as well as a definition of RFC1918 net blocks (private address space). These can be extended at your own convenience for use in the iptables/nftables ruleset.
+The role comes with a pre-populated hash of `gw_ipsets` for popular (game) service providers, as well as a definition of RFC1918 net blocks (private address space). These can be extended at your own convenience for use in the iptables/nftables ruleset.
 
 IPTables / NFTables
 ---
@@ -39,4 +71,24 @@ gw_blacklist:
     - 10.0.1.0/24
   ports:
     - 53
+```
+
+### gw_trashing - Connection Trashing
+
+Trash or demote flows once they accumulate a certain size.
+[ from (fw_mark.class), to (fw_mark.class), threshold (bytes), direction ]
+
+The example below demotes a 'browsing' flow to 'downloading' once it reaches 4MB in volume.
+
+```
+gw_trashing:
+  - [ 'browse', 'download', '4000000', 'both' ]
+```
+
+### gw_smokeping_host - obey DSCP from clients
+
+Set the address or CIDR of the Smokeping host(s) in `gw_smokeping_host`.
+
+```
+gw_smokeping_host: 10.1.1.5/32
 ```
