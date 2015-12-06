@@ -10,7 +10,7 @@ Interfaces can be defined in the `netif` hash and should be declared on a host
 level. Enabling Ansible's hash merging allows you to define host interface
 templates.
 
-Configuration example below:
+This is a complete example that showcases what the role can do:
 
 ```
 netif:
@@ -19,7 +19,7 @@ netif:
     netmask: 255.255.255.0
     internal: true     ## Generate routes to `gw_internal_networks`
     nexthop: 10.1.1.1  ## over 10.1.1.1, useful for hardware core router
-  isp1:                ## Interface in transit network
+  isp1:                ## Interface in transit network with isp1
     addr: 10.16.61.1
     netmask: 255.255.255.0
     route: 1              ## Mark interface as external
@@ -27,7 +27,7 @@ netif:
   isp2:                ## Directly connected to a modem
     addr: dhcp         ## Disables routes in routing tables
     nat: yes           ## Masquerade outgoing packets
-    route: 2
+    route: 2           ## This will generate an unused routing table
 ```
 
 Routing Tables
@@ -47,6 +47,58 @@ IPTables / NFTables
 ### Feature toggles
 
 Many deployment scenarios are supported. Different scenarios have varying requirements and benefits.
+
+#### MAC Spoofing
+
+Some ISPs require the customer to send a DHCP request with a specific MAC
+address in order to receive a pre-determined, 'fixed' address.
+
+_This is disabled in LXC containers, set the MAC in lp-lxc instead!__
+
+```
+netif:
+  wan:
+    addr: dhcp
+    macspoof: be:ef:be:ef:12:34
+```
+
+This allows, after bouncing the interface, to override the interface's MAC
+address. To combine this with interface renaming, read the paragraph below.
+
+#### Interface Renaming (Udev)
+
+Interface names like enp2s0 or eth1 are difficult to identify and easy to mix
+up. Just define the interface as you'd like it to appear and make sure to
+include the _original_ MAC address as seen on the network card or hypervisor.
+
+_This is disabled in LXC containers, set the interface name in lp-lxc instead!_
+
+```
+netif:
+  lan:
+    addr: 10.1.1.1
+    netmask: 255.255.255.0
+    mac: or:ig:in:al:ad:dr
+```
+
+Additionally, you can spoof the MAC on this interface, too:
+
+```
+netif:
+  lan:
+    addr: 10.1.1.1
+    netmask: 255.255.255.0
+    mac: or:ig:in:al:ad:dr
+    macspoof: be:ef:be:ef:12:34
+```
+
+This will:
+
+1. Generate a Udev rule that will rename the interface during system
+initialization based on the hardware address
+2. Configure the interface with the hwaddr given in `macspoof`
+3. Bring up the interface
+4. Assign the defined address to the interface (dhcp too!)
 
 ### Access Control
 
