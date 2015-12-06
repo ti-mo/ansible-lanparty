@@ -23,26 +23,26 @@ lxc.kmsg = 0
 
 # Network Configuration
 
-{% for n in item.value.ifaces.iteritems() %}
-# Interface {{ n.0 }} - vlan {{ n.1.vlan }}
+{% for name, if in item.value.ifaces.iteritems() %}
+# Interface {{ name }} - vlan {{ if.vlan }}
 lxc.network.type = veth
 lxc.network.flags = up
-lxc.network.name = {{ n.0 }}
-lxc.network.veth.pair = {{ item.key }}-{{ n.0 }}
-lxc.network.script.up = /etc/lxc/ovs-up {{ lxc_bridge }} {{ n.1.vlan }}
+lxc.network.name = {{ name }}
+lxc.network.veth.pair = {{ item.key }}-{{ name }}
+lxc.network.script.up = /etc/lxc/ovs-up {{ lxc_bridge }} {{ if.vlan }}
 lxc.network.script.down = /etc/lxc/ovs-down
 
-lxc.network.hwaddr = {{ n.1.hwaddr | default('f0:13:37:d0:0d:xx') }}
+lxc.network.hwaddr = {{ if.hwaddr | default('f0:13:37:d0:0d:xx') }}
 
-{% if n.1.address is defined and n.1.address | ipv4 %}
-lxc.network.ipv4 = {{ n.1.address }}
-{% if n.1.gateway is defined %}
-lxc.network.ipv4.gateway = {{ n.1.gateway }}
+{% if if.address is defined and if.address | ipv4 %}
+lxc.network.ipv4 = {{ if.address }}
+{% if if.gateway is defined %}
+lxc.network.ipv4.gateway = {{ if.gateway }}
 {% endif %}
-{% elif n.1.address is defined and n.1.address | ipv6 %}
-lxc.network.ipv6 = {{ n.1.address }}
-{% if n.1.gateway is defined %}
-lxc.network.ipv6.gateway = {{ n.1.gateway }}
+{% elif if.address is defined and if.address | ipv6 %}
+lxc.network.ipv6 = {{ if.address }}
+{% if if.gateway is defined %}
+lxc.network.ipv6.gateway = {{ if.gateway }}
 {% endif %}
 {% endif %}
 
