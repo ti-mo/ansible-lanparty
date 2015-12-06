@@ -3,10 +3,11 @@
   lxc_container:
     name: "{{ item.key }}"
     template: "{{ item.value.distro | default('debian') }}"
-    template_options: "--release {{ item.value.release | default('jessie') }} --packages sudo,python"
+    template_options: "--release {{ item.value.release | default('jessie') }}"
     backing_store: "{{ item.value.store | default('dir') }}"
     vg_name: "{{ lxc_vg | default('lxc') }}"
     state: started
+  register: lxc_created
   with_dict: lxc_containers
 
 - name: lxc | Render Configurations
@@ -54,3 +55,10 @@
     mode: 0600
   with_dict: lxc_containers
   when: item.value.store | default('dir') == 'dir'
+
+- name: lxc | Install basic packages
+  lxc_container:
+    name: "{{ item.item.key }}"
+    container_command: "apt-get update; apt-get -q -y install sudo python"
+  when: lxc_created is defined and lxc_created.changed and item.changed
+  with_items: lxc_created.results
