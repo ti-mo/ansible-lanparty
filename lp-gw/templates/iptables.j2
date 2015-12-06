@@ -9,9 +9,9 @@
 -A INPUT -i lo -j ACCEPT
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -j ACCEPT
--A INPUT -p tcp -m tcp --dport ssh -m set --match-set RFC1918 src -j ACCEPT
--A INPUT -p tcp -m tcp --dport {{ observium_agent_port | default(6556) }} -m set --match-set RFC1918 src -j ACCEPT
--A INPUT -p udp -m udp --dport snmp -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p tcp --dport ssh -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p tcp --dport {{ observium_agent_port | default(6556) }} -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p udp --dport snmp -m set --match-set RFC1918 src -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 
 # Accept all packets matched to related/established connections
@@ -34,8 +34,8 @@
 
 # Destination ports to block
 {% for p in gw_blacklist.ports | default([]) %}
--A FORWARD -p tcp -m tcp --dport {{ p }} -m set ! --match-set RFC1918 dst -j REJECT
--A FORWARD -p udp -m udp --dport {{ p }} -m set ! --match-set RFC1918 dst -j REJECT
+-A FORWARD -p tcp --dport {{ p }} -m set --match-set RFC1918 src -j REJECT
+-A FORWARD -p udp --dport {{ p }} -m set --match-set RFC1918 src -j REJECT
 {% endfor %}
 COMMIT
 
@@ -49,18 +49,19 @@ COMMIT
 # Link Selection Chains
 :LS_IN - [0:0]
 :LS_OUT - [0:0]
-:LS_NEW_CONN - [0:0]
-:LS_OPEN_CONN - [0:0]
+:LS_NEW - [0:0]
+:LS_OPEN - [0:0]
 :LS_SAVE - [0:0]
 
 # Quality of Service Chains
-{% for name, ch in fw_ch_qos|dictsort() %}
-:{{ ch }} - [0:0]
-{% endfor %}
+:QOS_IN - [0:0]
+:QOS_OUT - [0:0]
+:QOS_SMOKEPING - [0:0]
+:QOS_SERVICES - [0:0]
 
-# Game Chains
-{% for name, ch in fw_ch_game|dictsort() %}
-:{{ ch }} - [0:0]
+# Service Chains
+{% for name, _ in gw_services.iteritems() %}
+:SVC_{{ name | upper }} - [0:0]
 {% endfor %}
 
 ##  vv OVERVIEW vv  ###########################################################
@@ -78,33 +79,33 @@ COMMIT
 
 ########
 # :: FORWARD ::
-# Execute QoS Class Selection
+# Execute QoS Priority Selection
 ####
 
 ## Match against bogon IPSet (RFC1918)
-# If source matches external address, send to {{ fw_ch_qos.in }}, else send to {{ fw_ch_qos.out }}
--A FORWARD -m set ! --match-set RFC1918 src -j {{ fw_ch_qos.in }}
--A FORWARD -m set --match-set RFC1918 src -j {{ fw_ch_qos.out }}
+# If source matches external address, send to QOS_IN, else send to QOS_OUT
+-A FORWARD -m set ! --match-set RFC1918 src -j QOS_IN
+-A FORWARD -m set --match-set RFC1918 src -j QOS_OUT
 
 ########
 # :: POSTROUTING ::
-# Thrash hogs, save packet mark to connection and tag with DSCP
+# Trash hogs, save packet mark to connection and tag with DSCP
 ####
 
 ## Bandwidth Hogging Detection
 # [ from, to, threshold (bytes), direction ]
-{% for h in fw_hog %}
--A POSTROUTING -m mark --mark {{ fw_mark.class[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark {{ fw_mark.class[h.1] }}/0xf
+{% for h in gw_trashing %}
+-A POSTROUTING -m mark --mark {{ gw_priorities[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark {{ gw_priorities[h.1] }}/0xf
 {% endfor %}
 
-## Save Packet Class Mark to Connection
-{% for c, m in fw_mark.class|dictsort(false, 'value') %}
--A POSTROUTING -m mark --mark {{ m }}/0xf -m connmark ! --mark {{ m }}/0xf -j CONNMARK --save-mark --nfmask 0xf --ctmask 0xf
+## Save Packet Priority Mark to Connection
+{% for _, mark in gw_priorities.iteritems() %}
+-A POSTROUTING -m mark --mark {{ mark }}/0xf -m connmark ! --mark {{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xf --ctmask 0xf
 {% endfor %}
 
 ## Assign DSCP Mark
-{% for c, m in fw_mark.class|dictsort(false, 'value') %}
--A POSTROUTING -m mark --mark {{ m }}/0xf -j DSCP --set-dscp {{ fw_dscp[c] }}
+{% for prio, mark in gw_priorities.iteritems() %}
+-A POSTROUTING -m mark --mark {{ mark }}/0xf -j DSCP --set-dscp {{ gw_dscp[prio] }}
 {% endfor %}
 
 ##  ^^ OVERVIEW ^^  ###########################################################
@@ -127,21 +128,23 @@ COMMIT
 
 ## Incoming packet
 # Mark packet based on WAN link where it came in
-{% for i, m in fw_mark.link|dictsort() %}
--A LS_IN -i {{ fw_link[i] }} -j MARK --set-xmark {{ m }}/0xf0
+{% for i, value in netif.iteritems() %}
+{% if value.route is defined and value.route is number %}
+-A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route }}0/0xf0
+{% endif %}
 {% endfor %}
 
 ## Dedicated Link Selection Exceptions
 # We might want to overrule the link selection algorithm
-{% for d in fw_dedi %}
--A LS_OUT -m mark --mark 0x0/0xf0 -s {{ d.0 }}{% if d.2 is defined %} -m comment --comment "{{ d.2 }}"{% endif %} -j MARK --set-xmark {{ fw_mark.link[d.1] }}/0xf0
+{% for name, value in gw_force_routes.iteritems() %}
+-A LS_OUT -m mark --mark 0x0/0xf0 -s {{ value.0 }} -m comment --comment "Link Override: {{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
 {% endfor %}
 
 ## Outgoing Link Selection
 # Select an ISP based on the packet's source IP
-# Does not clobber the selection made in "Link Selection Exceptions"
-{% for name, r in fw_domain|dictsort(false, 'value') %}
--A LS_OUT -m mark --mark 0x0/0xf0 -m comment --comment "[ {{ name|center(18) }} ]" -s {{ r.0 }} -j MARK --set-xmark {{ fw_mark.link[r.1] }}/0xf0
+# Does not clobber the selection made in "Dedicated Link Selection Exceptions"
+{% for name, value in gw_routes.iteritems() %}
+-A LS_OUT -m mark --mark 0x00/0xf0 -s {{ value.0 }} -m comment --comment "[ {{ name|center(18) }} ]" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
 {% endfor %}
 
 # Default mark if no group matched
@@ -154,73 +157,58 @@ COMMIT
 ####
 
 ## Smokeping Chain
--A {{ fw_ch_qos.out }} -s 10.16.4.121/32 -m comment --comment "SMOKEPING" -j {{ fw_ch_qos.ping }}
+{% if gw_smokeping_host is defined %}
+-A QOS_OUT -s {{ gw_smokeping_host }} -m comment --comment "SMOKEPING" -j QOS_PING
+{% endif %}
 
 ## Hosts Quality of Service
-{% for h in fw_qos.hosts %}
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -s {{ h.0 }}{% if h.2 is defined %} -m comment --comment "{{ h.2 }}"{% endif %} -j MARK --set-xmark {{ fw_mark.class[h.1] }}/0xf
+{% for name, value in gw_host_priority.iteritems() %}
+-A QOS_OUT -m mark --mark 0x0/0xf -s {{ value.0 }} -m comment --comment "Priority Override: {{ name }}" -j MARK --set-xmark {{ gw_priorities[value.1] }}/0xf
 {% endfor %}
 
-## Take a journey through the games chain
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -j {{ fw_ch_qos.games }}
-
-## Misc Quality of Service Rules
-{% for p in fw_qos.ports %}
-{% if p.0 == 'icmp' %}
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -p icmp -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
-{% endif %}
-{% if p.0 == 'both' or p.0 == 'tcp' %}
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -p tcp -m tcp --dport {{ p.1 }} -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
-{% endif %}
-{% if p.0 == 'both' or p.0 == 'udp' %}
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -p udp -m udp --dport {{ p.1 }} -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
-{% endif %}
-{% endfor %}
+## Take a journey through the services chain
+-A QOS_OUT -m mark --mark 0x0/0xf -j QOS_SERVICES
 
 ## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
--A {{ fw_ch_qos.in }} -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ fw_mark.class.trash }}/0xf
--A {{ fw_ch_qos.out }} -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ fw_mark.class.trash }}/0xf
+-A QOS_IN -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ gw_priorities.trash }}/0xf
+-A QOS_OUT -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark {{ gw_priorities.trash }}/0xf
 
 ####
-# Game Chains
-# Triggered in FORWARD through {{ fw_ch_qos.out }}
+# Service Chains
+# Triggered in FORWARD through QOS_OUT
 ####
-## Jump to specific game chains in {{ fw_ch_qos.games }}
-{% for k, g in fw_ch_game|dictsort() %}
--A {{ fw_ch_qos.games }} -j {{ g }}
+## Jump to QOS_SERVICES subchains
+{% for name, _ in gw_services.iteritems() %}
+-A QOS_SERVICES -j SVC_{{ name | upper }}
 {% endfor %}
 
-## Game Chains
-{% for n, g in fw_qos.games|dictsort() %}
-  {%- if g.ports is defined %}
-    {%- for p in g.ports %}
-{% if p.0 == 'tcp' or p.0 == 'udp' %}
--A {{ fw_ch_game[n] }} -p {{ p.0 }} -m {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
-{% endif %}
-{% if p.0 == 'both' %}
--A {{ fw_ch_game[n] }} -p udp -m udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
--A {{ fw_ch_game[n] }} -p tcp -m tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.2] }}/0xf
+## Service Chains
+{% for name, value in gw_services.iteritems() %}
+  {%- if value.ports is defined %}
+    {%- for p in value.ports %}
+{% if p.0 == 'icmp' %}
+-A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark {{ gw_priorities[p.2] }}/0xf
+{% elif p.0 == 'tcp' or p.0 == 'udp' %}
+-A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.2] }}/0xf
+{% elif p.0 == 'both' %}
+-A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.2] }}/0xf
+-A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.2] }}/0xf
 {% endif %}
     {%- endfor %}
   {%- endif %}
-  {%- if g.sets is defined %}
-    {%- for p in g.sets %}
-{% if p.0 == 'tcp' or p.0 == 'udp' %}
--A {{ fw_ch_game[n] }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.4] }}/0xf
-{% endif %}
-{% if p.0 == 'both' %}
--A {{ fw_ch_game[n] }} -p udp -m tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.4] }}/0xf
--A {{ fw_ch_game[n] }} -p udp -m tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ fw_mark.class[p.4] }}/0xf
+  {%- if value.sets is defined %}
+    {%- for p in value.sets %}
+{% if p.0 == 'icmp' %}
+-A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark {{ gw_priorities[p.4] }}/0xf
+{% elif p.0 == 'tcp' or p.0 == 'udp' %}
+-A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.4] }}/0xf
+{% elif p.0 == 'both' %}
+-A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.4] }}/0xf
+-A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark {{ gw_priorities[p.4] }}/0xf
 {% endif %}
     {%- endfor %}
   {%- endif %}
-{%- endfor %}
-
-## Smokeping Probes
-{% for n, p in ping_providers|dictsort() %}
-{% for cn, c in p.classes|dictsort() %}
--A {{ fw_ch_qos.ping }} -m dscp --dscp {{ c.0 }} -j MARK --set-xmark {{ c.1 }}/0xffffffff
-{% endfor %}
+-A SVC_{{ name | upper }} -m mark ! --mark 0x0/0xf -j ACCEPT
 {% endfor %}
 
 COMMIT
@@ -231,8 +219,11 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
-# Routes to SNAT
-{% for s, d in fw_snat | default([]) %}
--A POSTROUTING -s {{ s }} -d {{ d }} -j MASQUERADE
+# NAT on all NAT-enabled interfaces
+{% for name, value in netif.iteritems() %}
+{% if value.nat is defined and value.nat %}
+-A POSTROUTING -m set --match-set RFC1918 src -o {{ name }} -j MASQUERADE
+{% endif %}
 {% endfor %}
+
 COMMIT

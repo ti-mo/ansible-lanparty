@@ -1,6 +1,9 @@
 ---
-# Packages and kernel params
+- include: validate.yml
+  tags: [ 'validate' ]
+
 - include: install.yml
+  tags: [ 'install' ]
 
 - include: netif.yml
   when: ansible_virtualization_type != 'lxc'
@@ -14,4 +17,3 @@
 
 - include: iptables.yml
   tags: [ 'iptables' ]
-

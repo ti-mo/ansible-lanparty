@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
-#
-{% for n, i in netif|dictsort() %}
-{% if i.mac is defined %}
-KERNEL=="eth*", SUBSYSTEM=="net", ATTR{address}=="{{ i.mac }}", NAME="{{ n }}"
+# Rename interfaces based on their original MAC
+{% for name, value in netif|dictsort() %}
+{% if value.mac is defined %}
+KERNEL=="eth*", SUBSYSTEM=="net", ATTR{address}=="{{ value.mac }}", NAME="{{ name }}"
 {% endif %}
 {% endfor %}
