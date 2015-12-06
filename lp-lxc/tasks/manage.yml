@@ -3,7 +3,7 @@
   lxc_container:
     name: "{{ item.key }}"
     template: "{{ item.value.distro | default('debian') }}"
-    template_options: "--release {{ item.value.release | default('jessie') }}"
+    template_options: "--release {{ item.value.release | default('jessie') }} --packages sudo,python"
     backing_store: "{{ item.value.store | default('dir') }}"
     vg_name: "{{ lxc_vg | default('lxc') }}"
     state: started
