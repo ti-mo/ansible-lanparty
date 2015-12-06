@@ -30,25 +30,91 @@ netif:
     route: 2           ## This will generate an unused routing table
 ```
 
-Routing Tables
+Routing
 ---
-A routing table per interface defined in the `netif` hash is added to `/etc/iproute2/rt_tables` when the interface's `route` parameter is set. Tables will be added in order and have their indexes set to their position in the hash. Re-ordering the hash will switch up the table IDs, so doing this at runtime with rules in memory will cause issues.
 
-_DHCP interfaces will always add their default gateways to the `main` table,
-adding more than one DHCP interface is not recommended!_
+In order to keep the environment as lean and error-resilient as possible, we
+apply dynamically-configured static routing. This avoids any dependencies that
+cross system boundaries and configures machines in a fully deterministic way.
 
-IPsets
+When chaining gateways together (eg. 1 core, 4 ISPs), it's necessary to define
+a return path on each ISP host. Without a return path, ISP gateways will send
+all traffic destined to private addresses over their DHCP-assigned default
+gateways.
+
+_It might be necessary to temporarily add a return path manually._ With the
+correct configuration, once Ansible has been run on the remote gateway, routes
+towards internal networks will be configured permanently and will persist
+across reboots.
+
+```
+gw_internal_networks:
+  - 10.1.1.0/24
+
+netif:
+  lan:
+    addr: 192.168.0.2
+    netmask: 255.255.255.0
+    internal: true
+    nexthop: 192.168.0.1
+  wan:
+    addr: dhcp
+```
+
+The configuration above will add a path to 10.1.1.0/24 over 192.168.0.1 to the
+main routing table. Any packets destined to 10.1.1.0/24 will be sent to
+192.168.0.1 over the `lan` interface.
+
+Link Selection
 ---
+
+The role allows you to configure an outgoing interface (directly connected WAN
+link or other hop) based on multiple criteria. It is heavily focused towards
+source-based routing. Selecting links with different WAN addresses often yield
+unwanted side effects, eg. a game launcher connecting to port 443 with one
+source address and the game client connecting to 27015 with another.
+
+A routing table per interface defined in the `netif` hash is added to `/etc/iproute2/rt_tables` when the interface's `route` parameter is set. `route`
+must be a unique number, as it is used to identify the interface's routing
+table.
+
+_DHCP interfaces will always have their default gateways added to the `main`
+table by dhclient. Adding more than one DHCP interface is not recommended!_
+
+Mapping a range of addresses on your network to a specific outgoing interface
+can be done as follows:
+
+```
+gw_routes:
+  visitors: [ 10.1.1.0/24, isp2 ]
+```
+
+Given the `isp2` interface is defined on the host `gw_routes` is set on,
+traffic from 10.1.1.0/24 will leave over interface `isp2`.
+
+Ranges can be overridden (eg. you want to allocate a dedicated link with a
+higher upload profile to a live streamer) as follows:
+
+```
+gw_force_routes:
+  stream: [ 10.1.1.123/32, isp3 ]
+```
+
+This condition will be evaluated earlier in the ruleset, the rules in
+`gw_routes` will be ignored for 10.1.1.123.
+
+Service Definitions (QoS)
+---
+
 The role comes with a pre-populated hash of `gw_ipsets` for popular (game) service providers, as well as a definition of RFC1918 net blocks (private address space). These can be extended at your own convenience for use in the iptables/nftables ruleset.
 
-IPTables / NFTables
+Feature Overview
 ---
 
-### Feature toggles
+Many deployment scenarios are supported. Different scenarios have varying requirements and benefits. Some features can be explicitly enabled or disabled,
+some are simply optional and can be configured by defining certain behaviour.
 
-Many deployment scenarios are supported. Different scenarios have varying requirements and benefits.
-
-#### MAC Spoofing
+### MAC Spoofing
 
 Some ISPs require the customer to send a DHCP request with a specific MAC
 address in order to receive a pre-determined, 'fixed' address.
@@ -65,7 +131,7 @@ netif:
 This allows, after bouncing the interface, to override the interface's MAC
 address. To combine this with interface renaming, read the paragraph below.
 
-#### Interface Renaming (Udev)
+### Interface Renaming (Udev)
 
 Interface names like enp2s0 or eth1 are difficult to identify and easy to mix
 up. Just define the interface as you'd like it to appear and make sure to
