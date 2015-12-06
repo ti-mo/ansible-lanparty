@@ -11,6 +11,9 @@
 - name: reload tc
   service: name=tc state=reloaded
 
+- name: restart router
+  service: name=router state=restarted
+
 - name: warn interfaces
   debug: msg='WARNING, /etc/network/interfaces has been modified. Please restart interfaces manually.'
 

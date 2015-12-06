@@ -3,3 +3,57 @@
   template:
     src: rt_tables.j2
     dest: /etc/iproute2/rt_tables
+
+- name: Routing | Render Routes
+  template:
+    src: router.j2
+    dest: /usr/bin/router
+    mode: 0755
+  notify: restart router
+
+- name: Routing | Router Unit File
+  template:
+    src: units/router-unit.j2
+    dest: /etc/systemd/system/router.service
+
+- name: Routing | Host Kernel Parameters
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  tags: [ 'kernel' ]
+  when: ansible_virtualization_type != 'lxc'
+  with_items:
+    - { name: 'net.ipv4.neigh.default.gc_thresh1', value: '2048' }
+    - { name: 'net.ipv4.neigh.default.gc_thresh2', value: '3072' }
+    - { name: 'net.ipv4.neigh.default.gc_thresh3', value: '4096' }
+
+- name: Routing | IP Kernel Parameters
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  tags: [ 'kernel' ]
+  with_items:
+    - { name: 'net.ipv6.conf.all.disable_ipv6', value: '1' }
+    - { name: 'net.ipv6.conf.default.disable_ipv6', value: '1' }
+    - { name: 'net.ipv4.ip_forward', value: '1' }
+    - { name: 'net.ipv4.conf.all.arp_accept', value: '0' }
+    - { name: 'net.ipv4.conf.all.arp_ignore', value: '1' }
+    - { name: 'net.ipv4.conf.all.arp_announce', value: '2' }
+    - { name: 'net.ipv4.conf.all.arp_filter', value: '1' }
+    - { name: 'net.ipv4.conf.all.arp_notify', value: '1' }
+    - { name: 'net.ipv4.conf.all.log_martians', value: '1' }
+    - { name: 'net.ipv4.conf.all.rp_filter', value: '0' }
+    - { name: 'net.netfilter.nf_conntrack_max', value: '300000' }
+    - { name: 'net.netfilter.nf_conntrack_timestamp', value: '1' }
+
+- name: Routing | Ensure Service
+  service:
+    name: router
+    state: started
+    enabled: true

@@ -7,6 +7,8 @@
 0     unspec
 
 # Custom Tables
-{% for i, n in netif.iteritems() %}
-{{ loop.index }}   {{ i }}
+{% for name, value in netif.iteritems() %}
+{% if value.route is defined and value.route is number %}
+{{ value.route }}   {{ name }}
+{% endif %}
 {% endfor %}

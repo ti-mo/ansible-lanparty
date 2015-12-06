@@ -1,37 +1,26 @@
 # {{ ansible_managed }}
-# Make sure the table mappings in /etc/iproute2/rt_tables are rendered before this.
-#
 
 # The loopback network interface
 auto lo
 iface lo inet loopback
 
-{% for i, c in netif|dictsort()%}
-allow-hotplug {{ i }}
-iface {{ i }} inet static
-  address {{ c.addr }}
-  netmask {{ c.netmask }}
-  {% if c.ns is defined and c.ns -%}
-  dns-nameservers {% for h in groups['dns'] %}{{ hostvars[h]['ansible_default_ipv4']['address'] }}
-  {% endfor -%}
+{% for name, value in netif.iteritems() %}
+allow-hotplug {{ name }}
+{% if value.addr == 'dhcp' %}
+iface {{ name }} inet dhcp
+{% else %}
+iface {{ name }} inet static
+  address {{ value.addr }}
+  netmask {{ value.netmask }}
+{% if value.ns is defined and gw_nameservers is defined and value.ns == 'auto' %}
+  dns-nameservers {{ gw_nameservers | join(' ') }}
   dns-search {{ domains.lan }}
-  {% endif %}
-  {%- if c.core is defined -%}
-  {%- for r in internal_networks -%}
-  post-up ip route add {{ r }} via {{ c.core }}
-  post-down ip route del {{ r }} via {{ c.core }}
-  {% endfor %}
-  {% endif %}
-  {%- if c.isp is defined %}
-  {%- set pref = fw_rt_pref + fw_rt_tables[c.isp][0] -%}
-  post-up ip route add default via {{ fw_rt_tables[c.isp][1] }} table {{ c.isp }}
-  post-up ip rule add pref {{ pref }} fwmark {{ fw_mark.link[c.isp] }}/0xf0 table {{ c.isp }}
-  {% if fw_rt_tables[c.isp][2] is defined and fw_rt_tables[c.isp][2] -%}
-  post-up ip rule add pref {{ fw_rt_pref + 1000 }} table {{ c.isp }}
-  post-down ip rule del pref {{ fw_rt_pref + 1000 }}
-  {% endif -%}
-  post-down ip rule del pref {{ pref }}
-  post-down ip route del default via {{ fw_rt_tables[c.isp][1] }} table {{ c.isp }}
-  {% endif %}
-
+{% elif value.ns is defined and value.ns | ipaddr %}
+  dns-nameservers {{ value.ns }}
+  dns-search {{ domains.lan }}
+{% endif %}
+{% endif %}
+{% if value.macspoof is defined %}
+  hwaddress ether {{ value.macspoof }}
+{% endif %}
 {% endfor %}
