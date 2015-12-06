@@ -23,6 +23,14 @@
   when: item.value.route is number and item.value.addr | ipaddr
   with_dict: netif
 
+- name: Validate | Internal interface needs nexthop
+  assert:
+    that:
+      - item.value.nexthop is defined
+    msg: "Specify a nexthop on internal interface {{ item.key }}"
+  when: item.value.internal is defined and item.value.internal
+  with_dict: netif
+
 - name: Validate | ns auto needs gw_nameservers set
   assert:
     that:
