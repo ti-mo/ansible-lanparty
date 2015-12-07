@@ -56,10 +56,10 @@ COMMIT
 # Quality of Service Chains
 :QOS_IN - [0:0]
 :QOS_OUT - [0:0]
-:QOS_PING - [0:0]
 :QOS_SERVICES - [0:0]
 
 # Service Chains
+:SVC_SMOKEPING - [0:0]
 {% for name, _ in gw_services.iteritems() %}
 :SVC_{{ name | upper }} - [0:0]
 {% endfor %}
@@ -67,7 +67,7 @@ COMMIT
 ##  vv OVERVIEW vv  ###########################################################
 
 ########
-# :: PREROUTING ::
+# :: mangle.PREROUTING ::
 # Execute Link Selection
 ####
 
@@ -78,7 +78,7 @@ COMMIT
 -A PREROUTING -m conntrack --ctstate NEW -j LS_NEW
 
 ########
-# :: FORWARD ::
+# :: mangle.FORWARD ::
 # Execute QoS Priority Selection
 ####
 
@@ -88,7 +88,7 @@ COMMIT
 -A FORWARD -m set --match-set RFC1918 src -j QOS_OUT
 
 ########
-# :: POSTROUTING ::
+# :: mangle.POSTROUTING ::
 # Trash hogs, save packet mark to connection and tag with DSCP
 ####
 
@@ -111,21 +111,26 @@ COMMIT
 ##  ^^ OVERVIEW ^^  ###########################################################
 
 ####
+# LS_NEW
 # Link Selection Chains
-# Triggered in PREROUTING
+# Triggered in mangle.PREROUTING
 ####
 ## New Connection
 # Check which direction packet came from
 # Send packet through LS_IN or LS_OUT accordingly
 # Save the decision made in LS_IN or LS_OUT to the connection
--A LS_NEW -m comment --comment "Inbound Packets" -m set ! --match-set RFC1918 src -j LS_IN
--A LS_NEW -m comment --comment "Outbound Packets" -m set --match-set RFC1918 src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Packets" -m set --match-set RFC1918 src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Packets" -m set --match-set RFC1918 dst -j LS_IN
 -A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
 
 ## Existing Connection
 # Connection is already known, restore our decision to the packet
--A LS_OPEN -m comment --comment "Restore entire LS/QOS decision to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A LS_OPEN -m comment --comment "Restore full ctmark to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
 
+####
+# LS_IN
+# Triggered in mangle.LS_IN
+####
 ## Incoming packet
 # Mark packet based on WAN link where it came in
 {% for i, value in netif.iteritems() %}
@@ -134,6 +139,10 @@ COMMIT
 {% endif %}
 {% endfor %}
 
+####
+# LS_OUT
+# Triggered in mangle.LS_NEW
+####
 ## Dedicated Link Selection Exceptions
 # We might want to overrule the link selection algorithm
 {% for name, value in gw_force_routes.iteritems() %}
@@ -147,19 +156,19 @@ COMMIT
 -A LS_OUT -m mark --mark 0x00/0xf0 -s {{ value.0 }} -m comment --comment "[ {{ name|center(18) }} ]" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
 {% endfor %}
 
+## Smokeping Chain
+{% for host in gw_smokeping_hosts | default([]) %}
+-A LS_OUT -s {{ host }} -m comment --comment "SMOKEPING" -j SVC_SMOKEPING
+{% endfor %}
+
 # Default mark if no group matched
 # TODO: Log this
--A LS_OUT -m mark --mark 0x0/0xf0 -j MARK --set-xmark 0x40/0xf0
+-A LS_OUT -m mark --mark 0x0/0xf0 -j MARK --set-xmark 0x{{ gw_priorities.trash }}0/0xf0
 
 ####
 # Quality of Service Chains
-# Triggered in FORWARD
+# Triggered in mangle.FORWARD (after link selection)
 ####
-
-## Smokeping Chain
-{% for host in gw_smokeping_hosts | default([]) %}
--A QOS_OUT -s {{ host }} -m comment --comment "SMOKEPING" -j QOS_PING
-{% endfor %}
 
 ## Hosts Quality of Service
 {% for name, value in gw_host_priority.iteritems() %}
@@ -182,7 +191,7 @@ COMMIT
 {% for name, value in netif.iteritems() if value.route is defined %}
 {% set netloop = loop %}
 {% for _, prio in gw_priorities|dictsort(false, 'value') %}
--A QOS_PING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xff
+-A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xff
 {% endfor %}
 {% endfor %}
 
