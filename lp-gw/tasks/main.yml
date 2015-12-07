@@ -17,3 +17,6 @@
 
 - include: iptables.yml
   tags: [ 'iptables' ]
+
+- include: tc.yml
+  tags: [ 'tc' ]
