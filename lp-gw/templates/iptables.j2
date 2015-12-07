@@ -196,7 +196,7 @@ COMMIT
 {% endfor %}
 
 ## Jump to QOS_SERVICES subchains
-{% for name, _ in gw_services.iteritems() %}
+{% for name, _ in gw_services|dictsort(true, 'key') %}
 -A QOS_SERVICES -j SVC_{{ name | upper }}
 {% endfor %}
 

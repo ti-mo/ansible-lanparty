@@ -19,19 +19,35 @@ gw_trashing:
   - [ 'prio2', 'trash', '104857600', 'reply' ]
 
 gw_services:
-  ping:
+  1_ping:
     ports:
       - [ 'icmp', 0, 'prio1' ]
-  dns:
+  1_dns:
     ports:
       - [ 'udp', '53', 'prio1' ]
-  ntp:
+  1_ntp:
     ports:
       - [ 'udp', '123', 'prio1' ]
-  http:
+  1_http:
     ports:
       - [ 'tcp', '80', 'browse' ]
       - [ 'tcp', '443', 'browse' ]
+  2_valve:
+    sets:
+      - [ 'udp', 'IPSET_GAME_VALVE', 'dst', '27015:28999', 'prio1' ]
+  2_steam:
+    ports:
+      - [ 'udp', '27015:27030', 'prio1', '27005' ]
+  2_lol:
+    ports:
+      - [ 'udp', '5000:5500', 'prio1' ]
+      - [ 'tcp', '2099', 'prio2' ]
+      - [ 'tcp', '5222:5223', 'prio2' ]
+      - [ 'tcp', '8088', 'prio2' ]
+      - [ 'tcp', '8393:8400', 'trash' ]
+    sets:
+      - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '80', 'prio2' ]
+      - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '443', 'prio2' ]
   bf:
     ports:
       - [ 'udp', '14000:14016', 'prio2' ]
@@ -46,9 +62,6 @@ gw_services:
   cod:
     ports:
       - [ 'udp', '28960:28965', 'prio1' ]
-  dota2:
-    sets:
-      - [ 'udp', 'IPSET_GAME_VALVE', 'dst', '27015:28999', 'prio1' ]
   eve:
     ports:
       - [ 'tcp', '2600', 'prio2' ]
@@ -61,16 +74,6 @@ gw_services:
   gw2:
     ports:
       - [ 'tcp', '6112', 'prio2' ]
-  lol:
-    ports:
-      - [ 'udp', '5000:5500', 'prio1' ]
-      - [ 'tcp', '2099', 'prio2' ]
-      - [ 'tcp', '5222:5223', 'prio2' ]
-      - [ 'tcp', '8088', 'prio2' ]
-      - [ 'tcp', '8393:8400', 'trash' ]
-    sets:
-      - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '80', 'prio2' ]
-      - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '443', 'prio2' ]
   mc:
     ports:
       - [ 'both', '25561:25565', 'prio2' ]
@@ -84,9 +87,6 @@ gw_services:
   sc2:
     ports:
       - [ 'both', '1119:1120', 'prio1' ]
-  steam:
-    ports:
-      - [ 'udp', '27015:27030', 'prio1', '27005' ]
   uplay:
     ports:
       - [ 'tcp', '13000', 'prio2' ]
