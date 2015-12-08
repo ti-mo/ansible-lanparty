@@ -3,7 +3,6 @@
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
-:UDPFLOOD - [0:0]
 
 # Input Filtering
 -A INPUT -i lo -j ACCEPT
@@ -23,9 +22,7 @@
 {% endfor %}
 
 # Stop UDP flooding ?
--A FORWARD -p udp -m conntrack --ctstate NEW -j UDPFLOOD
--A UDPFLOOD -m recent --set --rsource --name UDPFLOOD
--A UDPFLOOD -m recent --update --rsource --name UDPFLOOD --seconds 10 --hitcount 10 -j DROP
+-A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 2/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -j DROP
 
 # Source hosts to block
 {% for h in gw_blacklist.hosts | default([]) %}
@@ -57,6 +54,7 @@ COMMIT
 :QOS_IN - [0:0]
 :QOS_OUT - [0:0]
 :QOS_SERVICES - [0:0]
+:QOS_DEMOTE - [0:0]
 
 # Service Chains
 :SVC_SMOKEPING - [0:0]
@@ -92,10 +90,12 @@ COMMIT
 # Trash hogs, save packet mark to connection and tag with DSCP
 ####
 
+-A POSTROUTING -m limit --limit 100/second -j QOS_DEMOTE
+
 ## Bandwidth Hogging Detection
 # [ from, to, threshold (bytes), direction ]
 {% for h in gw_trashing %}
--A POSTROUTING -m mark --mark 0x{{ gw_priorities[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xf
+-A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xf
 {% endfor %}
 
 ## Save Packet Priority Mark to Connection
