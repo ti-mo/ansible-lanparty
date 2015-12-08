@@ -231,17 +231,20 @@ COMMIT
 
 COMMIT
 
+{% for name, value in netif.iteritems() if value.nat is defined and value.nat %}
+{% if loop.first %}
 *nat
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
+{% endif %}
 
 # NAT on all NAT-enabled interfaces
-{% for name, value in netif.iteritems() %}
-{% if value.nat is defined and value.nat %}
 -A POSTROUTING -m set --match-set RFC1918 src -o {{ name }} -j MASQUERADE
+
+{% if loop.last %}
+COMMIT
 {% endif %}
 {% endfor %}
 
-COMMIT
