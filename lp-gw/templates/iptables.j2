@@ -80,6 +80,12 @@ COMMIT
 # Execute QoS Priority Selection
 ####
 
+## DSCP -> NFMark
+# Obey DSCP marks sent by the previous hop
+{% for prio, mark in gw_priorities.iteritems() %}
+-A FORWARD -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+{% endfor %}
+
 ## Match against bogon IPSet (RFC1918)
 # If source matches external address, send to QOS_IN, else send to QOS_OUT
 -A FORWARD -m set ! --match-set RFC1918 src -j QOS_IN
