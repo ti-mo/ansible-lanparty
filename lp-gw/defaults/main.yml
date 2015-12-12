@@ -1,4 +1,7 @@
 ---
+gw_config:
+  translate_dscp: true
+
 gw_whitelist: []
 
 gw_blacklist:
@@ -167,9 +170,9 @@ gw_ipsets:
 gw_priorities:
   prio1: 1
   prio2: 2
-  crew: 3
-  browse: 4
-  download: 5
+  browse: 3
+  download: 4
+  crew: 5
   trash: 6
 
 gw_dscp:
@@ -178,4 +181,4 @@ gw_dscp:
   crew: "0x12"
   browse: "0x1a"
   download: "0x1c"
-  trash: "0x00"
+  trash: "0x01"
