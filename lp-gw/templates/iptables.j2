@@ -83,7 +83,7 @@ COMMIT
 
 ## Match against bogon IPSet (RFC1918)
 # If source matches external address, send to QOS_IN, else send to QOS_OUT
--A FORWARD -m set ! --match-set RFC1918 src -j QOS_IN
+-A FORWARD -m set --match-set RFC1918 dst -j QOS_IN
 -A FORWARD -m set --match-set RFC1918 src -j QOS_OUT
 
 ########
@@ -99,6 +99,12 @@ COMMIT
 ## Assign DSCP Mark
 {% for prio, mark in gw_priorities.iteritems() %}
 -A POSTROUTING -m mark --mark 0x{{ mark }}/0xf -j DSCP --set-dscp {{ gw_dscp[prio] }}
+{% endfor %}
+
+## Strip DSCP marks towards links with strip_dscp set
+# Cloaks DSCP usage for the end user, useful for interfaces facing visitors
+{% for name, value in netif.iteritems() if value.strip_dscp is defined and value.strip_dscp %}
+-A POSTROUTING -o {{ name }} -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
 {% endfor %}
 
 ##  ^^ OVERVIEW ^^  ###########################################################
@@ -163,18 +169,24 @@ COMMIT
 # Triggered in mangle.FORWARD (after link selection)
 ####
 
-# Only obey DSCP marks from private address space
--A QOS_IN -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
-
+###
+# QOS_OUT
+# Called when packet originates from RFC1918 address
+###
 ## Hosts Quality of Service
 {% for name, value in gw_host_priority.iteritems() %}
 -A QOS_OUT -m mark --mark 0x0/0xf -s {{ value.0 }} -m comment --comment "Priority Override: {{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] }}/0xf
 {% endfor %}
 
+# Strip DSCP marks from specific links
+# Does not interfere with Smokeping marks, those are handled in LS_OUT
+{% for name, value in netif.iteritems() if value.strip_dscp is defined and value.strip_dscp %}
+-A QOS_OUT -i {{ name }} -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
+{% endfor %}
+
 ## DSCP -> NFMark
 # Obey DSCP marks sent by the previous trusted hop
-# Filtered for private address space in mangle.QOS_IN
-{% for prio, mark in gw_priorities.iteritems() %}
+{% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
 -A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
 {% endfor %}
 
@@ -185,6 +197,14 @@ COMMIT
 
 ## Take a journey through the services chain
 -A QOS_OUT -m mark --mark 0x0/0xf -j QOS_SERVICES
+
+###
+# QOS_IN
+# Called when packet originates from internet
+###
+## Only obey DSCP marks from private address space
+## Clear the DSCP field (to 0x0) from internet packets
+-A QOS_IN -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
 
 ## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
 -A QOS_IN -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xf
@@ -261,4 +281,3 @@ COMMIT
 COMMIT
 {% endif %}
 {% endfor %}
-
