@@ -1,15 +1,15 @@
 ---
-- name: restore iptables
-  service: name=netfilter-persistent state=restarted
-
 - name: restore ipset
   service: name=ipset state=restarted
+
+- name: restore iptables
+  service: name=netfilter-persistent state=restarted
 
 - name: reload daemons
   shell: systemctl daemon-reload
 
-- name: reload tc
-  service: name=tc state=reloaded
+- name: restart tc
+  shell: systemctl restart tc@*
 
 - name: restart router
   service: name=router state=restarted

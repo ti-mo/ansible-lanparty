@@ -4,6 +4,7 @@
     src: tc.j2
     dest: /usr/bin/tc-lp
     mode: 0755
+  notify: restart tc
 
 - name: TC | Unit File
   template:

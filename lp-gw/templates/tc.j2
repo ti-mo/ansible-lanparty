@@ -53,7 +53,7 @@ RATE_C1=${ETH_RATE} # Maximum interface speed
   echo '            '${RATE_C21}' | tcp/80, tcp/443, tcp/21'
   echo '                '${RATE_C31}' | Browsing | DSCP AF31'
   echo '                '${RATE_C32}' | Downloading | DSCP AF32'
-  echo '            '${RATE_C22}' | Thrash | DSCP Best Effort'
+  echo '            '${RATE_C22}' | Trash | DSCP Best Effort'
   echo '            '${RATE_C23}' | Crew | DSCP AF21'
   echo '   '${RATE_C3}' | Reserved for interface communication'
 
@@ -78,13 +78,13 @@ RATE_C1=${ETH_RATE} # Maximum interface speed
     $TC qdisc add dev ${IFACE} parent 1:3 handle 3: fq_codel noecn limit 1200 flows 65535 target 5ms
 
   $TC filter add dev ${IFACE} parent 1: protocol arp basic classid 1:3
-  $TC filter add dev ${IFACE} parent 1: handle 11 fw classid 1:11 # DSCP AF41
-  $TC filter add dev ${IFACE} parent 1: handle 12 fw classid 1:12 # DSCP AF42
-  $TC filter add dev ${IFACE} parent 1: handle 31 fw classid 1:31 # DSCP AF31
-  $TC filter add dev ${IFACE} parent 1: handle 32 fw classid 1:32 # DSCP AF32
-  $TC filter add dev ${IFACE} parent 1: handle 22 fw classid 1:22 # DSCP Best Effort
-  $TC filter add dev ${IFACE} parent 1: handle 23 fw classid 1:23 # DSCP AF21
-  $TC filter add dev ${IFACE} parent 1: handle 3 fw classid 1:3
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x1 0xf classid 1:11 # DSCP AF41
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x2 0xf classid 1:12 # DSCP AF42
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x3 0xf classid 1:31 # DSCP AF31
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x4 0xf classid 1:32 # DSCP AF32
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x5 0xf classid 1:23 # DSCP AF21
+  $TC filter add dev ${IFACE} parent 1: u32 match mark 0x6 0xf classid 1:22 # DSCP Best Effort
+  $TC filter add dev ${IFACE} parent 1: handle 13 fw classid 1:3
 
   return 0
 }
