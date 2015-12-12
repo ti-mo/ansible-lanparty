@@ -6,3 +6,8 @@ create {{ name }} hash:net
 add {{ name }} {{ ip }}
 {% endfor %}
 {% endfor %}
+
+create INT_NET hash:net
+{% for net in gw_internal_networks %}
+add INT_NET {{ net }}
+{% endfor %}
