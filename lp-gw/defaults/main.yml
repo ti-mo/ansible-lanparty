@@ -1,6 +1,7 @@
 ---
 gw_config:
   translate_dscp: true
+  conntrack_max: 300000
 
 gw_whitelist: []
 
