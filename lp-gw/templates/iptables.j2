@@ -1,4 +1,11 @@
 # {{ ansible_managed }}
+
+{% if gw_config.minimal | default(false) %}
+# lp-gw Minimal Mode is active
+# All traffic filtering and re-classification is disabled
+# Set gw_config.minimal to false to re-enable
+{% endif %}
+
 *filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
@@ -13,6 +20,7 @@
 -A INPUT -p udp --dport snmp -m set --match-set RFC1918 src -j ACCEPT
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 
+{% if not gw_config.minimal | default(false) %}
 # Accept all packets matched to related/established connections
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
@@ -32,9 +40,14 @@
 
 # Destination ports to block
 {% for p in gw_blacklist.ports | default([]) %}
--A FORWARD -p tcp --dport {{ p }} -m set --match-set RFC1918 src -j REJECT
--A FORWARD -p udp --dport {{ p }} -m set --match-set RFC1918 src -j REJECT
+-A FORWARD -p tcp --dport {{ p }} -m set --match-set INT_NET src -j REJECT
+-A FORWARD -p udp --dport {{ p }} -m set --match-set INT_NET src -j REJECT
 {% endfor %}
+{% else %}
+# lp-gw Minimal Mode is activated
+# All traffic filtering and re-classification is disabled
+{% endif %}
+
 COMMIT
 
 *mangle
@@ -44,6 +57,33 @@ COMMIT
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
 
+:QOS_IN - [0:0]
+:QOS_OUT - [0:0]
+
+########
+# :: mangle.FORWARD ::
+# Execute QoS Priority Selection
+# Used in Minimal Mode and Full Mode
+####
+
+## Match against IPSet with internal networks (INT_NET)
+# If source matches external address, send to QOS_IN, else send to QOS_OUT
+-A FORWARD -m set --match-set INT_NET dst -j QOS_IN
+-A FORWARD -m set --match-set INT_NET src -j QOS_OUT
+
+{% if gw_config.minimal | default(false) %}
+## Minimal Mode DSCP -> NFMark translation
+# Minimal disables DSCP stripping, so marks will always be forwarded downstream
+{% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+{% endfor %}
+# Save fwmark to connmark for all outbound packets that differ
+{% for _, mark in gw_priorities.iteritems() %}
+-A QOS_OUT -m mark --mark 0x{{ mark }}/0xf -m connmark ! --mark 0x{{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xffffffff --ctmask 0xffffffff
+{% endfor %}
+-A QOS_IN -j CONNMARK --restore-mark --nfmask 0xf --ctmask 0xf
+{% else %}
+
 # Link Selection Chains
 :LS_IN - [0:0]
 :LS_OUT - [0:0]
@@ -52,8 +92,6 @@ COMMIT
 :LS_SAVE - [0:0]
 
 # Quality of Service Chains
-:QOS_IN - [0:0]
-:QOS_OUT - [0:0]
 :QOS_SERVICES - [0:0]
 :QOS_DEMOTE - [0:0]
 
@@ -77,18 +115,8 @@ COMMIT
 -A PREROUTING -m conntrack --ctstate NEW -j LS_NEW
 
 ########
-# :: mangle.FORWARD ::
-# Execute QoS Priority Selection
-####
-
-## Match against bogon IPSet (RFC1918)
-# If source matches external address, send to QOS_IN, else send to QOS_OUT
--A FORWARD -m set --match-set RFC1918 dst -j QOS_IN
--A FORWARD -m set --match-set RFC1918 src -j QOS_OUT
-
-########
 # :: mangle.POSTROUTING ::
-# Trash hogs, save packet mark to connection and tag with DSCP
+# Save packet mark to connection and tag with DSCP
 ####
 
 ## Save Packet Priority Mark to Connection
@@ -118,8 +146,8 @@ COMMIT
 # Check which direction packet came from
 # Send packet through LS_IN or LS_OUT accordingly
 # Save the decision made in LS_IN or LS_OUT to the connection
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Packets" -m set --match-set RFC1918 src -j LS_OUT
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Packets" -m set --match-set RFC1918 dst -j LS_IN
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Packets" -m set --match-set INT_NET src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Packets" -m set --match-set INT_NET dst -j LS_IN
 -A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
 
 ## Existing Connection
@@ -171,7 +199,7 @@ COMMIT
 
 ###
 # QOS_OUT
-# Called when packet originates from RFC1918 address
+# Called when packet originates from an INT_NET address
 ###
 ## Hosts Quality of Service
 {% for name, value in gw_host_priority.iteritems() %}
@@ -263,6 +291,9 @@ COMMIT
 -A SVC_{{ name | upper }} -m mark ! --mark 0x0/0xf -j ACCEPT
 {% endfor %}
 
+{# End Minimal Mode Condition #}
+{% endif %}
+
 COMMIT
 
 {% for name, value in netif.iteritems() if value.nat is defined and value.nat %}
@@ -275,7 +306,7 @@ COMMIT
 
 # NAT on all NAT-enabled interfaces
 {% endif %}
--A POSTROUTING -m set --match-set RFC1918 src -o {{ name }} -j MASQUERADE
+-A POSTROUTING -m set --match-set INT_NET src -o {{ name }} -j MASQUERADE
 {% if loop.last %}
 
 COMMIT

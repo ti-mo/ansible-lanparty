@@ -114,6 +114,23 @@ Feature Overview
 Many deployment scenarios are supported. Different scenarios have varying requirements and benefits. Some features can be explicitly enabled or disabled,
 some are simply optional and can be configured by defining certain behaviour.
 
+### Minimal Mode
+
+Install a lightweight gateway with all features disabled BUT the following:
+
+* TC ruleset on marked interfaces
+* NAT on marked interfaces (implicitly enables conntrack)
+* DSCP-to-fwmark conversion
+
+Useful in scenarios where one lp-gw instance functions as a central gateway,
+doing packet classification and link selection and tagging all packets with
+DSCP. Enable this on a per-host basis using:
+
+```
+gw_config:
+  minimal: true
+```
+
 ### MAC Spoofing
 
 Some ISPs require the customer to send a DHCP request with a specific MAC
