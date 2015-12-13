@@ -29,6 +29,8 @@
     - { name: 'net.ipv4.neigh.default.gc_thresh1', value: '2048' }
     - { name: 'net.ipv4.neigh.default.gc_thresh2', value: '3072' }
     - { name: 'net.ipv4.neigh.default.gc_thresh3', value: '4096' }
+    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
+    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }
 
 - name: Routing | IP Kernel Parameters
   sysctl:
@@ -49,8 +51,6 @@
     - { name: 'net.ipv4.conf.all.arp_notify', value: '1' }
     - { name: 'net.ipv4.conf.all.log_martians', value: '1' }
     - { name: 'net.ipv4.conf.all.rp_filter', value: '0' }
-    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
-    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }
     - { name: 'net.netfilter.nf_conntrack_timestamp', value: '1' }
     - { name: 'net.netfilter.nf_conntrack_icmp_timeout', value: '5' }
     - { name: 'net.netfilter.nf_conntrack_udp_timeout', value: '10' }

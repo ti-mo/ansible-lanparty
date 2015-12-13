@@ -272,12 +272,12 @@ COMMIT
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
-{% endif %}
 
 # NAT on all NAT-enabled interfaces
+{% endif %}
 -A POSTROUTING -m set --match-set RFC1918 src -o {{ name }} -j MASQUERADE
-
 {% if loop.last %}
+
 COMMIT
 {% endif %}
 {% endfor %}
