@@ -1,6 +1,29 @@
 lp-gw - Internet Gateway
 ===
 
+Differences over lp-fw / lp-isp combo
+---
+
+* One role fits 'all' use cases / scenarios
+* Configuration has been greatly simplified
+* Performance improvements
+  - Overall streamlining of packet processing chain
+  - Throttle iptables -> conntrack lookups with (hash)limit
+  - Many logic blocks moved to separate chain with one entry condition
+  - Reduced amount of rules that are matched against every packet
+  - 'Minimal Mode' / ISP configuration only CTsaves outgoing packets
+* Per-interface feature toggles
+* Sane defaults introduced into role
+* TC script
+  - No longer run by LSB wrapper
+  - Gets one configuration and one instance per managed interface
+* LXC awareness for kernel parameters (still need solution for host params)
+* Lowered default CT timeouts for UDP to further reduce state inflation
+* Added 'validate' playbook for basic input validation
+* Introduced INT_NET IPset with containing internal networks
+* rt_tables entries are now intelligently created for each 'route' netif
+* 
+
 Interface Configuration
 ---
 _/etc/network/interfaces will NOT be managed for LXC containers! Modify the
