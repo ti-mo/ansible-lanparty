@@ -1,0 +1,22 @@
+---
+- include: validate.yml
+  tags: [ 'validate' ]
+
+- include: install.yml
+  tags: [ 'install' ]
+
+- include: netif.yml
+  when: ansible_virtualization_type != 'lxc'
+  tags: [ 'network', 'netif' ]
+
+- include: routing.yml
+  tags: [ 'routing' ]
+
+- include: ipset.yml
+  tags: [ 'ipset' ]
+
+- include: iptables.yml
+  tags: [ 'iptables' ]
+
+- include: tc.yml
+  tags: [ 'tc' ]

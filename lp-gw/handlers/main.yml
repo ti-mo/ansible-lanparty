@@ -1,0 +1,21 @@
+---
+- name: restore ipset
+  service: name=ipset state=restarted
+
+- name: restore iptables
+  service: name=netfilter-persistent state=restarted
+
+- name: reload daemons
+  shell: systemctl daemon-reload
+
+- name: restart tc
+  shell: systemctl restart tc@*
+
+- name: restart router
+  service: name=router state=restarted
+
+- name: warn interfaces
+  debug: msg='WARNING, /etc/network/interfaces has been modified. Please restart interfaces manually.'
+
+- name: warn dhclient
+  debug: msg='WARNING, dhclient configuration altered, dhclient should ne restarted manually through ifupdown'

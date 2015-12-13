@@ -1,13 +1,15 @@
 *** Probes ***
 
-+ FPing
-
++ {{ smokeping_tool }}
 binary = /usr/bin/fping
 
-{% for n, p in ping_providers|dictsort() %}
-{% for cn, c in p.classes|dictsort() %}
-++ {{ smokeping.tool }}{{ n }}{{ cn }}
-tos = {{ c.0 * 4 }}
+++ {{ smokeping_tool }}Default
+
+{% for name, value in netif.iteritems() if value.route is defined %}
+{% set netloop = loop %}
+{% for prioname, prio in gw_priorities|dictsort(false, 'value') %}
+++ {{ smokeping_tool }}{{ name }}{{ prioname }}
+tos = {{ (netloop.index0 * loop.length + loop.index) * 4 }}
 
 {% endfor %}
 {% endfor %}

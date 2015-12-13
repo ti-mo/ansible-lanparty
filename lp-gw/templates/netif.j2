@@ -1,0 +1,26 @@
+# {{ ansible_managed }}
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+{% for name, value in netif.iteritems() %}
+allow-hotplug {{ name }}
+{% if value.addr == 'dhcp' %}
+iface {{ name }} inet dhcp
+{% else %}
+iface {{ name }} inet static
+  address {{ value.addr }}
+  netmask {{ value.netmask }}
+{% if value.ns is defined and gw_nameservers is defined and value.ns == 'auto' %}
+  dns-nameservers {{ gw_nameservers | join(' ') }}
+  dns-search {{ domains.lan }}
+{% elif value.ns is defined and value.ns | ipaddr %}
+  dns-nameservers {{ value.ns }}
+  dns-search {{ domains.lan }}
+{% endif %}
+{% endif %}
+{% if value.macspoof is defined %}
+  hwaddress ether {{ value.macspoof }}
+{% endif %}
+{% endfor %}

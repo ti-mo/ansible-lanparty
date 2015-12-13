@@ -1,0 +1,314 @@
+# {{ ansible_managed }}
+
+{% if gw_config.minimal | default(false) %}
+# lp-gw Minimal Mode is active
+# All traffic filtering and re-classification is disabled
+# Set gw_config.minimal to false to re-enable
+{% endif %}
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Input Filtering
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -p tcp --dport ssh -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p tcp --dport {{ observium_agent_port | default(6556) }} -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -p udp --dport snmp -m set --match-set RFC1918 src -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-port-unreachable
+
+{% if not gw_config.minimal | default(false) %}
+# Accept all packets matched to related/established connections
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# Hosts exempt from block rules
+{% for r in gw_whitelist | default([]) %}
+-A FORWARD -s {{ r }} -j ACCEPT
+{% endfor %}
+
+# Limit outgoing UDP conenction flooding
+# Issues are caused by Steam server browsers sending 1k-2k UDP packets to all different hosts
+-A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 2/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -j DROP
+
+# Source hosts to block
+{% for h in gw_blacklist.hosts | default([]) %}
+-A FORWARD -s {{ h }} -j REJECT
+{% endfor %}
+
+# Destination ports to block
+{% for p in gw_blacklist.ports | default([]) %}
+-A FORWARD -p tcp --dport {{ p }} -m set --match-set INT_NET src -j REJECT
+-A FORWARD -p udp --dport {{ p }} -m set --match-set INT_NET src -j REJECT
+{% endfor %}
+{% else %}
+# lp-gw Minimal Mode is activated
+# All traffic filtering and re-classification is disabled
+{% endif %}
+
+COMMIT
+
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+:QOS_IN - [0:0]
+:QOS_OUT - [0:0]
+
+########
+# :: mangle.FORWARD ::
+# Execute QoS Priority Selection
+# Used in Minimal Mode and Full Mode
+####
+
+## Match against IPSet with internal networks (INT_NET)
+# If source matches external address, send to QOS_IN, else send to QOS_OUT
+-A FORWARD -m set --match-set INT_NET dst -j QOS_IN
+-A FORWARD -m set --match-set INT_NET src -j QOS_OUT
+
+{% if gw_config.minimal | default(false) %}
+## Minimal Mode DSCP -> NFMark translation
+# Minimal disables DSCP stripping, so marks will always be forwarded downstream
+{% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+{% endfor %}
+# Save fwmark to connmark for all outbound packets that differ
+{% for _, mark in gw_priorities.iteritems() %}
+-A QOS_OUT -m mark --mark 0x{{ mark }}/0xf -m connmark ! --mark 0x{{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xffffffff --ctmask 0xffffffff
+{% endfor %}
+-A QOS_IN -j CONNMARK --restore-mark --nfmask 0xf --ctmask 0xf
+{% else %}
+
+# Link Selection Chains
+:LS_IN - [0:0]
+:LS_OUT - [0:0]
+:LS_NEW - [0:0]
+:LS_OPEN - [0:0]
+:LS_SAVE - [0:0]
+
+# Quality of Service Chains
+:QOS_SERVICES - [0:0]
+:QOS_DEMOTE - [0:0]
+
+# Service Chains
+:SVC_SMOKEPING - [0:0]
+{% for name, _ in gw_services.iteritems() %}
+:SVC_{{ name | upper }} - [0:0]
+{% endfor %}
+
+##  vv OVERVIEW vv  ###########################################################
+
+########
+# :: mangle.PREROUTING ::
+# Execute Link Selection
+####
+
+## Determine Connection State [new/existing]
+# If we need to create a new connection, send to LS_NEW chain, where link selection decision is made
+# If packet belongs to existing connection, send to LS_OPEN chain, restoring decision to packet
+-A PREROUTING -m conntrack ! --ctstate NEW -j LS_OPEN
+-A PREROUTING -m conntrack --ctstate NEW -j LS_NEW
+
+########
+# :: mangle.POSTROUTING ::
+# Save packet mark to connection and tag with DSCP
+####
+
+## Save Packet Priority Mark to Connection
+{% for _, mark in gw_priorities.iteritems() %}
+-A POSTROUTING -m mark --mark 0x{{ mark }}/0xf -m connmark ! --mark 0x{{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xf --ctmask 0xf
+{% endfor %}
+
+## Assign DSCP Mark
+{% for prio, mark in gw_priorities.iteritems() %}
+-A POSTROUTING -m mark --mark 0x{{ mark }}/0xf -j DSCP --set-dscp {{ gw_dscp[prio] }}
+{% endfor %}
+
+## Strip DSCP marks towards links with strip_dscp set
+# Cloaks DSCP usage for the end user, useful for interfaces facing visitors
+{% for name, value in netif.iteritems() if value.strip_dscp is defined and value.strip_dscp %}
+-A POSTROUTING -o {{ name }} -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
+{% endfor %}
+
+##  ^^ OVERVIEW ^^  ###########################################################
+
+####
+# LS_NEW
+# Link Selection Chains
+# Triggered in mangle.PREROUTING
+####
+## New Connection
+# Check which direction packet came from
+# Send packet through LS_IN or LS_OUT accordingly
+# Save the decision made in LS_IN or LS_OUT to the connection
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Packets" -m set --match-set INT_NET src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Packets" -m set --match-set INT_NET dst -j LS_IN
+-A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
+
+## Existing Connection
+# Connection is already known, restore our decision to the packet
+-A LS_OPEN -m comment --comment "Restore full ctmark to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
+
+####
+# LS_IN
+# Triggered in mangle.LS_IN
+####
+## Incoming packet
+# Mark packet based on WAN link where it came in
+{% for i, value in netif.iteritems() %}
+{% if value.route is defined and value.route is number %}
+-A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route }}0/0xf0
+{% endif %}
+{% endfor %}
+
+####
+# LS_OUT
+# Triggered in mangle.LS_NEW
+####
+## Dedicated Link Selection Exceptions
+# We might want to overrule the link selection algorithm
+{% for name, value in gw_force_routes.iteritems() %}
+-A LS_OUT -m mark --mark 0x0/0xf0 -s {{ value.0 }} -m comment --comment "Link Override: {{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
+{% endfor %}
+
+## Outgoing Link Selection
+# Select an ISP based on the packet's source IP
+# Does not clobber the selection made in "Dedicated Link Selection Exceptions"
+{% for name, value in gw_routes.iteritems() %}
+-A LS_OUT -m mark --mark 0x00/0xf0 -s {{ value.0 }} -m comment --comment "[ {{ name|center(18) }} ]" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
+{% endfor %}
+
+## Smokeping Chain
+{% for host in gw_smokeping_hosts | default([]) %}
+-A LS_OUT -s {{ host }} -m comment --comment "SMOKEPING" -j SVC_SMOKEPING
+{% endfor %}
+
+# Default mark if no group matched
+# TODO: Log this
+-A LS_OUT -m mark --mark 0x0/0xf0 -j MARK --set-xmark 0x{{ gw_priorities.trash }}0/0xf0
+
+####
+# Quality of Service Chains
+# Triggered in mangle.FORWARD (after link selection)
+####
+
+###
+# QOS_OUT
+# Called when packet originates from an INT_NET address
+###
+## Hosts Quality of Service
+{% for name, value in gw_host_priority.iteritems() %}
+-A QOS_OUT -m mark --mark 0x0/0xf -s {{ value.0 }} -m comment --comment "Priority Override: {{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] }}/0xf
+{% endfor %}
+
+# Strip DSCP marks from specific links
+# Does not interfere with Smokeping marks, those are handled in LS_OUT
+{% for name, value in netif.iteritems() if value.strip_dscp is defined and value.strip_dscp %}
+-A QOS_OUT -i {{ name }} -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
+{% endfor %}
+
+## DSCP -> NFMark
+# Obey DSCP marks sent by the previous trusted hop
+{% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+{% endfor %}
+
+## Randomly check flows for obesity
+## Only packets without DSCP headers will be candidates for demoting
+## The chain is rate limited to avoid conntrack metadata lookups at (demote rule) times the packet rate
+-A QOS_OUT -m dscp --dscp 0x0 -m mark ! --mark 0x0/0xf -m limit --limit 100/second -j QOS_DEMOTE
+
+## Take a journey through the services chain
+-A QOS_OUT -m mark --mark 0x0/0xf -j QOS_SERVICES
+
+###
+# QOS_IN
+# Called when packet originates from internet
+###
+## Only obey DSCP marks from private address space
+## Clear the DSCP field (to 0x0) from internet packets
+-A QOS_IN -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
+
+## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
+-A QOS_IN -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xf
+-A QOS_OUT -m mark --mark 0x0/0xf -m comment --comment "Default QOS Mark" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xf
+
+####
+# Service Chains
+# Triggered in FORWARD through QOS_OUT
+####
+
+## Smokeping Probes
+{% for name, value in netif.iteritems() if value.route is defined %}
+{% set netloop = loop %}
+{% for _, prio in gw_priorities|dictsort(false, 'value') %}
+-A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xff
+{% endfor %}
+{% endfor %}
+
+## Bandwidth Hogging Detection
+# [ from, to, threshold (bytes), direction ]
+{% for h in gw_trashing %}
+-A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xf
+{% endfor %}
+
+## Jump to QOS_SERVICES subchains
+{% for name, _ in gw_services|dictsort(true, 'key') %}
+-A QOS_SERVICES -j SVC_{{ name | upper }}
+{% endfor %}
+
+## Service Chains
+{% for name, value in gw_services.iteritems() %}
+  {%- if value.ports is defined %}
+    {%- for p in value.ports %}
+{% if p.0 == 'icmp' %}
+-A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+{% elif p.0 == 'tcp' or p.0 == 'udp' %}
+-A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+{% elif p.0 == 'both' %}
+-A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+-A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+{% endif %}
+    {%- endfor %}
+  {%- endif %}
+  {%- if value.sets is defined %}
+    {%- for p in value.sets %}
+{% if p.0 == 'icmp' %}
+-A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+{% elif p.0 == 'tcp' or p.0 == 'udp' %}
+-A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+{% elif p.0 == 'both' %}
+-A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+-A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+{% endif %}
+    {%- endfor %}
+  {%- endif %}
+-A SVC_{{ name | upper }} -m mark ! --mark 0x0/0xf -j ACCEPT
+{% endfor %}
+
+{# End Minimal Mode Condition #}
+{% endif %}
+
+COMMIT
+
+{% for name, value in netif.iteritems() if value.nat is defined and value.nat %}
+{% if loop.first %}
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+# NAT on all NAT-enabled interfaces
+{% endif %}
+-A POSTROUTING -m set --match-set INT_NET src -o {{ name }} -j MASQUERADE
+{% if loop.last %}
+
+COMMIT
+{% endif %}
+{% endfor %}

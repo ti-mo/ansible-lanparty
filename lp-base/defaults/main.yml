@@ -27,10 +27,8 @@ trusted_networks: []
 snmp_comms:
   - public
 
-observium:
-  agent:
-    port: 6556
-    binary: /usr/bin/check_mk_agent
+observium_agent_port: 6556
+observium_agent_binary: /usr/bin/check_mk_agent
 
 kern:
   params:
@@ -42,3 +40,4 @@ kern:
     - { name: 'net.ipv4.conf.all.arp_announce', value: '2' }
     - { name: 'net.ipv4.conf.all.arp_filter', value: '1' }
     - { name: 'net.ipv4.conf.all.arp_notify', value: '1' }
+    - { name: 'net.core.default_qdisc', value: 'fq_codel' }

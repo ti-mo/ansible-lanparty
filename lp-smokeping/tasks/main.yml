@@ -28,7 +28,8 @@
     - smokeping
     - sendmail
     - sendmail-bin
-    - apache2
+    - nginx
+    - fcgiwrap
   tags: [ 'packages' ]
 
 - name: Main | Smokeping Service

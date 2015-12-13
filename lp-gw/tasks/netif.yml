@@ -1,16 +1,11 @@
 ---
-- name: Routing | Render rt_tables
-  template:
-    src: rt_tables.j2
-    dest: /etc/iproute2/rt_tables
-
-- name: Routing | Render Network Interfaces
+- name: Network | Render Interfaces
   template:
     src: netif.j2
     dest: /etc/network/interfaces
   notify: warn interfaces
 
-- name: Routing | Render udev to MAC mapping
+- name: Network | Udev Interface Aliases
   template:
     src: udev-net.j2
     dest: /etc/udev/rules.d/70-persistent-net.rules

@@ -1,6 +1,6 @@
 *** Targets ***
 
-probe = FPingTN1C1
+probe = {{ smokeping_tool }}Default
 
 menu = Top
 title = Network Latency Grapher
@@ -20,42 +20,34 @@ title = This host
 host = localhost
 alerts = someloss,rttdetect,hostdown
 
-+ FoM
-menu = FoM
-title = FoM
++ {{ lp.name }}
+menu = {{ lp.name }}
+title = {{ lp.name }}
 
 ++ General
 menu = General
 title = General pings
 
-+++ Telenet-smtp
-menu = incline.eu
-title = incline.eu (via TN 1 QoS 1)
-probe = FPingTN1C1
-host = 91.121.168.206
+{% for targetname, target in smokeping_targets.iteritems() | default({}) %}
+++ {{ targetname }}
+menu = {{ targetname }}
+title = {{ targetname }}
+
+{% for name, value in netif.iteritems() if value.route is defined %}
+{% set netloop = loop %}
++++ {{ name }}
+menu = {{ name }}
+title = {{ name }}
+
+{% for prioname, prio in gw_priorities|dictsort(false, 'value') %}
+++++ {{ name }}-{{ prioname }}
+menu = {{ prioname }}
+title = {{ name }} {{ prioname }}
+probe = {{ smokeping_tool }}{{ name }}{{ prioname }}
+host = {{ target }}
 alerts = someloss,rttdetect,hostdown
 
-+++ Google
-menu = kangaroot.net
-title = Kangaroot (via TN 1 QoS 1)
-probe = FPingTN1C1
-host = 62.213.213.86
-alerts = someloss,rttdetect,hostdown
-
-
-{% for n, p in ping_providers|dictsort() %}
-++ {{ n }}
-menu = {{ p.name }}
-title = {{ p.name }}
-
-{% for cn, c in p.classes|dictsort() %}
-+++ {{ n }}-{{ cn }}
-menu = {{ cn }}
-title = {{ p.name }} {{ cn }}
-probe = {{ smokeping.tool }}{{ n }}{{ cn }}
-host = {{ ping_targets[0] }}
-alerts = {{ c.2 }}
-
+{% endfor %}
 {% endfor %}
 
 {% endfor %}

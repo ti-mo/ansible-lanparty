@@ -1,0 +1,13 @@
+---
+smokeping_dir: /var/lib/smokeping
+smokeping_tool: FPing
+smokeping_targets: {}
+
+# Copy of defaults in lp-gw
+gw_priorities:
+  prio1: 1
+  prio2: 2
+  crew: 3
+  browse: 4
+  download: 5
+  trash: 6

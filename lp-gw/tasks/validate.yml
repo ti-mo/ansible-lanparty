@@ -1,0 +1,60 @@
+---
+- name: Validate | No Udev interface renaming in LXC
+  assert:
+    that:
+      - item.value.mac is not defined
+    msg: "Renaming container interfaces is not recommended - interface names can be set in the lp-lxc configuration"
+  when: ansible_virtualization_type == 'lxc'
+  with_dict: netif
+
+- name: Validate | No MAC spoofing in LXC
+  assert:
+    that:
+      - item.value.macspoof is not defined
+    msg: "MAC spoofing LXC container interfaces is not recommended - do this in your lp-lxc configuration"
+  when: ansible_virtualization_type == 'lxc'
+  with_dict: netif
+
+- name: Validate | Route on static interface needs nexthop
+  assert:
+    that:
+      - item.value.nexthop is defined
+    msg: "Specify a nexthop on static interface {{ item.key }}"
+  when: item.value.route is number and item.value.addr | ipaddr
+  with_dict: netif
+
+- name: Validate | Internal interface needs nexthop
+  assert:
+    that:
+      - item.value.nexthop is defined
+    msg: "Specify a nexthop on internal interface {{ item.key }}"
+  when: item.value.internal is defined and item.value.internal
+  with_dict: netif
+
+- name: Validate | ns auto needs gw_nameservers set
+  assert:
+    that:
+      - gw_nameservers is defined
+      - gw_nameservers | count > 0
+    msg: "Need a list of `gw_nameservers` because {{ item.key }} has `ns` set to `auto`"
+  when: item.value.ns is defined and item.value.ns == 'auto'
+  with_dict: netif
+
+- name: Validate | gw_iternal_networks set and valid
+  assert:
+    that:
+      - gw_internal_networks is defined
+      - gw_internal_networks | length >= 1
+    msg: "Supply a valid list of prefixes in `gw_internal_networks`"
+
+- debug:
+    var: "{{ item | ipaddr('subnet') }}"
+  with_items: gw_internal_networks
+
+- name: Validate | Prefixes in gw_internal_networks need to be valid ipv4
+  assert:
+    that:
+      - item | ipv4
+      - item | ipaddr('subnet') == item
+    msg: "{{ item }} in `gw_internal_networks` is not a valid CIDR network"
+  with_items: gw_internal_networks

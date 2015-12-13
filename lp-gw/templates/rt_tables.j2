@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+#
+# Reserved Values
+255   local
+254   main
+253   default
+0     unspec
+
+# Custom Tables
+{% for name, value in netif.iteritems() %}
+{% if value.route is defined and value.route is number %}
+{{ value.route }}   {{ name }}
+{% endif %}
+{% endfor %}

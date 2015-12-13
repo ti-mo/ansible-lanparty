@@ -20,3 +20,9 @@
     value: 1
     sysctl_set: yes
     reload: yes
+
+- name: Install | Ignore DHCP nameservers
+  template:
+    src: dhclient.j2
+    dest: /etc/dhcp/dhclient.conf
+  notify: warn dhclient

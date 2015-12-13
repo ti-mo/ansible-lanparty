@@ -2,9 +2,9 @@
 auto lo
 iface lo inet loopback
 
-{% for n in item.value.ifaces.iteritems() %}
-{% if n.1.address == 'dhcp' %}
-auto {{ n.0 }}
-iface {{ n.0 }} inet dhcp
+{% for name, value in item.value.ifaces.iteritems() %}
+{% if value.address == 'dhcp' %}
+auto {{ name }}
+iface {{ name }} inet dhcp
 {% endif %}
 {% endfor %}

@@ -1,8 +1,0 @@
-# {{ ansible_managed }}
-#
-{% for name, set in ipsets.iteritems() %}
-create {{ name }} hash:net
-{% for ip in set %}
-add {{ name }} {{ ip }}
-{% endfor %}
-{% endfor %}

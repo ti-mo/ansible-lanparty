@@ -1,0 +1,32 @@
+---
+- name: TC | Interface Script
+  template:
+    src: tc.j2
+    dest: /usr/bin/tc-lp
+    mode: 0755
+  notify: restart tc
+
+- name: TC | Unit File
+  template:
+    src: units/tc-unit.j2
+    dest: /etc/systemd/system/tc@.service
+
+- name: TC | Config Directory
+  file:
+    state: directory
+    path: /etc/tc
+
+- name: TC | Interface Environments
+  template:
+    src: units/tc-env.j2
+    dest: /etc/tc/{{ item.key }}
+  with_dict: netif
+  when: item.value.rate is defined and item.value.rate is number
+
+- name: TC | Apply Tree
+  service:
+    name: tc@{{ item.key }}
+    state: started
+    enabled: true
+  with_dict: netif
+  when: item.value.rate is defined and item.value.rate is number

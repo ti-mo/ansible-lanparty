@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+#
+{% for name, set in gw_ipsets.iteritems() %}
+create {{ name }} hash:net
+{% for ip in set %}
+add {{ name }} {{ ip }}
+{% endfor %}
+{% endfor %}
+
+create INT_NET hash:net
+{% for net in gw_internal_networks %}
+add INT_NET {{ net }}
+{% endfor %}
