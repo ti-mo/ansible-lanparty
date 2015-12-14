@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+#
+BaseDir "/var/lib/collectd"
+PIDFile "/run/collectd.pid"
+
+Interval 10.0
+
+LoadPlugin cpu
+LoadPlugin load
+LoadPlugin interface
+LoadPlugin syslog
+
+<Plugin syslog>
+  LogLevel "info"
+</Plugin>
+
+<LoadPlugin df>
+  Interval 3600
+</LoadPlugin>
+
+<Plugin df>
+  ValuesPercentage true
+</Plugin>
+
+{% if collectd_server is defined %}
+LoadPlugin network
+<Plugin network>
+  Server "{{ collectd_server }}" "{{ collectd_server_port | default(25826) }}"
+</Plugin>
+{% endif %}
+
+Include "/etc/collectd.d/*.conf"

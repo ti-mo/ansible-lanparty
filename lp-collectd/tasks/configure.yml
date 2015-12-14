@@ -1,0 +1,6 @@
+---
+- name: Configure | Render Configuration
+  template:
+    src: collectd.j2
+    dest: /etc/collectd/collectd.conf
+  notify: restart collectd
