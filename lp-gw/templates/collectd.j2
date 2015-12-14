@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+LoadPlugin netlink
+LoadPlugin conntrack
+
+# Don't manage TC filters, there are known issues with filter naming
+# read more at https://collectd.org/wiki/index.php/Plugin:Netlink
+# Also, when using u32 filters, phantom fq_codel 'classes' are created
+# and deleted every poll cycle, resulting in a massive amount of tags
+# Grabbing all qdiscs gives us plenty of information.
+<Plugin netlink>
+  Interface "All"
+  VerboseInterface "All"
+  QDisc "All"
+</Plugin>
+
+<Plugin conntrack>
+</Plugin>
