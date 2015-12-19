@@ -14,6 +14,7 @@
     name: "{{ item }}"
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
+    default_release: testing
   with_items:
     - python-pip
     - python-dev
