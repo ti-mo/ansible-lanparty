@@ -21,6 +21,12 @@
 -A INPUT -j REJECT --reject-with icmp-port-unreachable
 
 {% if not gw_config.minimal | default(false) %}
+
+{% if gw_config.torrentfilter | default(true) %}
+# Reject UDP packets containing the fixed connection_id value at offset 30
+-A FORWARD -p udp -m u32 --u32 "30 & 0xFFFFFFFF = 0x04172710" -j REJECT
+{% endif %}
+
 # Accept all packets matched to related/established connections
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 

@@ -154,6 +154,29 @@ gw_config:
   minimal: true
 ```
 
+### Torrent Filtering
+
+The IPTables ruleset contains a limited amount of filtering mechanisms in an
+attempt to decrease pressure on the internet gateways. Torrent traffic / DHT is
+notoriously difficult to block, but some efforts are made to filter the
+low-hanging fruit. Users don't abuse the network intentionally, but are usually
+unaware of torrent software still running on their desktops.
+
+This functionality is enabled by default.
+
+```
+gw_config:
+    torrentfilter: true
+```
+
+As an extension, a domain blacklist of popular trackers / sites could be
+maintained to redirect users to a 'sorry' page. This educates the user (a bit
+more of a social solution to the problem) and might further reduce traffic
+pressure.
+
+Websites like Speedtest also fall under this category, as they give a very bad
+impression of your network infrastructure.
+
 ### MAC Spoofing
 
 Some ISPs require the customer to send a DHCP request with a specific MAC
