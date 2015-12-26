@@ -32,6 +32,10 @@
 -A FORWARD -s {{ r }} -j ACCEPT
 {% endfor %}
 
+# Limit outgoing UDP conenction flooding
+# Issues are caused by Steam server browsers sending 1k-2k UDP packets to all different hosts
+-A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 2/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -m comment --comment "udp_flood_overlimit" -j DROP
+
 {% if gw_config.torrentfilter | default(true) %}
 # Only consider outgoing traffic so we don't block internal source ports by accident
 -A FORWARD -m set --match-set INT_NET src -j TORRENT
@@ -53,12 +57,7 @@
 -A TORRENT -p tcp --dport 2710 -m comment --comment "tracker_xbt" -j REJECT
 # Many public trackers
 -A TORRENT -p tcp --dport 1337 -m comment --comment "tracker_1337" -j REJECT
-
 {% endif %}
-
-# Limit outgoing UDP conenction flooding
-# Issues are caused by Steam server browsers sending 1k-2k UDP packets to all different hosts
--A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 2/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -m comment --comment "udp_flood_overlimit" -j DROP
 
 # Source hosts to block
 {% for h in gw_blacklist.hosts | default([]) %}
