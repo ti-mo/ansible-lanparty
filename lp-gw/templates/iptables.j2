@@ -11,6 +11,8 @@
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 
+:TORRENT - [0:0]
+
 # Input Filtering
 -A INPUT -i lo -j ACCEPT
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -22,11 +24,6 @@
 
 {% if not gw_config.minimal | default(false) %}
 
-{% if gw_config.torrentfilter | default(true) %}
-# Reject UDP packets containing the fixed connection_id value at offset 30
--A FORWARD -p udp -m u32 --u32 "30 & 0xFFFFFFFF = 0x04172710" -j REJECT
-{% endif %}
-
 # Accept all packets matched to related/established connections
 -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
@@ -34,6 +31,30 @@
 {% for r in gw_whitelist | default([]) %}
 -A FORWARD -s {{ r }} -j ACCEPT
 {% endfor %}
+
+{% if gw_config.torrentfilter | default(true) %}
+# Only consider outgoing traffic so we don't block internal source ports by accident
+-A FORWARD -m set --match-set INT_NET src -j TORRENT
+
+# Reject UDP packets containing the fixed connection_id value at offset 30
+# This filters all initial outgoing packets to UDP trackers across the board
+-A TORRENT -p udp -m u32 --u32 "30 & 0xFFFFFFFF = 0x04172710" -j REJECT
+
+# Filter known BitTorrent ports
+# Default tracker ports
+-A TORRENT -p tcp --dport 6969 -j REJECT
+-A TORRENT -p udp --dport 6969 -j REJECT
+# Default client ports
+-A TORRENT -p tcp --dport 6881:6889 -j REJECT
+-A TORRENT -p udp --dport 6881:6889 -j REJECT
+
+# Filter known tracker ports
+# XBT Tracker
+-A TORRENT -p tcp --dport 2710 -j REJECT
+# Many public trackers
+-A TORRENT -p tcp --dport 1337 -j REJECT
+
+{% endif %}
 
 # Limit outgoing UDP conenction flooding
 # Issues are caused by Steam server browsers sending 1k-2k UDP packets to all different hosts
