@@ -2,13 +2,9 @@
 - name: Install | collectd-core Package
   apt:
     name: collectd-core
+  notify: enable collectd
 
 - name: Install | collectd.d Directory
   file:
     state: directory
     path: /etc/collectd.d
-
-- name: Install | Enable Service
-  service:
-    name: collectd
-    enabled: true

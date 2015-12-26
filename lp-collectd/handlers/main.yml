@@ -2,3 +2,8 @@
   service:
     name: collectd
     state: restarted
+
+- name: enable collectd
+  service:
+    name: collectd
+    enabled: true
