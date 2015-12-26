@@ -1,6 +1,7 @@
 # {{ ansible_managed }}
 LoadPlugin netlink
 LoadPlugin conntrack
+LoadPlugin iptables
 
 # Don't manage TC filters, there are known issues with filter naming
 # read more at https://collectd.org/wiki/index.php/Plugin:Netlink
@@ -14,4 +15,19 @@ LoadPlugin conntrack
 </Plugin>
 
 <Plugin conntrack>
+</Plugin>
+
+<Plugin iptables>
+  Chain "filter" "FORWARD"
+{% if gw_config.torrentfilter | default(true) %}
+  Chain "filter" "TORRENT"
+{% endif %}
+{% for name, _ in gw_services.iteritems() %}
+  Chain "mangle" "SVC_{{ name | upper }}"
+{% endfor %}
+  Chain "mangle" "PREROUTING"
+  Chain "mangle" "LS_IN"
+  Chain "mangle" "LS_OUT"
+  Chain "mangle" "QOS_IN"
+  Chain "mangle" "QOS_OUT"
 </Plugin>
