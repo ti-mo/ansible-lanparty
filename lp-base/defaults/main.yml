@@ -6,9 +6,13 @@ apt_cache_valid: 1200
 
 apt:
   prefs:
+    lanparty: 600
     stable: 500
     testing: 250
   sources:
+    lanparty:
+      - suite: lanparty
+        site: pkg.incline.eu
     stable:
       - suite: stable contrib
         site: ftp.be.debian.org/debian
@@ -20,6 +24,7 @@ apt:
       - suite: stable/updates
         site: security.debian.org
   gpg_keys:
+    - url: http://pkg.incline.eu/GPG-KEY-incline
     - url: https://packages.elasticsearch.org/GPG-KEY-elasticsearch
 
 trusted_networks: []
