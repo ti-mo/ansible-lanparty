@@ -23,6 +23,16 @@ apt:
     debian:
       - suite: stable/updates
         site: security.debian.org
+  elastic:
+    filebeat:
+      - site: packages.elastic.co/beats/apt
+        suite: stable
+    search:
+      - site: packages.elastic.co/elasticsearch/2.x/debian
+        suite: stable
+    logstash:
+      - site: packages.elastic.co/logstash/2.1/debian
+        suite: stable
   gpg_keys:
     - url: http://pkg.incline.eu/GPG-KEY-incline
     - url: https://packages.elasticsearch.org/GPG-KEY-elasticsearch

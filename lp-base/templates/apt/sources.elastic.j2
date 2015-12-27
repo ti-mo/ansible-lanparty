@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+{% for _, val in apt.elastic.iteritems() if apt.elastic is defined %}
+{% for item in val %}
+deb http://{{ item.site }} {{ item.suite }} main
+{% endfor %}
+{% endfor %}

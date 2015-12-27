@@ -49,6 +49,11 @@
     dest: "/etc/apt/sources.list.d/{{ item.key }}.list"
   with_dict: apt.contrib | default({})
 
+- name: Global | elastic apt repositories
+  template:
+    src: apt/sources.elastic.j2
+    dest: "/etc/apt/sources.list.d/elastic.list"
+
 - name: Global | apt GPG Keys
   apt_key:
     url: "{{ item.url }}"
