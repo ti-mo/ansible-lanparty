@@ -1,0 +1,16 @@
+---
+- name: Install | Need LogStash host
+  assert:
+    that:
+      - "logstash_host is defined"
+    msg: Define a LogStash host address in `logstash_host`
+
+- name: Install | Filebeat Packages
+  apt:
+    name: filebeat
+  notify: enable filebeat
+
+- name: Install | Ensure Service
+  service:
+    name: filebeat
+    state: started

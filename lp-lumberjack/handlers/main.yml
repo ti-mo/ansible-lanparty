@@ -1,5 +1,0 @@
----
-- name: restart lumberjack
-  service:
-    name: logstash-forwarder
-    state: restarted
