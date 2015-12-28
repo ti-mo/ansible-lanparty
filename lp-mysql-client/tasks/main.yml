@@ -1,7 +1,9 @@
 ---
 - name: Setup | Check mysql.apps definition
   assert:
-    that: "mysql.apps is iterable"
+    that:
+      - "mysql.apps is defined"
+      - "mysql.apps is iterable"
     msg: Define at least one application in mysql.apps
 
 - name: Setup | Check mysql.backend_group definition
