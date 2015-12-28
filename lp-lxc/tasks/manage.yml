@@ -27,11 +27,11 @@
 
 # lxc restart behaviour is split into start/stop
 # possible bug or race condition in tooling or Ansible module
-- name: lxc | Stop Modified Containers
+- name: lxc | Stop Modified Containers when lxc_restart == YES
   lxc_container:
     name: "{{ item.item.key }}"
     state: restarted
-  when: item.changed
+  when: item.changed and lxc_restart == 'YES'
   with_items: lxcconfig.results
 
 - name: lxc | Start All Defined Containers
@@ -56,9 +56,9 @@
   with_dict: lxc_containers
   when: item.value.store | default('dir') == 'dir'
 
-- name: lxc | Install basic packages
+- name: lxc | Install basic packages when lxc_restart == YES
   lxc_container:
     name: "{{ item.item.key }}"
-    container_command: "apt-get update; apt-get -q -y install sudo python"
-  when: lxc_created is defined and lxc_created.changed and item.changed
+    container_command: "echo 'nameserver {{ resolvers.0 | default('8.8.8.8')}}' > /etc/resolv.conf; apt-get update; apt-get -q -y install sudo python"
+  when: lxc_created is defined and lxc_created.changed and item.changed and lxc_restart == 'YES'
   with_items: lxc_created.results
