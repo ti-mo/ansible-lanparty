@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 server {
-    server_name   {{ ebot_web_domain }};
+    server_name   {{ ebot_web_domain }} _;
 
     access_log    {{ ebot_web_log_dir }}/access.log;
     error_log     {{ ebot_web_log_dir }}/error.log;

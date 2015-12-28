@@ -2,32 +2,36 @@
 - name: Install | PHP Packages
   apt:
     name: "{{ item }}"
-    force: yes
+    default_release: lanparty
   with_items:
     - php5-fpm
     - php5-mysql
   tags: [ 'packages' ]
+
+- name: Install | Create Directory
+  file:
+    path: "{{ ebot_web_install_dir }}"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
 
 - name: Install | Install from Git
   git:
     repo: https://github.com/ti-mo/eBot-CSGO-Web
     dest: "{{ ebot_web_install_dir }}"
     update: yes
-  register: ebotgit
-
-- name: Install | Directory Owner
-  file:
-    path: "{{ ebot_web_install_dir }}"
-    state: directory
-    owner: "{{ www_user }}"
-    group: "{{ www_user }}"
-    recurse: yes
-  when: ebotgit.changed
+  become_user: "{{ www_user }}"
 
 - name: Install | Log Directory
   file:
     state: directory
     path: "{{ ebot_web_log_dir }}"
+
+- name: Install | Disable default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
 
 - name: Install | Nginx Site
   template:

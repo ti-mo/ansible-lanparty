@@ -2,13 +2,12 @@
 - name: Deps | Install PHP / NodeJS
   apt:
     name: "{{ item }}"
-    force: true
+    default_release: lanparty
   with_items:
-    - php5
+    - php5-cli
     - php5-mysql
     - php5-json
-    - php5-dev
-    - php-pear
+    - php5-pthreads
     - nodejs
     - npm
 
@@ -17,16 +16,6 @@
     url: https://getcomposer.org/composer.phar
     dest: /usr/local/bin/composer
     mode: 0755
-
-- name: Deps | PECL pthreads
-  pear:
-    name: pecl/pthreads
-
-- name: Deps | pthreads Extension
-  lineinfile:
-    create: true
-    line: "extension=pthreads.so"
-    dest: /etc/php5/mods-available/pthreads.ini
 
 - name: Deps | Enable pthreads Extension
   file:

@@ -1,4 +1,6 @@
 ---
+ebot_inventory_group: ebot
+
 ebot_web_domain: ebot.example.com
 ebot_web_install_dir: /var/www/ebot
 ebot_web_log_dir: /var/log/nginx/ebot-web
