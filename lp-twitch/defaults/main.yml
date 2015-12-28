@@ -15,8 +15,16 @@ twitch_quality_filter:
   - medium
   - source
 
-lumberjack_files:
-  twitch:
-    files:
-      - "{{ twitch_logdir }}/*.log"
-    type: nginx-access
+filebeat_type: nginx-access
+filebeat_files:
+  - "{{ twitch_logdir }}/*.log"
+
+ns:
+  spoof:
+    services:
+      twitch:
+        domains:
+          - usher.justin.tv
+          - usher.twitch.tv
+          - hls.twitch.tv
+          - hls.ttvnw.net

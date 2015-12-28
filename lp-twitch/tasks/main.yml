@@ -3,6 +3,7 @@
   assert:
     that:
       "ns.spoof.services.twitch.domains is iterable"
+    msg: Need list of Twitch domains to spoof to create nginx vhosts
 
 - name: Twitch | Log Directories
   file:
