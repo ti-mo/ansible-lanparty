@@ -60,5 +60,5 @@
   lxc_container:
     name: "{{ item.item.key }}"
     container_command: "echo 'nameserver {{ resolvers.0 | default('8.8.8.8')}}' > /etc/resolv.conf; apt-get update; apt-get -q -y install sudo python"
-  when: lxc_created is defined and lxc_created.changed and item.changed and lxc_restart == 'YES'
+  when: lxc_created.changed and item.changed and lxc_restart == 'YES'
   with_items: lxc_created.results
