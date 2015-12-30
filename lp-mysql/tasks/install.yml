@@ -23,6 +23,9 @@
     state: directory
   notify: restart mysql
 
+- name: Install | Flush MySQL handlers for networking changes
+  meta: flush_handlers
+
 - name: Install | MySQL Service
   service:
     name: mysql
