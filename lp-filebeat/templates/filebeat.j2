@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+filebeat:
+  prospectors:
+    -
+      paths:
+{% for item in filebeat_files if filebeat_files is defined %}
+        - "{{ item }}"
+{% endfor %}
+
+output:
+  logstash:
+    hosts: [ "{{ logstash_host }}:{{ beats_port }}" ]

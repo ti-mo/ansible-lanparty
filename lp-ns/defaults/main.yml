@@ -1,11 +1,9 @@
 ---
 bind_logdir: /var/log/named
 
-lumberjack_files:
-  bind:
-    files:
-      - "{{ bind_logdir }}/*.log"
-    type: bind-query
+filebeat_type: bind-query
+filebeat_files:
+  - "{{ bind_logdir }}/*.log"
 
 ns:
 #####
