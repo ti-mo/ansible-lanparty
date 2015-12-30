@@ -1,13 +1,10 @@
 ---
 - name: Install | Add i386 Architecture
-  lineinfile:
-    dest: /var/lib/dpkg/arch
-    line: "i386"
-    regexp: "i386"
-    insertafter: "amd64"
-    create: yes
-  register: archrc
+  command: dpkg --add-architecture i386
+  args:
+    creates: /var/lib/dpkg/arch
   when: ansible_architecture != 'i386'
+  register: archrc
 
 - name: Install | Update APT Cache for i386
   apt:
