@@ -18,6 +18,21 @@ php symfony guard:create-user --is-super-admin admin@ebot admin password
 
 Log in to the admin panel using `http://<your-ebot-web-address>/admin.php`.
 
+Overriding Websocket Endpoints
+---
+
+Some network configurations might require the WebSocket endpoint the browser
+connects to to be modified. (eg. eBot behind reverse proxies or NATs) This does
+NOT change the address the eBot WebSocket listens on, only the address client
+connections are made to from the browser.
+
+```
+ebot_websocket_ip: 12.34.56.78
+ebot_websocket_port: 5000
+```
+
+This will make all clients connect to the WebSocket at 12.34.56.78:5000.
+
 Troubleshooting
 ---
 

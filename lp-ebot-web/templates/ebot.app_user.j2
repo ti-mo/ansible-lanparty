@@ -6,8 +6,8 @@
   demo_path: {{ ebot_web_demo_path }}
   demo_download: true
 
-  ebot_ip: {{ hostvars[groups[ebot_inventory_group][0]]['ansible_default_ipv4']['address'] }}
-  ebot_port: 12360
+  ebot_ip: {{ ebot_websocket_ip | default(hostvars[groups[ebot_inventory_group][0]]['ansible_default_ipv4']['address']) }}
+  ebot_port: {{ ebot_websocket_port | default(12360) }}
 
   # Either 'lan' or 'net'
   # Displays the server IP or the GO TV IP
