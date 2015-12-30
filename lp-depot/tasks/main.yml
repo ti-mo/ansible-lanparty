@@ -2,7 +2,9 @@
 - name: Depot | Ensure Spoof Zone Definitions in NS config
   assert:
     that:
-      "ns.spoof.services.{{ item }}.domains is iterable"
+      - "ns.spoof.services.{{ item }}.domains is defined"
+      - "ns.spoof.services.{{ item }}.domains is iterable"
+    msg: Need list of caching domains to spoof to create nginx vhosts
   with_items: depot_sites
 
 - name: Depot | Log Directories
