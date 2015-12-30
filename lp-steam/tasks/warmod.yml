@@ -1,4 +1,10 @@
 ---
+- name: Warmod | Create Addons Directory
+  file:
+    path: "{{ steamcmd_path }}/games/csgo/csgo/addons"
+    state: directory
+  become_user: "{{ steamcmd_user }}"
+
 - name: Warmod | Download MM:Source
   get_url:
     dest: "{{ steamcmd_path }}/games/csgo/csgo/addons/mmsource-linux.tar.gz"
