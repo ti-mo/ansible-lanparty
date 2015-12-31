@@ -5,14 +5,15 @@
     dest: /etc/nginx/sites-available/elasticsearch
   notify: reload nginx
 
+- name: Nginx | Remove Default Site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
 - name: Nginx | Symlink Site
   file:
     src: /etc/nginx/sites-available/elasticsearch
     dest: /etc/nginx/sites-enabled/elasticsearch
     state: link
   notify: reload nginx
-
-- name: Nginx | HTTP Password
-  copy:
-    content: "{{ lp.user }}:{{ lp.pass_hash }}"
-    dest: /etc/nginx/es_password
