@@ -2,7 +2,7 @@
 
 input {
   syslog {
-    port => {{ logstash.ports.syslog }}
+    port => {{ logstash.syslog | default(5140) }}
     type => syslog
   }
 }
@@ -21,13 +21,17 @@ filter {
 }
 
 output {
-  if [type] == "syslog" {
-    elasticsearch {
-      protocol => "node"
-      index => "syslog-%{+YYYY.MM.dd.HH}"
-      port => "{{ elasticsearch.tcp_port }}"
-      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
-      cluster => "{{ elasticsearch.cluster }}"
-    }
+{% if elasticsearch_group is defined %}
+  elasticsearch {
+    index => "%{[@metadata][type]}-%{+YYYY.MM.dd.HH}"
+    hosts => [
+{% for h in groups[elasticsearch_group] %}
+      "{{ hostvars[h]['ansible_default_ipv4']['address'] }}:80"{% if not loop.last %},{% endif %}
+{% endfor %} ]
   }
+{% else %}
+  file {
+    path => "/var/log/logstash/%{host}/%{type}.log"
+  }
+{% endif %}
 }
