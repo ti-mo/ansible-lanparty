@@ -1,3 +1,4 @@
 ---
 logstash_group: logstash
-beats_port: 5044
+logstash:
+  beats: 5044
