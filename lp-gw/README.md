@@ -40,7 +40,7 @@ netif:
   lan:                 ## The interface facing our clients
     addr: 10.1.1.5
     netmask: 255.255.255.0
-    internal: true     ## Generate routes to `gw_internal_networks`
+    internal: true     ## Generate routes to `internal_networks`
     nexthop: 10.1.1.1  ## over 10.1.1.1, useful for hardware core router
   isp1:                ## Interface in transit network with isp1
     addr: 10.16.61.1
@@ -71,7 +71,7 @@ towards internal networks will be configured permanently and will persist
 across reboots.
 
 ```
-gw_internal_networks:
+internal_networks:
   - 10.1.1.0/24
 
 netif:

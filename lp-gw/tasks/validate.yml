@@ -43,18 +43,18 @@
 - name: Validate | gw_iternal_networks set and valid
   assert:
     that:
-      - gw_internal_networks is defined
-      - gw_internal_networks | length >= 1
-    msg: "Supply a valid list of prefixes in `gw_internal_networks`"
+      - internal_networks is defined
+      - internal_networks | length >= 1
+    msg: "Supply a valid list of prefixes in `internal_networks`"
 
 - debug:
     var: "{{ item | ipaddr('subnet') }}"
-  with_items: gw_internal_networks
+  with_items: internal_networks
 
-- name: Validate | Prefixes in gw_internal_networks need to be valid ipv4
+- name: Validate | Prefixes in internal_networks need to be valid ipv4
   assert:
     that:
       - item | ipv4
       - item | ipaddr('subnet') == item
-    msg: "{{ item }} in `gw_internal_networks` is not a valid CIDR network"
-  with_items: gw_internal_networks
+    msg: "{{ item }} in `internal_networks` is not a valid CIDR network"
+  with_items: internal_networks

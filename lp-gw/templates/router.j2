@@ -7,7 +7,7 @@ start() {
 
   # Add routes to internal networks to the default routing table
 {%- if value.internal is defined and value.internal %}
-{% for r in gw_internal_networks | default([]) %}
+{% for r in internal_networks | default([]) %}
   echo "Adding route to internal network {{ r }} via {{ value.nexthop }}"
   ip route add {{ r }} via {{ value.nexthop }}
 {% endfor %}
@@ -38,7 +38,7 @@ stop() {
 {% for name, value in netif.iteritems() %}
 
 {%- if value.internal is defined and value.internal %}
-{% for r in gw_internal_networks | default([]) %}
+{% for r in internal_networks | default([]) %}
   echo "Deleting route to internal network {{ r }}"
   ip route del {{ r }}
 {% endfor %}
