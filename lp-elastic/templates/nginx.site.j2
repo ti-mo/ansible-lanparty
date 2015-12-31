@@ -1,6 +1,5 @@
 # {{ ansible_managed }}
-# Nginx proxy for Elasticsearch + Kibana
-#
+# Nginx proxy for Elasticsearch
 
 upstream elasticsearch {
   server 127.0.0.1:9200;
@@ -8,7 +7,7 @@ upstream elasticsearch {
 }
 
 server {
-  listen          *:80;
+  listen          80 default_server;
   server_name     _;
 
   # Shipping *.access.log to LogStash will make this storm
@@ -30,7 +29,9 @@ server {
     proxy_read_timeout 90;
 
     # Access Control
-    {% for n in trusted_networks -%}
+    allow 127.0.0.1;
+    allow {{ ansible_default_ipv4.address }};
+    {% for n in trusted_networks | default([]) -%}
     allow {{ n }};
     {% endfor -%}
     deny all;
