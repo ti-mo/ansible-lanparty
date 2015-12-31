@@ -1,73 +1,78 @@
 # {{ ansible_managed }}
 #
 
-option domain-name "{{ domains.lan }}";
-option domain-name-servers 172.16.1.2;
-option ntp-servers 172.16.1.3;
+option domain-name "{{ domains.lan | default('example.lan') }}";
+option domain-name-servers {{ resolvers | default(['8.8.8.8']) | join(', ') }};
+{% if timeservers is defined %}option ntp-servers {{ timeservers | join(', ') }};{% endif %}
 
-ddns-update-style interim;
-ddns-domainname "host.{{ domains.lan }}.";
-ddns-rev-domainname = "in-addr.arpa.";
-
-default-lease-time 86400;
-max-lease-time 172800;
+default-lease-time {{ dhcp.leasetime }};
+max-lease-time {{ dhcp.maxleasetime }};
 
 authoritative;
-log-facility local6;
+log-facility {{ dhcp.logfacility | default('local6') }};
 
-###
-# RNDC Key for Dynamic DNS
-key {{ ns.rndc.keyname }} {
-    algorithm {{ ns.rndc.algo }};
-    secret {{ ns.rndc.key }};
-}
-
-###
 # Gathering/parsing request information
 set client_ip = binary-to-ascii(10, 8, ".", leased-address);
-set client_mac = binary-to-ascii(16, 8, ":", substring(hardware, 1, 6));
-set switch_id = pick(substring(option agent.remote-id, 2, 999),"switch");
-set port_id = pick(binary-to-ascii(10, 8,".", suffix(option agent.circuit-id, 1)),"0");
-set vlan = pick(binary-to-ascii(10, 8,".", substring(option agent.circuit-id, 3, 1)),"0");
-set client_name = pick(option host-name,"unknown");
-###
+set client_mac = binary-to-ascii(16, 8, ":", suffix(hardware, 6));
+set switch_id = pick(substring(option agent.remote-id, 2, 999), "null");
+set switchport_id = pick(binary-to-ascii(10, 8, ".", suffix(option agent.circuit-id, 1)), "null");
+set vlan = pick(binary-to-ascii(10, 8, ".", substring(option agent.circuit-id, 3, 1)), "null");
+set client_name = pick(option host-name, "unknown");
+set log_string = concat("client_ip: ", client_ip, ", client_mac: ", client_mac, ", hostname: ", client_name, ", switch_id: ", switch_id ,", switchport_id: ", switchport_id ,", vlan: ", vlan);
 
-###
 # Logging
-on commit {
-    log(concat("Commit: IP: ", client_ip, " Mac: ", client_mac, " Hostname: ", client_name," Switch: ", switch_id ," Port: ", port_id ," vlan: ", vlan));
+on commit { log(concat("DHCPCOMMIT ", log_string)); }
+on release { log(concat("DHCPRELEASE ", log_string)); }
+on expiry { log(concat("DHCPEXPIRE ", log_string)); }
+
+{# 
+    Only consider doing DynDNS if:
+    * DynDNS is enabled
+    * we have at least one resolver with a private RFC1918 address
+#}
+{% if dhcp.dyndns | default(false)
+    and resolvers | ipaddr('private') | length > 0
+    and ns is defined %}
+# DynDNS Parameters
+ddns-update-style interim;
+ddns-domainname "{{ ns.dhcp.zone }}.";
+ddns-rev-domainname = "in-addr.arpa.";
+
+# RNDC Key for Dynamic DNS
+key {{ ns.rndc.keyname }} {
+  algorithm {{ ns.rndc.algo }};
+  secret {{ ns.rndc.key }};
 }
 
-on release {
-    log(concat("Release: IP: ", client_ip, " Mac: ", client_mac, " Hostname: ", client_name, " Switch: ", switch_id ," Port: ", port_id ," vlan: ", vlan));
+# Forward DynDNS DNS Zone
+zone {{ ns.dhcp.zone }}. {
+  primary {{ (resolvers | ipaddr('private')).0 }};
+  key {{ ns.rndc.keyname }};
 }
 
-on expiry {
-    log(concat("Expiry: IP: ", client_ip, " Mac: ", client_mac, " Hostname: ", client_name, " Switch: ", switch_id ," Port: ", port_id ," vlan: ", vlan));
-}
-#
-###
+{% for zone in ns.dhcp.rzones %}
+zone {{ zone }}.in-addr.arpa. { primary {{ (resolvers | ipaddr('private')).0 }}; key {{ ns.rndc.keyname }}; }
+{% endfor %}
 
-###
-# Class Definitions
-##
+{% endif %}
+
+# Class Definitions - generated from pool definitions
 # Map remote-id/curcuit-ids to dhcpd classes
-# Generated from pool definitions
-#
 {% for net, nattrs in dhcp.networks.iteritems() %}
-{% if nattrs.classes %}
-{% for pool in nattrs.pools %}
-{% if (pool.class is defined and pool.class) or pool.class is not defined %}
+{% if nattrs.classes | default(true) %}
+{% for pool in nattrs.pools if pool.class | default(true) %}
 {% if pool.circuits is defined %}
 class "{{ pool.name }}" {
 {% if pool.type is defined and pool.type == 'hp' %}
-  match if (({%- for c in pool.circuits %}(pick(binary-to-ascii(10, 8, ".", suffix(option agent.circuit-id, 1)), "0") = "{{ c }}"){% if not loop.last %} or
-            {% endif %}{% endfor %}){% if pool.remote is defined %} and
-            (pick(binary-to-ascii(10, 8, ".", option agent.remote-id), "0.0.0.0") = "{{ pool.remote }}"){% endif %});
+  {# HP circuit-id is one byte long, remote-id is management address of the switch #}
+  match if (({%- for circuit in pool.circuits %}(pick(binary-to-ascii(10, 8, ".", suffix(option agent.circuit-id, 1)), "0") = "{{ circuit }}"){% if not loop.last %} or
+    {% endif %}{% endfor %}){% if pool.remote is defined %} and
+    (pick(binary-to-ascii(10, 8, ".", option agent.remote-id), "0.0.0.0") = "{{ pool.remote }}"){% endif %});
 {% else %}
-  match if (({%- for c in pool.circuits %}(pick(binary-to-ascii(10, 8, "/", suffix(option agent.circuit-id, 2)), "0") = "{{ c }}"){% if not loop.last %} or
-            {% endif %}{% endfor %}){% if pool.remote is defined %} and
-            (pick(binary-to-ascii(16, 8, ":", suffix(option agent.remote-id, 6)), "0") = "{{ pool.remote }}"){% endif %});
+  {# Cisco (the default switch type) circuit-id is two bytes long, remote-id is 'mac address' of the switch #}
+  match if (({%- for circuit in pool.circuits %}(pick(binary-to-ascii(10, 8, "/", suffix(option agent.circuit-id, 2)), "0") = "{{ circuit }}"){% if not loop.last %} or
+    {% endif %}{% endfor %}){% if pool.remote is defined %} and
+    (pick(binary-to-ascii(16, 8, ":", suffix(option agent.remote-id, 6)), "0") = "{{ pool.remote }}"){% endif %});
 {% endif %}
 }
 {% else %}
@@ -78,66 +83,37 @@ class "{{ pool.name }}" { match if (pick(binary-to-ascii(16, 8, ":", suffix(opti
 class "{{ pool.name }}" { match if substring(option agent.remote-id, 2,{{ swname | length }}) = "{{ swname | upper }}"; }
 {% endif %}
 {% endif %}
-{% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}
 
 {% for net, nattrs in dhcp.networks.iteritems() %}
 # {{ net | capitalize }}
-# {{ nattrs.address }}/{{ nattrs.mask }} via {{ nattrs.router }}
-# Class matchers are {% if nattrs.classes %}enabled{% else %}disabled{% endif %}
-
-subnet {{ nattrs.address }} netmask {{ nattrs.mask }} {
-    option routers {{ nattrs.router }};
-    option subnet-mask {{ nattrs.mask }};
-
+# {{ nattrs.address }}/{{ nattrs.address | ipaddr('netmask') }} via {{ nattrs.router }}
+# Class matchers are {% if nattrs.classes | default(true) %}enabled{% else %}disabled{% endif %} for this subnet
+subnet {{ nattrs.address | ipaddr('network') }} netmask {{ nattrs.address | ipaddr('netmask') }} {
+    option routers {{ nattrs.router | ipv4 }};
+    option subnet-mask {{ nattrs.address | ipaddr('netmask') }};
+    option dhcp-server-identifier {{ ansible_default_ipv4.address }};
 {% if nattrs.option43 is defined %}
     option vendor-encapsulated-options "{{ nattrs.option43 }}";
 {% endif %}
 
 {% for pool in nattrs.pools %}
     pool {
-{% if nattrs.classes %}
-        allow members of "{{ pool.name }}";
-{% endif %}
-{% if pool.allow is defined %}
-{% for a in pool.allow %}
-        allow members of "{{ a }}";
-{% endfor %}
-{% endif %}
-{% if pool.deny is defined %}
-{% for d in pool.deny %}
-        deny members of "{{ d }}";
-{% endfor %}
-{% endif %}
         range {{ pool.start }} {{ pool.end }};
-{% if pool.ports is defined and not pool.ports %}
-        ddns-hostname = concat(client_name, ".", "{{ pool.name }}");
-{% else %}
-        ddns-hostname = concat(client_name, ".", "P", port_id, ".", "{{ pool.name }}");
+{% if nattrs.classes | default(true) and pool.class | default(true) %}allow members of "{{ pool.name }}";{% endif %}
+{% for allow in pool.allow | default([]) %}
+        allow members of "{{ allow }}";
+{% endfor %}
+{% for deny in pool.deny | default([]) %}
+        deny members of "{{ deny }}";
+{% endfor %}
+{% if dhcp.dyndns | default(false) %}
+        ddns-hostname = concat(client_name, ".", {% if pool.ports | default(false) %}"p", switchport_id, ".",{% endif %} "{{ pool.name }}");
 {% endif %}
     }
 {% endfor %}
 }
 
-{% endfor %}
-
-# DDNS Forward DNS Zone
-#
-zone {{ dhcp.dhcpdomain }} {
-    primary {{ dhcp.nameservers.0 }};
-    key {{ ns.rndc.keyname }};
-}
-
-# Reverse DNS Zone Definitions for all address pools
-#
-{% for net, nattrs in dhcp.networks.iteritems() %}
-{% for pool in nattrs.pools %}
-{% if pool.zone is defined and not pool.zone %}{% else %}
-# RDNS for network '{{ pool.name }}' ({{ pool.start }} - {{ pool.end }})
-zone {{ pool.start | regex_replace('(\\d{1, 3})\\.(\\d{1, 3})\\.(\\d{1, 3})\\.\\d{1, 3}', '\\3.\\2.\\1') }}.in-addr.arpa. { primary {{ dhcp.nameservers.0 }}; key {{ ns.rndc.keyname }}; }
-
-{% endif %}
-{% endfor %}
 {% endfor %}

@@ -1,0 +1,45 @@
+---
+- name: Verify | Define Resolvers
+  assert:
+    that:
+      - "resolvers is defined"
+    msg: Define a list of nameservers in `resolvers`
+
+- name: Verify | Resolver Addresses
+  assert:
+    that:
+      - "item | ipv4"
+    msg: "{{ item }} is not a valid IPv4 address"
+  with_items: resolvers
+
+- name: Verify | Need at least one network
+  assert:
+    that:
+      - "dhcp.networks is iterable"
+      - "dhcp.networks | length > 0"
+    msg: Need at least one network in `dhcp.networks`
+
+- name: Verify | Network Configurations
+  assert:
+    that:
+      - "item.value.address is defined"
+      - "item.value.address | ipv4('network')"
+    msg: "Invalid network address for dhcp.networks.{{ item.key }}"
+  with_dict: dhcp.networks
+
+- name: Verify | Network Pool Names and Addresses
+  assert:
+    that:
+      - "item.value.pools is iterable"
+      - "{% for pool in item.value.pools %} item.value.pools.{{ loop.index0 }}.name is defined {% if not loop.last %}and{%endif%}{% endfor %}"
+      - "{% for pool in item.value.pools %} item.value.pools.{{ loop.index0 }}.start | ipv4 {% if not loop.last %}and{%endif%}{% endfor %}"
+      - "{% for pool in item.value.pools %} item.value.pools.{{ loop.index0 }}.end | ipv4 {% if not loop.last %}and{%endif%}{% endfor %}"
+    msg: "Error in a pool for the '{{ item.key }}' network"
+  with_dict: dhcp.networks
+
+- name: Verify | RNDC Key
+  assert:
+    that:
+      - "ns.rndc.key is defined"
+    msg: "Set `ns.rndc.key` to a valid RNDC key generated using `rndc-confgen -b 256`"
+  when: dhcp.dyndns | default(false)

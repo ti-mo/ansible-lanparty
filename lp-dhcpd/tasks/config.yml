@@ -1,0 +1,11 @@
+---
+- name: Config | Install Packages
+  apt:
+    name: isc-dhcp-server
+  tags: [ 'packages' ]
+
+- name: Config | Render Configuration
+  template:
+    src: dhcpd.j2
+    dest: /etc/dhcp/dhcpd.conf
+  notify: restart dhcpd
