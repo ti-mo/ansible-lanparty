@@ -7,6 +7,7 @@ apt_cache_valid: 1200
 apt:
   prefs:
     lanparty: 600
+    elastic: 600
     stable: 500
     testing: 250
   sources:
@@ -41,6 +42,8 @@ trusted_networks: []
 
 snmp_comms:
   - public
+
+logstash: { }
 
 observium_agent_port: 6556
 observium_agent_binary: /usr/bin/check_mk_agent

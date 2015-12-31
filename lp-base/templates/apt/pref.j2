@@ -9,6 +9,8 @@ Package: *
 {% if item is defined %}
 {% if item.key == 'lanparty' %}
 Pin: release n=lanparty
+{% elif item.key == 'elastic' %}
+Pin: origin packages.elastic.co
 {% else %}
 Pin: release a={{ item.key }}
 {% endif %}
