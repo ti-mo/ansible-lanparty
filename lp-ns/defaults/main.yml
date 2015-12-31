@@ -6,55 +6,69 @@ filebeat_files:
   - "{{ bind_logdir }}/*.log"
 
 ns:
-#####
-# General Configuration
-  # ACL for the NS; will need to be extended ASAP
-  allowed:
-  forwarders:
-  # Authoritative NS, used in zone files
-  auth:
-#
-#####
+  auth: "ns.{{ domains.lan }}"
 
-#####
-# RNDC Key for management & Dynamic DNC
   rndc:
-    # Original keyfiles in files/keys/rndc
-    algo:
-    key:
-    keyname:
-#
-#####
+    algo: hmac-md5
+    keyname: lanparty
 
-#####
-#
   domains:
     # Directory to install forward zone files to
     confdir: /etc/bind/zones
     zones:
-      - name:
+      - name: example.lan
         records:
-#
-#####
+          - [ 'ns', 'A', '10.1.1.156' ]
+          - [ 'lp-gw', 'A', '10.1.1.5' ]
+          - [ 'lp-ns', 'A', '10.1.1.156' ]
 
-#####
-# DHCP Segment of the DNS setup
+  # Get DynDNS instructions from DHCPd
   dhcp:
     # Directory to install dynamic zones to
     confdir: /etc/bind/dhcp
-    fzones:
-    rzones:
-#
-#####
+    zone: host.example.lan
+    rzones: [ '10', '168.192', '16.172' ]
 
-#####
-# Spoofing zones for Content & Twitch cache
+  # Spoofing zones for Content & Twitch cache
+  # Can also be used for a dns blackhole
+  # (to 127.0.0.1 or 'sorry' page, etc.)
   spoof:
     # Directory to install spoofed zones to
     confdir: /etc/bind/spoof
     services:
-      - name: steam
-        dest:
+      steam:
         domains:
-#
-#####
+          - content1.steampowered.com
+          - content2.steampowered.com
+          - content3.steampowered.com
+          - content4.steampowered.com
+          - content5.steampowered.com
+          - content6.steampowered.com
+          - content7.steampowered.com
+          - content8.steampowered.com
+          - cs.steampowered.com
+          - clientconfig.akamai.steamstatic.com
+          - hsar.steampowered.com.edgesuite.net
+      blizzard:
+        domains:
+          - dist.blizzard.com
+          - llnw.blizzard.com
+          - dist.blizzard.com.edgesuite.net
+      riot:
+        domains:
+          - l3cdn.riotgames.com
+      origin:
+        domains:
+          - cdn.ea.com
+          - origin-a.akamaihd.net
+          - eaassets01-a.akamaihd.net
+          - eaassets02-a.akamaihd.net
+          - eaassets03-a.akamaihd.net
+          - eaassets04-a.akamaihd.net
+          - eaassets05-a.akamaihd.net
+      twitch:
+        domains:
+          - usher.justin.tv
+          - usher.twitch.tv
+          - hls.twitch.tv
+          - hls.ttvnw.net

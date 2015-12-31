@@ -1,34 +1,9 @@
 // {{ ansible_managed }}
 
-// Forward Zones
-{% for zone in ns.dhcp.fzones %}
-zone "{{ zone }}." IN { type master; file "{{ ns.dhcp.confdir }}/{{ zone }}.db"; allow-update { key "{{ ns.rndc.keyname }}"; }; };
-{% endfor %}
+// Forward Zone
+zone "{{ ns.dhcp.zone }}." { type master; file "{{ ns.dhcp.confdir }}/{{ ns.dhcp.zone }}.db"; allow-update { key "{{ ns.rndc.keyname }}"; }; };
 
 // Reverse Zones
 {% for zone in ns.dhcp.rzones %}
-zone "{{ zone }}.in-addr.arpa." IN { type master; file "{{ ns.dhcp.confdir }}/{{ zone }}.in-addr.arpa.db"; };
+zone "{{ zone }}.in-addr.arpa." { type master; file "{{ ns.dhcp.confdir }}/rev.{{ ns.dhcp.zone }}.db"; allow-update { key "{{ ns.rndc.keyname }}"; }; };
 {% endfor %}
-
-// Blackholed RFC1918 Zones
-
-zone "10.in-addr.arpa"      { type master; file "/etc/bind/db.empty"; };
-
-zone "16.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "17.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "18.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "19.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "20.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "21.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "22.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "23.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "24.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "25.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "26.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "27.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "28.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "29.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "30.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-zone "31.172.in-addr.arpa"  { type master; file "/etc/bind/db.empty"; };
-
-zone "168.192.in-addr.arpa" { type master; file "/etc/bind/db.empty"; };

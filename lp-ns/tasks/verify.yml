@@ -1,0 +1,48 @@
+---
+- name: Verify | Domain Definition
+  assert:
+    that:
+      - "domains.lan is defined"
+    msg: Set a value for `domains.lan`
+
+- name: Verify | Internal Networks
+  assert:
+    that:
+      - "internal_networks is iterable"
+      - "internal_networks | length > 0"
+    msg: Define at least one valid subnet in `internal_networks`
+
+- name: Verify | Internal CIDR
+  assert:
+    that:
+      - "item | ipaddr('network')"
+    msg: "{{ item }} is not a valid CIDR"
+  with_items: internal_networks
+
+- name: Verify | Zones Definition
+  assert:
+    that:
+      - "ns.domains.zones is iterable"
+      - "ns.domains.zones | length > 0"
+    msg: Define at least one domain in `ns.domains.zones`
+
+- name: Verify | No Nameless Zones
+  assert:
+    that:
+      - "item.1.name is defined"
+    msg: "Zone definition `ns.domains.zones.{{ item.0 }}` has no name"
+  with_indexed_items: ns.domains.zones
+
+- name: Verify | Zone Validation
+  assert:
+    that:
+      - "item.1.records is defined and item.1.records is iterable"
+    msg: "Define a record in `ns.domains.zones.{{ item.0 }}.records`"
+  with_indexed_items: ns.domains.zones
+
+- name: Verify | RNDC Key
+  assert:
+    that:
+      - "ns.rndc.key is defined"
+    msg: "Set `ns.rndc.key` to a valid RNDC key generated using `rndc-confgen -b 256`"
+  when: dhcp.dyndns | default(false)

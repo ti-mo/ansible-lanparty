@@ -1,4 +1,7 @@
 ---
+- include: verify.yml
+  tags: [ 'verify' ]
+
 - name: BIND Name Server
   apt:
     name: bind9

@@ -1,10 +1,13 @@
 // {{ ansible_managed }}
 // {{ item.key }} service spoof zone
+{% if not item.value.dest | default(false) | ipv4 %}
+// This zone is disabled because no spoof target was found in ns.spoof.services.{{ item.key }}.dest
+{% endif %}
 {% for domain in item.value.domains %}
 // - {{ domain }}
 {% endfor %}
 
-{% for domain in item.value.domains %}
+{% for domain in item.value.domains if item.value.dest | default(false) | ipv4 %}
 zone "{{ domain }}." IN {
         type master;
         file "{{ ns.spoof.confdir }}/{{ item.key }}.db";

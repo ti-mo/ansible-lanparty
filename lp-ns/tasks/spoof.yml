@@ -8,6 +8,7 @@
   template:
     src: zones/spoof.zone.j2
     dest: "{{ ns.spoof.confdir }}/{{ item.key }}.db"
+  when: item.dest | default() | ipaddr('address')
   with_dict: ns.spoof.services
   notify: reload bind
 

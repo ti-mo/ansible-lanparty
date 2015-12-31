@@ -10,26 +10,15 @@
     dest: "{{ ns.dhcp.confdir }}/dhcp.conf"
   notify: reload bind
 
-- name: BIND-DHCP | Forward Zone Files
+- name: BIND-DHCP | Zone Files
   template:
     force: no # Don't overwrite zone file!
     src: zones/domains.zone.j2
     dest: "{{ ns.dhcp.confdir }}/{{ item }}.db"
-  with_items: ns.dhcp.fzones
-  notify: reload bind
-  tags: [ 'zones' ]
-
-- name: BIND-DHCP | Reverse Zone Files
-  template:
-    force: no # Don't overwrite zone file!
-    src: zones/domains.zone.j2
-    dest: "{{ ns.dhcp.confdir }}/{{ item }}.in-addr.arpa.db"
-  with_items: ns.dhcp.rzones
-  notify: reload bind
-  tags: [ 'zones' ]
-
-- name: BIND-DHCP | Owner of dynamic DNS zones
-  file:
-    path: "{{ ns.dhcp.confdir }}"
     owner: bind
     group: bind
+  notify: reload bind
+  with_items:
+    - "{{ ns.dhcp.zone }}"
+    - "rev.{{ ns.dhcp.zone }}"
+  tags: [ 'zones' ]

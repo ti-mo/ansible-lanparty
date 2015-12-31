@@ -3,7 +3,7 @@
 // Access Control
 acl internals {
   127.0.0.0/8;
-{% for net in ns.allowed %}
+{% for net in internal_networks %}
   {{ net }};
 {% endfor %}
 };
@@ -19,14 +19,21 @@ include "{{ ns.dhcp.confdir }}/dhcp.conf";
 include "{{ ns.spoof.confdir }}/{{ name }}.conf";
 {% endfor %}
 
+{% if dhcp.dyndns | default(false) %}
 // TSIG key used for the dynamic update
 include "/etc/bind/rndc.key";
+{% endif %}
 
 // Configure the communication channel for Administrative BIND9 with rndc
 // By default, they key is in the rndc.key file and is used by rndc and bind9
 // on the localhost
 controls {
-    inet 127.0.0.1 port 953 allow { {{ trusted_networks | join('; ') }}; };
+    inet 127.0.0.1 port 953 allow {
+        127.0.0.1;
+{% for net in trusted_networks | default([]) %}
+        {{ net | ipaddr('network') }};
+{% endfor %}
+    };
 };
 
 // BIND Options

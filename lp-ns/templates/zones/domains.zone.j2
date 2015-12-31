@@ -1,7 +1,6 @@
 ; {{ ansible_managed }}
-; $ORIGIN is hard to manage in template, leave it to BIND
 $TTL  86400
-@       IN      SOA     {{ ns.auth }}.    {{ ns.hostmaster }}. (
+@       IN      SOA     {{ ns.auth }}.    admin.{{ domains.lan }}. (
                             1   ; Serial
                        604800   ; Refresh
                         86400   ; Retry

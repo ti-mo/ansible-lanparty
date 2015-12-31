@@ -10,6 +10,14 @@
     - local
     - default-zones
 
+- name: Config | Render Configuration
+  template:
+    src: conf/named.conf.j2
+    dest: /etc/bind/named.conf
+  notify: reload bind
+
+- meta: flush_handlers
+
 - name: Config | RNDC Key
   template:
     src: rndc.key.j2
@@ -20,12 +28,6 @@
   template:
     src: rndc.j2
     dest: /etc/bind/rndc.conf
-  notify: reload bind
-
-- name: Config | Render Configuration
-  template:
-    src: conf/named.conf.j2
-    dest: /etc/bind/named.conf
   notify: reload bind
 
 - name: Config | Force IPv4 Operation

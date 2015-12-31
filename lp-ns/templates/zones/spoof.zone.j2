@@ -1,7 +1,7 @@
 ; {{ ansible_managed }}
 ;
 $TTL    86400
-@       IN      SOA       {{ ns.auth }}.     {{ lp.soa_contact }}. (
+@       IN      SOA       {{ ns.auth }}.     admin.{{ ns.auth }}. (
                             1   ; Serial
                        604800   ; Refresh
                         86400   ; Retry

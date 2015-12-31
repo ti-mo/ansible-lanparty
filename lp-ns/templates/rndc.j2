@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 key "{{ ns.rndc.keyname }}" {
-    algorithm {{ ns.rndc.algo }};
-    secret "{{ ns.rndc.key }}";
+    algorithm {{ ns.rndc.algo | default('hmac-md5') }};
+    secret "{{ ns.rndc.key | default() }}";
 };
 
 options {
