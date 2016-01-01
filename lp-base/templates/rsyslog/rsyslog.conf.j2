@@ -17,6 +17,6 @@ $IncludeConfig /etc/rsyslog.d/*.conf
 *.=debug                    -/var/log/debug
 
 # Remote Syslogging
-{% for h in groups['logstash'] | default([]) %}
-*.*   @{{ hostvars[h]['ansible_ssh_host'] }}:{{ logstash.ports.syslog }}
-{% endfor %}
+{% if logstash_host | default() | ipaddr %}
+*.*   @{{ logstash_host }}:{{ logstash.syslog | default(5140) }}
+{% endif %}

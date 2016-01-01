@@ -1,0 +1,7 @@
+---
+elasticsearch:
+  cluster: lanparty
+  bind_host: localhost
+  publish_host: '{{ ansible_default_ipv4.address }}'
+  tcp_port: 9300
+  http_port: 9200

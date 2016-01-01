@@ -1,10 +1,8 @@
 # {{ ansible_managed }}
 
 input {
-  lumberjack {
-    port => {{ logstash.ports.lumberjack }}
-    ssl_certificate => "/etc/logstash/pki/logstash-forwarder.crt"
-    ssl_key => "/etc/logstash/pki/logstash-forwarder.key"
+  beats {
+    port => {{ logstash.beats | default(5044) }}
   }
 }
 
@@ -26,23 +24,13 @@ filter {
 }
 
 output {
-  if [type] == "nginx-access" {
-    elasticsearch {
-      protocol => "node"
-      index => "nginx-%{+YYYY.MM.dd.HH}"
-      port => "{{ elasticsearch.tcp_port }}"
-      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
-      cluster => "{{ elasticsearch.cluster }}"
-    }
+{% if elasticsearch_group is defined %}
+  elasticsearch {
+    index => "%{type}-%{+YYYY.MM.dd.HH}"
+    hosts => [
+{% for h in groups[elasticsearch_group] %}
+      "{{ hostvars[h]['ansible_default_ipv4']['address'] }}:80"{% if not loop.last %},{% endif %}
+{% endfor %} ]
   }
-
-  if [type] == "bind-query" {
-    elasticsearch {
-      protocol => "node"
-      index => "bind-%{+YYYY.MM.dd.HH}"
-      port => "{{ elasticsearch.tcp_port }}"
-      host => "{{ hostvars[groups[elasticsearch.ansible_group][0]]['ansible_default_ipv4']['address'] }}"
-      cluster => "{{ elasticsearch.cluster }}"
-    }
-  }
+{% endif %}
 }

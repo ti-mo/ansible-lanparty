@@ -1,0 +1,13 @@
+---
+- name: Verify | elasticsearch inventory group
+  assert:
+    that:
+      - "elasticsearch_group is defined"
+    msg: Define an inventory group of elasticsearch back-ends in `elasticsearch_group`
+
+- name: Verify | elasticsearch back-end
+  assert:
+    that:
+      - "elasticsearch_group in groups"
+    msg: "`elasticsearch_group` is defined but group '{{ elasticsearch_group }}' not found in inventory"
+    when: elasticsearch_group is defined

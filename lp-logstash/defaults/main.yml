@@ -1,0 +1,9 @@
+---
+logstash:
+  syslog: 5140
+  beats: 5004
+
+elasticsearch:
+  http_port: 9200
+  tcp_port: 9300
+  cluster: lanparty

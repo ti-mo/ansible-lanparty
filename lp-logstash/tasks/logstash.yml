@@ -1,9 +1,13 @@
 ---
-- name: Install | LogStash Packages
+- name: Install | OpenJDK
   apt:
-    name: "{{ item }}"
-  with_items:
-    - logstash
+    name: openjdk-8-jre-headless
+    default_release: testing
+  tags: [ 'packages' ]
+
+- name: Install | LogStash
+  apt:
+    name: logstash
   tags: [ 'packages' ]
 
 - name: Install | Render Configurations
@@ -13,20 +17,7 @@
   notify: restart logstash
   with_items:
     - syslog
-    - lumberjack
-
-- name: Install | PKI Directory
-  file:
-    state: directory
-    path: /etc/logstash/pki
-
-- name: Install | LogStash Private Keys
-  copy:
-    dest: /etc/logstash/pki/{{ item }}
-    src: files/keys/logstash/{{ item }}
-  with_items:
-    - logstash-forwarder.crt
-    - logstash-forwarder.key
+    - filebeat
 
 - name: Install | LogStash Service
   service:
