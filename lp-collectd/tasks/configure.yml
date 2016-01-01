@@ -4,3 +4,4 @@
     src: collectd.j2
     dest: /etc/collectd/collectd.conf
   notify: restart collectd
+  when: not skip_config | default(false)

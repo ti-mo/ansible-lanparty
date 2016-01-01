@@ -20,3 +20,14 @@ collectd_server_port: 25826
 
 `collectd_server` has no default and needs to be set in order for the `network`
 plugin to be activated. `collectd_server_port` defaults to 25826.
+
+Skipping Configuration
+---
+
+The collectd-core package needs to be installed on InfluxDB servers as it
+installs the `/usr/share/collectd/types.db` required by any InfluxDB instance
+wishing to accept data from our collectd clients.
+
+`lp-influxdb` relies on this role to provide `types.db` to the influxdb server.
+When run with `skip_config` enabled, this role will not render a config file.
+This way, `types.db` is guaranteed to be updated throughout package upgrades.
