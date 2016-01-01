@@ -2,7 +2,7 @@
 
 server {
   listen 80;
-  server_name {{ ns.spoof.services.twitch.domains | join(" ") }} _;
+  server_name .{{ ns.spoof.services.twitch.domains | join(" .") }} _;
 
   access_log {{ twitch_logdir }}/cache-access.log depot buffer=128k flush=1m;
   error_log {{ twitch_logdir }}/cache-error.log;
@@ -39,6 +39,9 @@ server {
   location ~ \.m3u8$ {
     # Quality Re-writes
     replace_filter '^#EXT-X-MEDIA:\N*?,NAME="({{ twitch_quality_filter | default([]) | join("|") }})",\N*?$\n#EXT-X-STREAM-INF:\N*?$\n^http\N*?$\n' '' gi;
+{% if twitch_filter_audio_only | default(false) %}
+    replace_filter '^#EXT-X-MEDIA:\N*?,GROUP-ID="audio_only",\N*?$\n#EXT-X-STREAM-INF:\N*?$\n^http\N*?$\n' '' gi;
+{% endif %}
 {% for r in twitch_quality_rename | default([]) %}
     replace_filter 'NAME="{{ r.0 }}"' 'NAME="{{ r.1 }}"' gi;
 {% endfor %}
@@ -57,7 +60,7 @@ server {
     proxy_ignore_client_abort on;
 
     # Debug Headers
-    add_header X-Qualities-Stripped "High-Medium-Low";
-    add_header X-Qualities-Modified "Source,Zanzi";
+    add_header Twitch-Qualities-Stripped "{{ twitch_quality_filter | default([]) | join("-") }}";
+    add_header Twitch-Qualities-Modified "{% for q in twitch_quality_rename | default([]) %}{{ q.0 }}-to-{{ q.1 }}{% if not loop.last %},{% endif %}{% endfor %}";
   }
 }
