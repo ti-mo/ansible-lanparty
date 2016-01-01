@@ -27,13 +27,14 @@ server {
   location / {
     proxy_pass http://elasticsearch;
     proxy_read_timeout 90;
+    proxy_buffering off;
 
     # Access Control
     allow 127.0.0.1;
     allow {{ ansible_default_ipv4.address }};
-    {% for n in trusted_networks | default([]) -%}
+{% for n in trusted_networks | default([]) %}
     allow {{ n }};
-    {% endfor -%}
+{% endfor %}
     deny all;
   }
 }
