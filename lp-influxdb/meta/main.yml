@@ -1,0 +1,3 @@
+---
+dependencies:
+  - { role: lp-collectd, skip_config: true }

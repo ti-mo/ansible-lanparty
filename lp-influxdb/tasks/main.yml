@@ -1,0 +1,10 @@
+---
+- name: Main | Install Packages
+  apt:
+    name: influxdb
+
+- name: Main | Ensure Service
+  service:
+    name: influxdb
+    state: started
+    enabled: true
