@@ -7,13 +7,11 @@ twitch_resolvers:
   - 8.8.8.8
   - 4.2.2.2
 
-twitch_quality_rename:
-  - [ 'high', 'Epic' ]
+twitch_quality_rename: []
 
 twitch_quality_filter:
-  - low
   - medium
-  - source
+  - mobile
 
 filebeat_type: nginx-access
 filebeat_files:
