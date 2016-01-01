@@ -1,5 +1,5 @@
 ---
-- name: Verify | ElasticSearch Back-end
+- name: Verify | elasticsearch back-end
   assert:
     that:
       - "elasticsearch_group in groups"
