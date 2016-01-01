@@ -26,7 +26,7 @@ filter {
 output {
 {% if elasticsearch_group is defined %}
   elasticsearch {
-    index => "%{[@metadata][type]}-%{+YYYY.MM.dd.HH}"
+    index => "%{type}-%{+YYYY.MM.dd.HH}"
     hosts => [
 {% for h in groups[elasticsearch_group] %}
       "{{ hostvars[h]['ansible_default_ipv4']['address'] }}:80"{% if not loop.last %},{% endif %}
