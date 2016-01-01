@@ -4,7 +4,7 @@
 acl internals {
   127.0.0.0/8;
 {% for net in internal_networks %}
-  {{ net }};
+  {{ net | ipaddr }};
 {% endfor %}
 };
 
@@ -31,7 +31,7 @@ controls {
     inet 127.0.0.1 port 953 allow {
         127.0.0.1;
 {% for net in trusted_networks | default([]) %}
-        {{ net | ipaddr('network') }};
+        {{ net | ipaddr }};
 {% endfor %}
     };
 };
