@@ -1,4 +1,10 @@
 ---
+- name: Main | Kibana User
+  user:
+    name: "{{ kibana_user }}"
+    home: "{{ kibana_install_dir }}"
+    system: true
+
 - name: Main | Ensure Directories
   file:
     path: "{{ item }}"
@@ -7,11 +13,6 @@
     group: "{{ kibana_user }}"
   with_items:
     - "{{ kibana_install_dir }}"
-
-- name: Main | Kibana User
-  user:
-    name: "{{ kibana_user }}"
-    home: "{{ kibana_install_dir }}"
 
 - name: Main | Kibana Archive
   get_url:
@@ -32,6 +33,8 @@
     src: kibana.unit.j2
     dest: /lib/systemd/system/kibana.service
   notify: reload daemons
+
+- meta: flush_handlers
 
 - name: Main | Nginx Site
   template:

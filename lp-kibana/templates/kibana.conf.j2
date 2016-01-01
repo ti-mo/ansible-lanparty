@@ -7,7 +7,7 @@ port: {{ kibana_port }}
 host: "127.0.0.1"
 
 # The Elasticsearch instance to use for all your queries.
-elasticsearch_url: "http://{{ hostvars[groups['logstash-es'][0]]['ansible_default_ipv4']['address'] }}"
+elasticsearch_url: "http://{{ hostvars[groups[elasticsearch_group][0]]['ansible_default_ipv4']['address'] }}"
 
 # preserve_elasticsearch_host true will send the hostname specified in `elasticsearch`. If you set it to false,
 # then the host you use to connect to *this* Kibana instance will be sent.
