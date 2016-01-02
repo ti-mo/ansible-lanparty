@@ -66,10 +66,23 @@
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
   with_items:
-    [ 'sudo', 'rsyslog', 'open-vm-tools',
-      'iputils-arping', 'tcpdump', 'ethtool',
-      'dnsutils', 'git', 'htop', 'hping3',
-      'zsh', 'curl', 'ntpdate', 'mailutils',
-      'python-mysqldb', 'ntp', 'vlan',
-      'ifenslave', 'bridge-utils' ]
+    [ 'sudo', 'rsyslog', 'iputils-arping', 'tcpdump', 'ethtool',
+      'dnsutils', 'git', 'htop', 'hping3', 'zsh', 'curl', 'ntpdate',
+      'mailutils', 'python-mysqldb', 'ntp', ]
+  tags: [ 'packages' ]
+
+- name: Global | VMware-only packages
+  apt:
+    name: open-vm-tools
+  when: ansible_virtualization_type == 'VMware'
+  tags: [ 'packages' ]
+
+- name: Global | Networking Packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - vlan
+    - ifenslave
+    - bridge-utils
+  when: ansible_virtualization_type != 'lxc'
   tags: [ 'packages' ]
