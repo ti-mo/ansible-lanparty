@@ -6,8 +6,14 @@ start() {
 {% for name, value in netif.iteritems() %}
 
   # Add routes to internal networks to the default routing table
-{%- if value.internal is defined and value.internal %}
-{% for r in internal_networks | default([]) %}
+{% if value.internal is defined and value.internal %}
+{#
+  Run an extra check to make sure we don't falsely add an internal route
+  when this network appears in `internal_networks`. This way, we can safely
+  add transit networks to the list. (so gateways can make DNS requests etc.)
+  This needs to be done for route deletion as well.
+#}
+{% for r in internal_networks | default([]) if not value.nexthop | ipaddr(r) %}
   echo "Adding route to internal network {{ r }} via {{ value.nexthop }}"
   ip route add {{ r }} via {{ value.nexthop }}
 {% endfor %}
@@ -38,7 +44,7 @@ stop() {
 {% for name, value in netif.iteritems() %}
 
 {%- if value.internal is defined and value.internal %}
-{% for r in internal_networks | default([]) %}
+{% for r in internal_networks | default([]) if not value.nexthop | ipaddr(r) %}
   echo "Deleting route to internal network {{ r }}"
   ip route del {{ r }}
 {% endfor %}
