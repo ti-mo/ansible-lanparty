@@ -20,10 +20,6 @@
 - include: motd.yml
   tags: [ 'motd' ]
 
-# Observium/LibreNMS Pluggable Monitoring Agent
-- include: agent.yml
-  tags: [ 'agent' ]
-
 # RSyslog Daemon
 - include: rsyslog.yml
   tags: [ 'syslog', 'rsyslog' ]

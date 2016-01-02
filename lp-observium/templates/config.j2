@@ -30,7 +30,7 @@ $config['base_url']        = "http://{{ observium.url }}/";
 #$config['rrdcached']    = "unix:/var/run/rrdcached.sock";
 
 ### Default community
-$config['snmp']['community'] = array({% for n in snmp_comms %}"{{ n }}",{% endfor %});
+$config['snmp']['community'] = array({% for n in snmp_comms | default([]) %}"{{ n }}",{% endfor %});
 
 ### Authentication Model
 $config['auth_mechanism'] = "mysql"; # default, other options: ldap, http-auth

@@ -1,0 +1,6 @@
+---
+snmp_comms:
+  - public
+
+observium_agent_port: 6556
+observium_agent_binary: /usr/bin/check_mk_agent

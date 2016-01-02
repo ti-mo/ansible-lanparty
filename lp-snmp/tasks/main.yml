@@ -1,5 +1,5 @@
 ---
-- name: Monitoring Agent | Install xinetd and Net-SNMP
+- name: Main | Install xinetd and Net-SNMP
   apt:
     name: "{{ item }}"
   with_items:
@@ -7,19 +7,19 @@
     - snmpd
   tags: [ 'packages' ]
 
-- name: Monitoring Agent | Check_MK Agent
+- name: Main | Check_MK Agent
   template:
     src: agent/check_mk_agent.j2
     dest: "{{ observium_agent_binary | default('/usr/bin/check_mk_agent') }}"
     mode: u+x
 
-- name: Monitoring Agent | Check_MK xinetd
+- name: Main | Check_MK xinetd
   template:
     src: agent/check_mk_xinetd.j2
     dest: /etc/xinetd.d/check_mk
   notify: restart xinetd
 
-- name: Monitoring Agent | Create Directories
+- name: Main | Create Directories
   file:
     recurse: true
     path: "{{ item }}"
@@ -28,34 +28,34 @@
     - /usr/lib/check_mk_agent/plugins
     - /usr/lib/check_mk_agent/local
 
-- name: Monitoring Agent | Agent Plugins
+- name: Main | Agent Plugins
   template:
     src: "agent/{{ item }}.j2"
     dest: "/usr/lib/check_mk_agent/local/{{ item }}"
   with_items:
     - apache
 
-- name: Monitoring Agent | SNMPd Default Options
+- name: Main | SNMPd Default Options
   lineinfile:
     dest: /etc/default/snmpd
     line: "SNMPDOPTS='-LS0-5d -Lf /dev/null -u snmp -p /var/run/snmpd.pid'"
     regexp: "^\\#?\\s?SNMPDOPTS"
   notify: restart snmpd
 
-- name: Monitoring Agent | Distro Script
+- name: Main | Distro Script
   template:
     src: agent/distro.j2
     dest: /usr/bin/distro
     mode: a+x
 
-- name: Monitoring Agent | SNMPd Configuration
+- name: Main | SNMPd Configuration
   template:
     src: agent/snmpd.j2
     dest: /etc/snmp/snmpd.conf
   notify: restart snmpd
 
 # Uses LSB init script - removed `enabled`
-- name: Monitoring Agent | SNMPd Service
+- name: Main | SNMPd Service
   service:
     name: snmpd
     pattern: 'bin/snmpd'
