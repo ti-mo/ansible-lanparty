@@ -40,7 +40,7 @@
   when: item.value.ns is defined and item.value.ns == 'auto'
   with_dict: netif
 
-- name: Validate | gw_iternal_networks set and valid
+- name: Validate | internal_networks set and valid
   assert:
     that:
       - internal_networks is defined
