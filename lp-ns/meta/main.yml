@@ -1,3 +1,4 @@
 ---
 dependencies:
   - { role: lp-filebeat }
+  - { role: lp-collectd }

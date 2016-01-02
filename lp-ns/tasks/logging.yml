@@ -10,3 +10,9 @@
   template:
     src: logrotate.j2
     dest: /etc/logrotate.d/bind
+
+- name: Logging | collectd config
+  template:
+    src: collectd.j2
+    dest: /etc/collectd.d/bind.conf
+  notify: restart collectd
