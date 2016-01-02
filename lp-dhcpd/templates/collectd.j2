@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+LoadPlugin python
+
+<Plugin python>
+  ModulePath "/var/lib/dhcp"
+  LogTraces true
+  Interactive false
+  Import "leases"
+</Plugin>

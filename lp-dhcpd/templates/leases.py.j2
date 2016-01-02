@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+from isc_dhcp_leases.iscdhcpleases import Lease, IscDhcpLeases
+import datetime, collectd, os.path
+
+def read(data=None):
+
+	leasefile = '/var/lib/dhcp/dhcpd.leases'
+
+	if os.path.isfile(leasefile):
+		leases = IscDhcpLeases(leasefile)
+
+		# Get currently active leases
+		count_active =  len(leases.get_current())
+
+		# Calculate touched (inactive) leases
+		count_touch = len(leases.get()) - count_active
+
+		# Dispatch active
+		vl = collectd.Values(type='gauge')
+		vl.plugin='dhcp_leases'
+		vl.type_instance = 'active'
+		vl.dispatch(values=[count_active])
+
+		# Dispatch touched (inactive)
+		vl = collectd.Values(type='gauge')
+		vl.plugin='dhcp_leases'
+		vl.type_instance = 'touched'
+		vl.dispatch(values=[count_touch])
+
+def write(vl, data=None):
+	for i in vl.values:
+		print "%s (%s): %f" % (vl.plugin, vl.type, i)
+
+collectd.register_read(read)
+collectd.register_write(write);

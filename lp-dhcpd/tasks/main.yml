@@ -4,3 +4,6 @@
 
 - include: config.yml
   tags: [ 'config' ]
+
+- include: collectd.yml
+  tags: [ 'collectd' ]

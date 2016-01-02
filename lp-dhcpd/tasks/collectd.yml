@@ -1,0 +1,19 @@
+---
+- name: collectd | Install pip
+  apt:
+    name: python-pip
+
+- name: collectd | Python isc_dhcp_leases
+  pip:
+    name: isc_dhcp_leases
+
+- name: collectd | Lease Parser
+  template:
+    src: leases.py.j2
+    dest: /var/lib/dhcp/leases.py
+
+- name: collectd | Python Plugin
+  template:
+    src: collectd.j2
+    dest: /etc/collectd.d/dhcp-leases.conf
+  notify: restart collectd
