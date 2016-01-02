@@ -13,9 +13,11 @@ depot_path: /var/lib/nginx
 depot_logdir: /var/log/depot
 depot_logrotate_size: 200M
 
-filebeat_type: nginx-access
-filebeat_files:
-  - "{{ depot_logdir }}/*/*.log"
+filebeat:
+  depot:
+    type: nginx-access
+    files:
+      - "{{ depot_logdir }}/*/*.log"
 
 ns:
   spoof:

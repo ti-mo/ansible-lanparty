@@ -13,9 +13,11 @@ twitch_quality_filter:
   - medium
   - mobile
 
-filebeat_type: nginx-access
-filebeat_files:
-  - "{{ twitch_logdir }}/*.log"
+filebeat:
+  twitch:
+    type: nginx-access
+    files:
+      - "{{ twitch_logdir }}/*.log"
 
 ns:
   spoof:

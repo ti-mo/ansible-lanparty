@@ -1,10 +1,15 @@
 # {{ ansible_managed }}
 filebeat:
   prospectors:
+{% for name, value in filebeat.iteritems() | default({}) %}
     -
+{% if value.type is defined %}
+      document_type: {{ value.type }}
+{% endif %}
       paths:
-{% for item in filebeat_files if filebeat_files is defined %}
-        - "{{ item }}"
+{% for path in value.files %}
+        - "{{ path }}"
+{% endfor %}
 {% endfor %}
 
 output:

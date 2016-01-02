@@ -1,9 +1,11 @@
 ---
 bind_logdir: /var/log/named
 
-filebeat_type: bind-query
-filebeat_files:
-  - "{{ bind_logdir }}/*.log"
+filebeat:
+  dns:
+    type: bind-query
+    files:
+      - "{{ bind_logdir }}/*.log"
 
 ns:
   auth: "ns.{{ domains.lan }}"
