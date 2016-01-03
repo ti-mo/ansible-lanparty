@@ -5,10 +5,17 @@ PIDFile "/run/collectd.pid"
 
 Interval 10.0
 
-LoadPlugin cpu
+{#
+  This plugin generates many series that are identical across all containers on one host.
+  Read the metrics of the host system instead for accurate readings.
+#}
+{% if ansible_virtualization_type != 'lxc' %}LoadPlugin cpu{% endif %}
+
 LoadPlugin load
 LoadPlugin interface
 LoadPlugin syslog
+LoadPlugin processes
+LoadPlugin swap
 
 <Plugin syslog>
   LogLevel "info"
