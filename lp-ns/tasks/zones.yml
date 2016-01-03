@@ -12,6 +12,12 @@
   notify: reload bind
   tags: [ 'zones' ]
 
+- name: Zones | Root Hints
+  template:
+    src: zones/root.hints.j2
+    dest: /etc/bind/db.root
+  notify: reload bind
+
 - name: Zones | Config Files
   template:
     src: conf/domains.conf.j2
