@@ -13,6 +13,7 @@ server {
     # Cache location
     proxy_cache riot;
     proxy_cache_key "$server_name$request_uri";
+    proxy_cache_valid 200 7d;
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;

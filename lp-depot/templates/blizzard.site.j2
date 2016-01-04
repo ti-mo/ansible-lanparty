@@ -10,17 +10,17 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
+    # Request Slicing
+    # Supported in nginx 1.9.8
+    slice 1m;
+
     # Cache Location
     proxy_cache blizzard;
 
     # Cache Settings
-    proxy_cache_key "$server_name$request_uri $http_range";
-    proxy_cache_valid 206 90d;
-
-    # Some downloads are very large so we cache based on range to keep
-    # single downloads quick and hence ensure interactivity is good.
-    proxy_set_header Range $http_range;
-    proxy_set_header If-Range $http_if_range;
+    proxy_cache_key   $uri$slice_range;
+    proxy_cache_valid 200 206 7d;
+    proxy_set_header  Range $slice_range;
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;

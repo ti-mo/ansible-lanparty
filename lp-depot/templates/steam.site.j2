@@ -15,6 +15,7 @@ server {
 
     # Cache Settings
     proxy_cache_key "$server_name$uri";
+    proxy_cache_valid 200 7d;
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;
