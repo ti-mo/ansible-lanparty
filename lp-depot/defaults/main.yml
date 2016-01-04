@@ -4,6 +4,7 @@ depot_sites:
   - blizzard
   - origin
   - riot
+  - windows
 
 depot_resolvers:
   - 8.8.8.8
@@ -39,15 +40,15 @@ ns:
         domains:
           - dist.blizzard.com
           - llnw.blizzard.com
+          - blzddist1-a.akamaihd.net
+          - blzddist2-a.akamaihd.net
           - dist.blizzard.com.edgesuite.net
       origin:
         domains:
-          - cdn.ea.com
-          - eaassets01-a.akamaihd.net
-          - eaassets02-a.akamaihd.net
-          - eaassets03-a.akamaihd.net
-          - eaassets04-a.akamaihd.net
-          - eaassets05-a.akamaihd.net
+          - origin-a.akamaihd.net
       riot:
         domains:
           - l3cdn.riotgames.com
+      windows:
+        domains:
+          - download.windowsupdate.com
