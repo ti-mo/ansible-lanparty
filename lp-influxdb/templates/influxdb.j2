@@ -1,0 +1,89 @@
+## {{ ansible_managed }}
+
+# Change this option to true to disable Influxdata reporting
+reporting-disabled = false
+
+[meta]
+  dir = "/var/lib/influxdb/meta"
+  hostname = "{{ ansible_default_ipv4.address }}"
+  bind-address = ":{{ influx_raft_port | default(8088) }}"
+  retention-autocreate = true
+  election-timeout = "1s"
+  heartbeat-timeout = "1s"
+  leader-lease-timeout = "500ms"
+  commit-timeout = "50ms"
+  cluster-tracing = false
+
+  raft-promotion-enabled = true
+
+[data]
+  dir = "/var/lib/influxdb/data"
+
+  # These are the WAL settings for the storage engine >= 0.9.3
+  wal-dir = "/var/lib/influxdb/wal"
+  wal-logging-enabled = true
+
+[hinted-handoff]
+  enabled = true
+  dir = "/var/lib/influxdb/hh"
+  max-size = 1073741824
+  max-age = "168h"
+  retry-rate-limit = 0
+
+  retry-interval = "1s"
+  retry-max-interval = "1m"
+
+  purge-interval = "1h"
+
+[cluster]
+  shard-writer-timeout = "5s" # The time within which a remote shard must respond to a write request. 
+  write-timeout = "10s" # The time within which a write request must complete on the cluster.
+
+[retention]
+  enabled = true
+  check-interval = "30m"
+
+[shard-precreation]
+  enabled = true
+  check-interval = "10m"
+  advance-period = "30m"
+
+[monitor]
+  store-enabled = true # Whether to record statistics internally.
+  store-database = "_internal" # The destination database for recorded statistics
+  store-interval = "10s" # The interval at which to record statistics
+
+[admin]
+  enabled = true
+  bind-address = ":{{ influx_admin_port | default(8083) }}"
+  https-enabled = false
+  https-certificate = "/etc/ssl/influxdb.pem"
+
+[http]
+  enabled = true
+  bind-address = ":{{ influx_http_port | default(8086) }}"
+  auth-enabled = false
+  log-enabled = true
+  write-tracing = false
+  pprof-enabled = false
+  https-enabled = false
+  https-certificate = "/etc/ssl/influxdb.pem"
+
+[collectd]
+  enabled = true
+  port = {{ collectd_server_port | default(25826) }}
+  database = "collectd_db"
+  typesdb = "/usr/share/collectd/types.db"
+
+  batch-size = 1000 # will flush if this many points get buffered
+  batch-pending = 5 # number of batches that may be pending in memory
+  batch-timeout = "1s" # will flush at least this often even if we haven't hit buffer limit
+  read-buffer = 0 # UDP Read buffer size, 0 means OS default. UDP listener will fail if set above OS max.
+
+[continuous_queries]
+  log-enabled = true
+  enabled = true
+  recompute-previous-n = 2
+  recompute-no-older-than = "10m"
+  compute-runs-per-interval = 10
+  compute-no-more-than = "2m"

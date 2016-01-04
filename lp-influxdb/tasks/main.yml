@@ -3,6 +3,12 @@
   apt:
     name: influxdb
 
+- name: Main | Render Config
+  template:
+    src: influxdb.j2
+    dest: /etc/influxdb/influxdb.conf
+  notify: restart influxdb
+
 - name: Main | Ensure Service
   service:
     name: influxdb

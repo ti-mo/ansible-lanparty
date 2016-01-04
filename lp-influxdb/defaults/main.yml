@@ -1,0 +1,5 @@
+---
+influx_http_port: 8086
+influx_admin_port: 8083
+influx_raft_port: 8088
+collectd_server_port: 25826
