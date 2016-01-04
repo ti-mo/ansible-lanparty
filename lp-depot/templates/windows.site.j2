@@ -1,0 +1,29 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name .{{ ns.spoof.services.windows.domains | join(" .") }};
+
+  access_log {{ depot_logdir }}/windows/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/windows/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }};
+
+  location / {
+    # Request Slicing
+    # Supported in nginx 1.9.8
+    slice 1m;
+
+    # Cache Location
+    proxy_cache windows;
+
+    # Cache Settings
+    proxy_cache_key   $uri$slice_range;
+    proxy_cache_valid 200 206 7d;
+    proxy_set_header  Range $slice_range;
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+}
