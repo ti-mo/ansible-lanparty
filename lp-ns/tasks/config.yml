@@ -15,6 +15,7 @@
     src: conf/named.conf.j2
     dest: /etc/bind/named.conf
   notify: reload bind
+  tags: spoof
 
 - meta: flush_handlers
 

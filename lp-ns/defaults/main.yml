@@ -55,22 +55,21 @@ ns:
         domains:
           - dist.blizzard.com
           - llnw.blizzard.com
+          - blzddist1-a.akamaihd.net
+          - blzddist2-a.akamaihd.net
           - dist.blizzard.com.edgesuite.net
       riot:
         domains:
           - l3cdn.riotgames.com
       origin:
         domains:
-          - cdn.ea.com
           - origin-a.akamaihd.net
-          - eaassets01-a.akamaihd.net
-          - eaassets02-a.akamaihd.net
-          - eaassets03-a.akamaihd.net
-          - eaassets04-a.akamaihd.net
-          - eaassets05-a.akamaihd.net
       twitch:
         domains:
           - usher.justin.tv
           - usher.twitch.tv
           - hls.twitch.tv
           - hls.ttvnw.net
+      windows:
+        domains:
+          - download.windowsupdate.com
