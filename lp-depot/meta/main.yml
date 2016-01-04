@@ -1,4 +1,4 @@
 ---
 dependencies:
-  - { role: lp-nginx, nginx_openresty: true, start_nginx: false }
+  - { role: lp-nginx, start_nginx: false }
   - { role: lp-filebeat }
