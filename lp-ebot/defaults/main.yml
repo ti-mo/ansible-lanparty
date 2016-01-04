@@ -11,11 +11,5 @@ ebot_maps:
   - de_overpass
   - de_cbble
 
-ebot_workshop_maps:
-  - [ de_dust2, 125438255 ]
-  - [ de_inferno, 125438669 ]
-  - [ de_train, 125438372 ]
-  - [ de_cache, 163589843 ]
-  - [ de_mirage, 152508932 ]
-  - [ de_overpass, 205240106 ]
-  - [ de_cobblestone, 205239595 ]
+ebot_workshop_maps: []
+#  - [ de_dust2, 125438255 ]
