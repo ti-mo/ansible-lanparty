@@ -1,4 +1,9 @@
 ---
+- name: lxc | Clean up stale LXC subsystem lock
+  file:
+    path: /var/lock/subsys/lxc
+    state: absent
+
 - name: lxc | Create Containers
   lxc_container:
     name: "{{ item.key }}"
