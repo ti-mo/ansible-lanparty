@@ -20,7 +20,7 @@
 - name: System | Persist Hostname
   copy:
     dest: /etc/hostname
-    content: "{{ inventory_hostname }}"
+    content: "{{ inventory_hostname }}.{{ domains.lan }}"
   tags: [ 'hostname' ]
 
 - name: System | Modify Grub Boot Delay
