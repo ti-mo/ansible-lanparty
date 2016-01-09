@@ -1,2 +1,7 @@
 # {{ ansible_managed }}
-Acquire::http { Proxy "http://{{ hostvars[groups['pkg'][0]]['ansible_default_ipv4']['address'] }}:{{ pkg.cache.port }}"; };
+
+{% if apt_cache_url is defined %}
+Acquire::http { Proxy "http://{{ apt_cache_url }}:{{ apt_cache_port }}"; };
+{% else %}
+# `apt_cache_url` not defined, cache proxy disabled
+{% endif %}
