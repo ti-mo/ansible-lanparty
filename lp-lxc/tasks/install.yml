@@ -19,6 +19,12 @@
     - python-pip
     - python-dev
 
+- name: lxc | Debian bug 808205 workaround (gcc >=5.1)
+  apt:
+    name: gcc
+    default_release: testing
+    state: latest
+
 - name: lxc | Install OVS scripts
   template:
     src: "{{ item }}.j2"
