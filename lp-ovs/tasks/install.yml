@@ -1,0 +1,19 @@
+---
+- name: Install | Custom NoNet Unit File
+  template:
+    src: ovs-nonet.unit.j2
+    dest: /etc/systemd/system/openvswitch-nonetwork.service
+
+- name: Install | Custom Internal Unit File
+  template:
+    src: ovs.unit.j2
+    dest: /etc/systemd/system/openvswitch-switch.service
+
+- name: Install | Enable Services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items:
+    - openvswitch-switch
+    - openvswitch-nonetwork

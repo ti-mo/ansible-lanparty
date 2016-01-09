@@ -1,0 +1,17 @@
+---
+- name: Manage | Install Packages
+  apt:
+    name: openvswitch-switch
+
+- name: Manage | Create Bridges
+  openvswitch_bridge:
+    bridge: "{{ item.name }}"
+  with_items: openvswitch
+
+- name: Manage | Create Ports
+  openvswitch_port:
+    bridge: "{{ item.0.name }}"
+    port: "{{ item.1 }}"
+  with_subelements:
+    - openvswitch
+    - ports

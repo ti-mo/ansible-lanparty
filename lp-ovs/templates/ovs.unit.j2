@@ -1,0 +1,13 @@
+[Unit]
+Description=Open vSwitch
+After=local-fs.target systemd-tmpfiles-setup.service
+Requires=openvswitch-nonetwork.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+ExecStop=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
