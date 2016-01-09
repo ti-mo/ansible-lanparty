@@ -13,7 +13,7 @@
 
 - name: System | Set Hostname
   hostname:
-    name: "{{ inventory_hostname }}"
+    name: "{{ inventory_hostname }}.{{ domains.lan }}"
   notify: restart rsyslog
   tags: [ 'hostname' ]
 
