@@ -3,7 +3,9 @@
   assert:
     that:
       - "item.value.ifaces is defined and item.value.ifaces is iterable"
+    msg: "Define at least one network interface in {{ item.key }}.ifaces"
   with_dict: lxc_containers
+  when: lxc_containers is defined
 
 - include: install.yml
   tags: [ 'install' ]
