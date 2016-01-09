@@ -4,22 +4,22 @@
 # Valid boolean values are a zero number for false, non-zero numbers for true.
 
 # disk location for cache tree
-CacheDir: {{ pkg.cache.path }}
+CacheDir: {{ apt_cache.path }}
 
 # set empty to disable logging
-LogDir: {{ pkg.cache.logdir }}
+LogDir: {{ apt_cache.logdir }}
 
 # Store the pid of the daemon process therein
-PidFile: {{ pkg.cache.pidfile }}
+PidFile: {{ apt_cache.pidfile }}
 
 # listen port
-Port:{{ pkg.cache.port }}
+Port:{{ apt_cache_port }}
 
 # report page
 ReportPage: acng-report.html
 
 # Days before considering an unreferenced file expired (to be deleted).
-ExTreshold: {{ pkg.cache.expiry }}
+ExTreshold: {{ apt_cache.expiry }}
 
 # Higher modes only working with the debug version
 # Warning, writes a lot into apt-cacher.err logfile

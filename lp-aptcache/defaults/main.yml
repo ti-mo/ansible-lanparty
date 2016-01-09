@@ -1,0 +1,9 @@
+---
+apt_cache_port: 3142
+
+apt_cache:
+  expiry: 90
+  reportpage: acng-report.html
+  path: /var/cache/apt-cacher-ng
+  logdir: /var/log/apt-cacher-ng
+  pidfile: /var/run/apt-cacher-ng/pid

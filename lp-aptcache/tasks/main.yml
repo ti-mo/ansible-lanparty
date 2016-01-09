@@ -1,25 +1,29 @@
 ---
-- include: reprepro.yml
-  tags: [ 'repo', 'reprepro' ]
+- name: Main | Verify Credentials
+  assert:
+    that:
+      - "lp.user is defined"
+      - "lp.pass is defined"
+    msg: Need credentials for ACNG admin panel at `lp.user` and `lp.pass`
 
-- name: Apt Cache | Install APT-Cacher-NG Package
+- name: Main | Install Package
   apt:
     name: apt-cacher-ng
   tags: [ 'packages' ]
 
-- name: Apt Cache | Render Configuration
+- name: Main | Render Configuration
   template:
     src: acng/acng.conf.j2
     dest: /etc/apt-cacher-ng/acng.conf
   notify: restart acng
 
-- name: Apt Cache | Render Admin Credentials
+- name: Main | Render Admin Credentials
   template:
     src: acng/security.conf.j2
     dest: /etc/apt-cacher-ng/security.conf
   notify: restart acng
 
-- name: Apt Cache | APT-Cacher-NG Service
+- name: Main | Start Service
   service:
     name: apt-cacher-ng
     state: started
