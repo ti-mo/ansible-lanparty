@@ -1,7 +1,8 @@
 # {{ ansible_managed }}
 [Unit]
 Description=Custom LXC Autostart with OpenVSwitch Dependency
-After=network.target openvswitch-switch.service
+After=network.target openvswitch-nonetwork.service
+Requires=openvswitch-nonetwork.service
 
 [Service]
 Type=oneshot
