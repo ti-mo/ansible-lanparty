@@ -32,7 +32,7 @@ lxc.network.veth.pair = {{ item.key | hash('sha512') | truncate(8, true, "") }}-
 lxc.network.script.up = /etc/lxc/ovs-up {{ lxc_bridge }} {{ if.vlan }}
 lxc.network.script.down = /etc/lxc/ovs-down
 
-lxc.network.hwaddr = {{ if.hwaddr | default('13:37:d0:0d:xx:xx') }}
+lxc.network.hwaddr = {{ if.hwaddr | default('f0:13:37:d0:0d:xx') }}
 
 {% if if.address is defined and if.address | ipv4 %}
 lxc.network.ipv4 = {{ if.address }}
