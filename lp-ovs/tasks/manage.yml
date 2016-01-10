@@ -1,8 +1,4 @@
 ---
-- name: Manage | Install Packages
-  apt:
-    name: openvswitch-switch
-
 - name: Manage | Create Bridges
   openvswitch_bridge:
     bridge: "{{ item.name }}"

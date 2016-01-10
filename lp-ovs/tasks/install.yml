@@ -1,4 +1,8 @@
 ---
+- name: Manage | Install Packages
+  apt:
+    name: openvswitch-switch
+
 - name: Install | Custom NoNet Unit File
   template:
     src: ovs-nonet.unit.j2
