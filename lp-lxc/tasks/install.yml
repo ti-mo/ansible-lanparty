@@ -25,6 +25,14 @@
     default_release: testing
     state: latest
 
+- name: lxc | Unit w/ OVS Dependency
+  template:
+    src: lxc.unit.j2
+    dest: /etc/systemd/system/lxc.service
+  notify: reload daemons
+
+- meta: flush_handlers
+
 - name: lxc | Install OVS scripts
   template:
     src: "{{ item }}.j2"
@@ -38,3 +46,8 @@
   pip:
     executable: pip2
     name: lxc-python2
+
+- name: lxc | Enable LXC Autostart
+  service:
+    name: lxc
+    enabled: true

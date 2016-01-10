@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Custom LXC Autostart with OpenVSwitch Dependency
+After=network.target openvswitch-switch.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/lib/x86_64-linux-gnu/lxc/lxc-devsetup
+ExecStart=/usr/lib/x86_64-linux-gnu/lxc/lxc-autostart-helper start
+ExecStop=/usr/lib/x86_64-linux-gnu/lxc/lxc-autostart-helper stop
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
