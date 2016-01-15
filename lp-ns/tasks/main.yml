@@ -22,6 +22,9 @@
 - include: logging.yml
   tags: [ 'logging' ]
 
+- include: rndc.yml
+  tags: [ 'rndc' ]
+
 - name: BIND9 Service
   service:
     name: bind9

@@ -1,0 +1,14 @@
+---
+- meta: flush_handlers
+
+- name: Config | RNDC Key
+  template:
+    src: rndc.key.j2
+    dest: /etc/bind/rndc.key
+  notify: restart bind
+
+- name: Config | RNDC Key Configuration
+  template:
+    src: rndc.j2
+    dest: /etc/bind/rndc.conf
+  notify: reload bind
