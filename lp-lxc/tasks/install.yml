@@ -31,6 +31,18 @@
     state: started
     enabled: true
 
+- name: lxc | Set conntrack kernel parameters for lp-gw
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    reload: yes
+  tags: [ 'kernel' ]
+  with_items:
+    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
+    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }
+  when: gw_config is defined and gw_config.conntrack_max is defined
+
 - name: lxc | Debian bug 808205 workaround (gcc >=5.1)
   apt:
     name: gcc
