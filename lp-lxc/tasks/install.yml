@@ -19,6 +19,18 @@
     - python-pip
     - python-dev
 
+# We need the ip_tables kernel module family loaded
+# so LXC containers can use them.
+- name: lxc | Install iptables-persistent
+  apt:
+    name: iptables-persistent
+
+- name: lxc | Run iptables-persistent for global kernel modules
+  service:
+    name: netfilter-persistent
+    state: started
+    enabled: true
+
 - name: lxc | Debian bug 808205 workaround (gcc >=5.1)
   apt:
     name: gcc
