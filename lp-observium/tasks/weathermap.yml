@@ -1,29 +1,21 @@
 ---
-- name: Weathermap Git Checkout
+- name: Weathermap | Git Checkout
   git:
-    repo=https://github.com/laf/weathermap
-    depth=1 update=yes
-    dest={{ observium.install_dir }}/html/weathermap
-  register: git
+    repo: https://github.com/laf/weathermap
+    dest: "{{ observium.install_dir }}/html/weathermap"
+  become_user: "{{ observium.user }}"
+  ignore_errors: true
 
-- name: Weathermap Permissions
+- name: Weathermap | Maps Directory
   file:
-    path={{ observium.install_dir }}/html/weathermap
-    owner={{ observium.user }}
-    group={{ observium.user }}
-    state=directory
-    recurse=true
-  when: git.changed
+    path: "{{ observium.install_dir }}/html/weathermap/maps"
+    state: directory
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
 
-- name: Maps Directory
-  file:
-    path={{ observium.install_dir }}/html/weathermap/maps
-    owner={{ observium.user }}
-    group={{ observium.user }}
-    state=directory
-  when: git.changed
-
-- name: LibreNMS Menubar
+- name: Weathermap | LibreNMS Menubar
   template:
-    src=weather_menubar.j2
-    dest={{ observium.install_dir }}/html/includes/print-menubar-custom.inc.php
+    src: weather_menubar.j2
+    dest: "{{ observium.install_dir }}/html/includes/print-menubar-custom.inc.php"
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
