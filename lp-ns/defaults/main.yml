@@ -7,6 +7,10 @@ filebeat:
     files:
       - "{{ bind_logdir }}/*.log"
 
+dhcp:
+  # Include RNDC key in config
+  dyndns: false
+
 ns:
   auth: "ns.{{ domains.lan }}"
 
