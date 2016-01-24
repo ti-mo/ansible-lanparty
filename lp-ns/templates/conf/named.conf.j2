@@ -3,7 +3,10 @@
 // Access Control
 acl internals {
   127.0.0.0/8;
-{% for net in internal_networks %}
+{% for net in internal_networks | default([]) %}
+  {{ net | ipaddr }};
+{% endfor %}
+{% for net in ns_allow_extras | default([]) %}
   {{ net | ipaddr }};
 {% endfor %}
 };
