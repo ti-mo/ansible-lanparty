@@ -5,6 +5,7 @@ auto lo
 iface lo inet loopback
 
 {% for name, value in netif.iteritems() %}
+auto {{ name }}
 allow-hotplug {{ name }}
 {% if value.addr == 'dhcp' %}
 iface {{ name }} inet dhcp
