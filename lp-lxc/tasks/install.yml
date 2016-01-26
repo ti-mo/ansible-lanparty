@@ -1,5 +1,5 @@
 ---
-- name: lxc | Install lxc-dev
+- name: lxc | Install lxc packages
   apt:
     name: "{{ item }}"
     update_cache: yes
@@ -8,16 +8,21 @@
   with_items:
     - lxc-dev
     - lxc
+    - python-pip
+    - python-dev
+  when: ansible_distribution == 'Debian'
 
-- name: lxc | Install Dependencies
+- name: lxc | Install lxc packages for Ubuntu
   apt:
     name: "{{ item }}"
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
-    default_release: testing
   with_items:
+    - lxc-dev
+    - lxc
     - python-pip
     - python-dev
+  when: ansible_distribution == 'Ubuntu'
 
 # We need the ip_tables kernel module family loaded
 # so LXC containers can use them.
@@ -39,8 +44,8 @@
     reload: yes
   tags: [ 'kernel' ]
   with_items:
-    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
-    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }
+    - { name: 'net.netfilter.nf_conntrack_max', value: gw_config.conntrack_max }
+    - { name: 'net.netfilter.nf_conntrack_buckets', value: gw_config.conntrack_max }
   when: gw_config is defined and gw_config.conntrack_max is defined
 
 - name: lxc | Debian bug 808205 workaround (gcc >=5.1)
@@ -48,6 +53,7 @@
     name: gcc
     default_release: testing
     state: latest
+  when: ansible_distribution == 'Debian'
 
 - name: lxc | Unit w/ OVS Dependency
   template:
