@@ -11,11 +11,12 @@
     path: /etc/init.d/netfilter-sysctl
     state: absent
 
-- name: IPTables | Custom netfilter-sysctl service
+- name: IPTables | Stop custom netfilter-sysctl service
   service:
     name: netfilter-sysctl
     state: stopped
     enabled: false
+  ignore_errors: true
 
 - name: IPTables | Netfilter unit w/ sysctl reload
   template:
