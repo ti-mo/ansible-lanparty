@@ -87,3 +87,10 @@ reporting-disabled = false
   recompute-no-older-than = "10m"
   compute-runs-per-interval = 10
   compute-no-more-than = "2m"
+
+{% for db, port in influx_udp_listeners.iteritems() %}
+[[udp]]
+  enabled = true
+  bind-address = ":{{ port }}"
+  database = "{{ db }}"
+{% endfor %}
