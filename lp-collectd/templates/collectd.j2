@@ -29,10 +29,10 @@ LoadPlugin swap
   ValuesPercentage true
 </Plugin>
 
-{% if collectd_server is defined %}
+{% if influxdb_server is defined %}
 LoadPlugin network
 <Plugin network>
-  Server "{{ collectd_server }}" "{{ collectd_server_port | default(25826) }}"
+  Server "{{ influxdb_server }}" "{{ influxdb_server_port | default(25826) }}"
 </Plugin>
 {% endif %}
 
