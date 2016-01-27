@@ -71,7 +71,7 @@ reporting-disabled = false
 
 [collectd]
   enabled = true
-  port = {{ collectd_server_port | default(25826) }}
+  port = {{ influxdb_server_port | default(25826) }}
   database = "collectd_db"
   typesdb = "/usr/share/collectd/types.db"
 
