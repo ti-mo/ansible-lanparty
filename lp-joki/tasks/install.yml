@@ -1,0 +1,7 @@
+---
+- name: Install | APT Package
+  apt:
+    name: joki
+  notify: reload daemons
+
+- meta: flush handlers

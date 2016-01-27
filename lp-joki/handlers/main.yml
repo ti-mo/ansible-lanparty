@@ -1,0 +1,8 @@
+---
+- name: restart joki
+  service:
+    name: joki
+    state: restarted
+
+- name: reload daemons
+  command: systemctl daemon-reload

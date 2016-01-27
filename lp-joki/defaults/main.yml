@@ -1,0 +1,5 @@
+---
+influxdb_port: 8090
+
+joki_measurement: joki
+joki_influx_db: ping

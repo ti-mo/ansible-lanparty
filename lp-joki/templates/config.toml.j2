@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+
+debug = false
+interval = 1000
+cycle = 10
+
+[influxdb]
+measurement = "{{ joki_measurement }}"
+db = "{{ joki_influx_db }}"
+host = "{{ influxdb_server }}"
+port = "{{ influxdb_port | default(8090) }}"
+user = "{{ influxdb_user | default("") }}"
+pass = "{{ influxdb_pass | default("") }}"
+
+## Probes
+{% for name, value in netif.iteritems() if value.route is defined %}
+[probes.{{ name }}]
+{% set netloop = loop %}
+{% for prioname, prio in gw_priorities|dictsort(false, 'value') %}
+{{ prioname }} = {{ (netloop.index0 * loop.length + loop.index) * 4 }}
+{% endfor %}
+
+{% endfor %}
+## Targets
+{% for targetname, target in ping_targets.iteritems() | default({}) %}
+[targets.{{ targetname }}]
+name = "{{ target.fullname }}"
+address = "{{ target.address }}"
+probes = "{{ target.probes | default("all") }}"
+
+{% endfor %}

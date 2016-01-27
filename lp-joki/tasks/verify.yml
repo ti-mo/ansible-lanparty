@@ -1,0 +1,32 @@
+---
+- name: Verify | InfluxDB Configuration
+  assert:
+    that:
+      - influxdb_server is defined
+      - influxdb_port | int
+      # Disabled, Joki uses InfluxDB UDP, no auth support
+      # - influxdb_user is defined
+      # - influxdb_pass is defined
+    msg: Please configure InfluxDB credentials for Joki
+
+- name: Verify | Targets
+  assert:
+    that:
+      - item.value.fullname is defined
+      - item.value.address is defined
+    msg: Error in Joki targets configuration in `ping_targets`
+  with_dict: ping_targets | default({})
+
+- name: Verify | Priorities Defined
+  assert:
+    that:
+      - gw_priorities | default({}) | length > 0
+    msg: "`gw_priorities` undefined on Joki host"
+
+- name: Verify | Priorities
+  assert:
+    that:
+      - item.value is defined
+      - item.value | int
+    msg: "Error in item {{ item.key }} in `gw_priorities` on Joki host"
+  with_dict: gw_priorities

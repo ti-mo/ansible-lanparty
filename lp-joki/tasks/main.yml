@@ -1,0 +1,9 @@
+---
+- include: verify.yml
+  tags: [ 'verify' ]
+
+- include: install.yml
+  tags: [ 'install' ]
+
+- include: configure.yml
+  tags: [ 'configure' ]
