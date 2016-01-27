@@ -214,7 +214,7 @@ COMMIT
 {% endfor %}
 
 ## Smokeping Chain
-{% for host in gw_smokeping_hosts | default([]) %}
+{% for host in gw_ping_hosts | default([]) %}
 -A LS_OUT -s {{ host }} -m comment --comment "ping_{{ host }}" -j SVC_SMOKEPING
 {% endfor %}
 
