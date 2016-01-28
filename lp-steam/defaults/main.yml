@@ -64,8 +64,8 @@ ql_server_instances:
   - id: 1
     tags: duel
     slots: 4
-    rules: grand
-    gameport: 27960
+    rules: public
+    gameport: 27015
 
 ql_rules:
   public:
