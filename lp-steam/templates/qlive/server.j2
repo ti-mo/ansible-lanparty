@@ -1,7 +1,7 @@
 // {{ ansible_managed }}
 
 set sv_hostname "{{ lp.name }} {{ item.rules | capitalize }} #{{ steam_server_id }}.{{ item.id }}"
-set sv_tags "{{ item.rules }},{{ ql_tags | default([]) | join(',') }},{{ item.tags | default([]) | join(',') }}"
+set sv_tags "{{ item.rules }},{{ ql_tags | default([]) | join(',') }},{{ item.tags | default("") }}"
 set sv_maxClients "{{ item.slots }}"
 
 set zmq_rcon_enable "1"
