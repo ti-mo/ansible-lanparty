@@ -63,7 +63,10 @@
   template:
     src: qlive/systemd-unit.j2
     dest: /lib/systemd/system/qlive@.service
+  notify: reload daemons
   tags: [ 'systemd' ]
+
+- meta: flush_handlers
 
 - name: QLive | Start and enable gameserver
   service:
