@@ -53,7 +53,7 @@ csgo_gotv_password: stream
 csgo_gotv_maxclients: 4
 
 # --- Quake
-ql_admin_ids: []
+ql_admin_steamids: []
 
 ql_priv_password: privateparts
 
