@@ -9,15 +9,12 @@
   with_items: ql_server_instances
 
 - name: QLive | Admin SteamIDs
-  lineinfile:
-    line: "{{ item.1 }}|admin"
-    dest: "{{ steamcmd_path }}/.quakelive/{{ item.0.id }}/baseq3/access.txt"
+  template:
+    src: qlive/admins.j2
+    dest: "{{ steamcmd_path }}/.quakelive/{{ item.id }}/baseq3/access.txt"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
-    create: true
-  with_nested:
-    - ql_server_instances
-    - ql_admin_steamids
+  with_items: ql_server_instances
 
 - name: QLive | Server Config
   template:
