@@ -68,7 +68,7 @@
   with_items:
     [ 'sudo', 'rsyslog', 'iputils-arping', 'tcpdump', 'ethtool',
       'dnsutils', 'git', 'htop', 'hping3', 'zsh', 'curl', 'ntpdate',
-      'mailutils', 'python-mysqldb', 'ntp', ]
+      'mailutils', 'python-mysqldb', 'ntp', 'locales' ]
   tags: [ 'packages' ]
 
 - name: Global | VMware-only packages
