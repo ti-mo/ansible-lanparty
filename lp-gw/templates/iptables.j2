@@ -16,6 +16,13 @@
 # Input Filtering
 -A INPUT -i lo -j ACCEPT
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+{% for name, value in netif.iteritems() %}
+{% if value.drop_external | default(false) %}
+-A INPUT -i {{ name }} -m set ! --match-set INT_NET src -j DROP
+{% endif %}
+{% endfor %}
+
 -A INPUT -p icmp -j ACCEPT
 -A INPUT -p tcp --dport ssh -m set --match-set RFC1918 src -j ACCEPT
 -A INPUT -p tcp --dport {{ observium_agent_port | default(6556) }} -m set --match-set RFC1918 src -j ACCEPT
