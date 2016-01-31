@@ -1,4 +1,11 @@
 ---
+# This compat package is not available upstream,
+# but is added in ansible-lp apt repository
+- name: Install | MySQL Compat Library
+  apt:
+    name: libmysqlclient15off
+  tags: [ 'packages' ]
+
 - name: Install | TeamSpeak3 User
   user:
     name: "{{ ts.user }}"
