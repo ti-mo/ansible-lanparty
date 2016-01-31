@@ -1,4 +1,9 @@
 ---
+- name: Install | Netcat
+  apt:
+    name: netcat
+  tags: [ 'packages' ]
+
 # This compat package is not available upstream,
 # but is added in ansible-lp apt repository
 - name: Install | MySQL Compat Library
@@ -24,6 +29,7 @@
     url: "{{ ts.url }}"
     dest: "{{ ts.install_dir }}/tarballs/"
   register: tarball
+  tags: tarball
 
 - name: Install | Unpack Tarball
   unarchive:
@@ -34,6 +40,7 @@
     group: "{{ ts.user }}"
   when: tarball.changed
   notify: restart ts3
+  tags: tarball
 
 - name: Install | Check Leading Directory
   stat:
