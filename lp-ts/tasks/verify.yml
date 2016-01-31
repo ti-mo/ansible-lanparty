@@ -1,0 +1,8 @@
+---
+- name: Verify | TeamSpeak MySQL Server
+  assert:
+    that:
+      - ts_mysql_server is defined
+      - ts_mysql_server | ipaddr
+    msg: Define a MySQL server address in `ts_mysql_server`
+  when: ts.use_mysql | default(false)

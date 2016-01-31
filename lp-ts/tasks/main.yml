@@ -1,4 +1,7 @@
 ---
+- include: verify.yml
+  tags: [ 'verify' ]
+
 - include: install.yml
   tags: [ 'voice', 'ts' ]
 
