@@ -38,7 +38,7 @@ csgo_server_instances:
 
 csgo_warmod: true
 csgo_mm_version: 1.10.6
-csgo_mm_url: http://sourcemod.gameconnect.net/files/mmsource-{{ csgo_mm_version }}-linux.tar.gz
+csgo_mm_url: http://incline.eu/ansible-lanparty/mmsource-{{ csgo_mm_version }}-linux.tar.gz
 
 csgo_sm_version: 1.7.3-git5290
 csgo_sm_url: http://www.sourcemod.net/smdrop/1.7/sourcemod-{{ csgo_sm_version }}-linux.tar.gz
