@@ -1,6 +1,6 @@
 [config]
-host={{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}
-port={{ mysql.port }}
+host={{ ts_mysql_server }}
+port={{ mysql.port | default(3306) }}
 username={{ mysql.apps.teamspeak.user }}
 password={{ mysql.apps.teamspeak.pass }}
 database={{ mysql.apps.teamspeak.db }}
