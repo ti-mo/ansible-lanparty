@@ -5,3 +5,8 @@
     dest: /etc/collectd/collectd.conf
   notify: restart collectd
   when: not skip_config | default(false)
+
+- name: Configure | Enable Service
+  service:
+    name: collectd
+    enabled: true
