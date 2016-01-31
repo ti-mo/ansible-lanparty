@@ -4,4 +4,4 @@
     name: joki
   notify: reload daemons
 
-- meta: flush handlers
+- meta: flush_handlers
