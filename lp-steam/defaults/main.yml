@@ -32,6 +32,7 @@ csgo_server_instances:
     rules: grand
     gameport: 27015
     warmod: true
+    coach: true
 
 csgo_warmod: true
 csgo_mm_version: 1.10.6

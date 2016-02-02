@@ -1,7 +1,6 @@
-// Electronic Sports League
+// ESL - www.eslgaming.com
 // CS:GO 3on3/5on5 Ladder Config
-// 21.05.2015
-
+// 14.01.2016
 
 ammo_grenade_limit_default 1
 ammo_grenade_limit_flashbang 2
@@ -45,7 +44,7 @@ mp_afterroundmoney 0				// amount of money awared to every player after each rou
 mp_autokick 0					// Kick idle/team-killing players
 mp_autoteambalance 0
 mp_buytime 15                           	// How many seconds after round start players can buy items for.
-mp_c4timer 35                           	// How long from when the C4 is armed until it blows
+mp_c4timer 40                           	// How long from when the C4 is armed until it blows
 mp_death_drop_defuser 1				// Drop defuser on player death
 mp_death_drop_grenade 2				// Which grenade to drop on player death: 0=none, 1=best, 2=current or best
 mp_death_drop_gun 1				// Which gun to drop on player death: 0=none, 1=best, 2=current or best
@@ -66,16 +65,13 @@ mp_match_end_restart 1				// At the end of the match, perform a restart instead 
 mp_maxmoney 16000				// maximum amount of money allowed in a player's account
 mp_maxrounds 30                         	// max number of rounds to play before server changes maps
 mp_molotovusedelay 0                    	// Number of seconds to delay before the molotov can be used after acquiring it
-mp_overtime_enable 1				// Use overtime rules to determine winner
-mp_overtime_maxrounds 10
-mp_overtime_startmoney 16000
 mp_playercashawards 1				// Players can earn money by performing in-game actions
 mp_playerid 0					// Controls what information player see in the status bar: 0 all names; 1 team names; 2 no names
 mp_playerid_delay 0.5				// Number of seconds to delay showing information in the status bar
 mp_playerid_hold 0.25				// Number of seconds to keep showing old information in the status bar
 mp_round_restart_delay 5			// Number of seconds to delay before restarting a round after a win
-mp_roundtime 1.75                       	// How many minutes each round takes.
-mp_roundtime_defuse 1.75                	// How many minutes each round takes on defusal maps.
+mp_roundtime 1.92                       	// How many minutes each round takes.
+mp_roundtime_defuse 1.92                	// How many minutes each round takes on defusal maps.
 mp_solid_teammates 1 				// Determines whether teammates are solid or not.
 mp_startmoney 800                       	// amount of money each player gets when they reset
 mp_teamcashawards 1				// Teams can earn money by performing in-game actions
@@ -86,8 +82,10 @@ mp_weapons_allow_map_placed 1             	// If this convar is set, when a matc
 mp_weapons_allow_zeus 1				// Determines whether the Zeus is purchasable or not.
 mp_win_panel_display_time 15	                // The amount of time to show the win panel between matches / halfs
 
-spec_freeze_time 5.0                            // Time spend frozen in observer freeze cam.
+spec_freeze_time 2.0                            // Time spend frozen in observer freeze cam.
 spec_freeze_panel_extended_time 0               // Time spent with the freeze panel still up after observer freeze cam is done.
+spec_freeze_time_lock 2
+spec_freeze_deathanim_time 0
 
 sv_accelerate 5.5			        // ( def. "10" ) client notify replicated
 sv_stopspeed 80					//
@@ -127,7 +125,10 @@ sv_pure_kick_clients 1                          // If set to 1, the server will 
 sv_pure_trace 0					// If set to 1, the server will print a message whenever a client is verifying a CR
 sv_spawn_afk_bomb_drop_time 30                 	// Players that spawn and don't move for longer than sv_spawn_afk_bomb_drop_time (default 15 seconds) will automatically drop the bomb.
 sv_steamgroup_exclusive 0                     	// If set, only members of Steam group will be able to join the server when it's empty, public people will be able to join the server only if it has players.
-sv_voiceenable 0
+sv_voiceenable 1
+sv_alltalk 0
+sv_auto_full_alltalk_during_warmup_half_end 0
 
 
-say "> ESL CS:GO 3on3/5on5 Ladder Config loaded - 21.05.2015<"
+
+say "> ESL CS:GO 3on3/5on5 Ladder Config loaded - 14.01.2016<"
