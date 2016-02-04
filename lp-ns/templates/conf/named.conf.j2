@@ -6,7 +6,7 @@ acl internals {
 {% for net in internal_networks | default([]) %}
   {{ net | ipaddr }};
 {% endfor %}
-{% for net in ns_allow_extras | default([]) %}
+{% for net in ns_allow_extra | default([]) %}
   {{ net | ipaddr }};
 {% endfor %}
 };
