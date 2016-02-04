@@ -11,6 +11,7 @@
     - python-pip
     - python-dev
   when: ansible_distribution == 'Debian'
+  tags: [ 'packages' ]
 
 - name: lxc | Install lxc packages for Ubuntu
   apt:
@@ -23,6 +24,7 @@
     - python-pip
     - python-dev
   when: ansible_distribution == 'Ubuntu'
+  tags: [ 'packages' ]
 
 # We need the ip_tables kernel module family loaded
 # so LXC containers can use them.
@@ -54,6 +56,7 @@
     default_release: testing
     state: latest
   when: ansible_distribution == 'Debian'
+  tags: [ 'packages' ]
 
 - name: lxc | Unit w/ OVS Dependency
   template:
