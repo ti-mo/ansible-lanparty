@@ -44,11 +44,11 @@ gw_services:
       - [ 'udp', '27015:27030', 'prio1', '27005' ]
   2_lol:
     ports:
-      - [ 'udp', '5000:5500', 'prio1' ]
+      - [ 'both', '5000:5500', 'prio1' ]
       - [ 'tcp', '2099', 'prio2' ]
       - [ 'tcp', '5222:5223', 'prio2' ]
       - [ 'tcp', '8088', 'prio2' ]
-      - [ 'tcp', '8393:8400', 'trash' ]
+      - [ 'tcp', '8393:8400', 'browse' ]
     sets:
       - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '80', 'prio2' ]
       - [ 'tcp', 'IPSET_GAME_LOL', 'dst', '443', 'prio2' ]
