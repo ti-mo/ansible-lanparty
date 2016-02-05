@@ -22,7 +22,7 @@ tv_password "{{ csgo_gotv_password | default('stream') }}"
 tv_maxclients "{{ csgo_gotv_maxclients | default(4) }}"
 {% endif %}
 
-{% if item.coach is defined and item.coach %}
+{% if item.coach | default(true) %}
 sv_coach_enabled 1
 {% endif %}
 
