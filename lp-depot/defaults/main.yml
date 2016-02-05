@@ -49,6 +49,7 @@ ns:
       riot:
         domains:
           - l3cdn.riotgames.com
+          - news.cdn.leagueoflegends.com
       windows:
         domains:
           - download.windowsupdate.com

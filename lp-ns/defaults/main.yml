@@ -65,6 +65,7 @@ ns:
       riot:
         domains:
           - l3cdn.riotgames.com
+          - news.cdn.leagueoflegends.com
       origin:
         domains:
           - origin-a.akamaihd.net
