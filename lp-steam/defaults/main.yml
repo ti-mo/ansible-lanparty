@@ -34,10 +34,10 @@ csgo_server_instances:
     gotv: true
     rules: grand
     gameport: 27015
-    warmod: true
+    warmod: false
     coach: true
 
-csgo_warmod: true
+csgo_warmod: false
 csgo_mm_version: 1.10.6
 csgo_mm_url: http://incline.eu/ansible-lanparty/mmsource-{{ csgo_mm_version }}-linux.tar.gz
 
