@@ -36,13 +36,13 @@ gw_services:
     ports:
       - [ 'tcp', '80', 'browse' ]
       - [ 'tcp', '443', 'browse' ]
-  2_valve:
+  0_valve:
     sets:
       - [ 'udp', 'IPSET_GAME_VALVE', 'dst', '27015:28999', 'prio1' ]
-  2_steam:
+  0_steam:
     ports:
       - [ 'udp', '27015:27030', 'prio1', '27005' ]
-  2_lol:
+  0_lol:
     ports:
       - [ 'both', '5000:5500', 'prio1' ]
       - [ 'tcp', '2099', 'prio2' ]
