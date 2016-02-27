@@ -257,7 +257,7 @@ COMMIT
 ## Randomly check flows for obesity
 ## Only packets without DSCP headers will be candidates for demoting
 ## The chain is rate limited to avoid conntrack metadata lookups at (demote rule) times the packet rate
--A QOS_OUT -m dscp --dscp 0x0 -m mark ! --mark 0x0/0xf -m limit --limit 100/second -j QOS_DEMOTE
+-A QOS_OUT -m dscp --dscp 0x0 -m mark ! --mark 0x0/0xf -m hashlimit --hashlimit-above 10/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name QOS_DEMOTE -j QOS_DEMOTE
 
 ## Take a journey through the services chain
 -A QOS_OUT -m mark --mark 0x0/0xf -j QOS_SERVICES
