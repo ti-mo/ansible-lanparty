@@ -74,7 +74,7 @@ gw_services:
       - [ 'udp', '25000:25099', 'prio2' ]
   rleague:
     ports:
-      - [ 'udp', '7700:7899', 'prio1' ]
+      - [ 'udp', '7000:9000', 'prio1' ]
   gw2:
     ports:
       - [ 'tcp', '6112', 'prio2' ]
