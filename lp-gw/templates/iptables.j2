@@ -41,11 +41,11 @@
 
 # Limit outgoing UDP conenction flooding
 # Issues are caused by Steam server browsers sending 1k-2k UDP packets to all different hosts
--A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 2/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -m comment --comment "udp_flood_overlimit" -j DROP
+-A FORWARD -p udp -m conntrack --ctstate NEW -m hashlimit --hashlimit-above 20/second --hashlimit-burst 20 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name UDPFLOOD -m comment --comment "udp_flood_overlimit" -j DROP
 
 # Limit outgoing SYN flooding. Running something like `ab -n 1000000 -c 19000 -i -r http://some.page/`
 # abuses the shaper's leniency towards 'mice' packets and causes heavy disruptions on the network.
--A FORWARD -p tcp --syn -m hashlimit --hashlimit-above 10/second --hashlimit-burst 20 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name SYNFLOOD -m comment --comment "syn_flood_overlimit" -j DROP
+-A FORWARD -p tcp --syn -m hashlimit --hashlimit-above 20/second --hashlimit-burst 20 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name SYNFLOOD -m comment --comment "syn_flood_overlimit" -j DROP
 
 {% if gw_config.torrentfilter | default(true) %}
 # Only consider outgoing traffic so we don't block internal source ports by accident
