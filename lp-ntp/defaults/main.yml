@@ -1,4 +1,12 @@
 ---
 ntp:
+  mode: client
   driftfile: /var/lib/ntp/ntp.drift
   statistics: 'loopstats peerstats clockstats'
+  restrict:
+    - '-4 default ignore'
+    - '-6 default ignore'
+    - '10.16.0.0 mask 255.255.0.0 nomodify notrap'
+    - '172.16.0.0 mask 255.255.0.0 nomodify notrap'
+    - '127.0.0.1'
+    - '::1'
