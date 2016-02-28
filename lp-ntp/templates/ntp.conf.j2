@@ -4,8 +4,8 @@ driftfile {{ ntp.driftfile }}
 
 {% if ntp.mode == 'client' %}
 # NTP Client Mode
-{% for host in groups['ntp'] %}
-server  {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }} iburst
+{% for host in ntp_servers | default([]) %}
+server  {{ host }} iburst
 {% endfor %}
 {% endif %}
 
