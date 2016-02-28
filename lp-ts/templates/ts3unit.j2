@@ -6,11 +6,11 @@ Description=TeamSpeak 3 Server Daemon
 User={{ ts.user }}
 TimeoutStartSec=300
 WorkingDirectory={{ ts.install_dir }}
-Environment="LD_LIBRARY_PATH={{ ts.install_dir }}:$LD_LIBRARY_PATH"
+Environment="LD_LIBRARY_PATH={{ ts.install_dir }}:{{ ts.install_dir }}/redist:$LD_LIBRARY_PATH"
 {% if ts.use_mysql %}
 ExecStartPre=/bin/sh -c "until nc -z {{ ts_mysql_server }} {{ mysql.port | default(3306) }}; do sleep 10; echo 'TeamSpeak MySQL database unreachable, waiting for 10 sec'; done"
 {% endif %}
-ExecStart={{ ts.install_dir }}/ts3server_linux_amd64 inifile=ts3server.ini
+ExecStart={{ ts.install_dir }}/ts3server inifile=ts3server.ini
 
 [Install]
 WantedBy=multi-user.target

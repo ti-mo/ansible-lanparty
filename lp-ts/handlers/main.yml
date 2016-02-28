@@ -1,3 +1,6 @@
 ---
 - name: restart ts3
   service: name=teamspeak3 state=restarted
+
+- name: reload daemons
+  command: systemctl daemon-reload

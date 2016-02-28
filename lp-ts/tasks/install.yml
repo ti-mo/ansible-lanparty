@@ -1,14 +1,10 @@
 ---
-- name: Install | Netcat
+- name: Install | Packages
   apt:
-    name: netcat
-  tags: [ 'packages' ]
-
-# This compat package is not available upstream,
-# but is added in ansible-lp apt repository
-- name: Install | MySQL Compat Library
-  apt:
-    name: libmysqlclient15off
+    name: "{{ item }}"
+  with_items:
+    - netcat
+    - bzip2
   tags: [ 'packages' ]
 
 - name: Install | TeamSpeak3 User

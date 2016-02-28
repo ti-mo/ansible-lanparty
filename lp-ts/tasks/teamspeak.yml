@@ -26,7 +26,10 @@
     src: ts3unit.j2
     dest: /etc/systemd/system/teamspeak3.service
     mode: 755
+  notify: reload daemons
   tags: [ 'services', 'units' ]
+
+- meta: flush_handlers
 
 - name: TS3 | TeamSpeak3 Service
   service:
