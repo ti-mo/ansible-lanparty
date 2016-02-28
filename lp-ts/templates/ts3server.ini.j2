@@ -8,10 +8,12 @@ query_port=10011
 query_ip=0.0.0.0
 query_ip_whitelist=query_ip_whitelist.txt
 query_ip_blacklist=query_ip_blacklist.txt
+{% if ts.use_mysql %}
 dbplugin=ts3db_{{ ts.db_driver }}
+dbsqlcreatepath=create_{{ ts.db_driver }}/
+{% endif %}
 dbpluginparameter=
 dbsqlpath=sql/
-dbsqlcreatepath=create_{{ ts.db_driver }}/
 dbconnections=10
 logpath=logs
 logquerycommands=0
