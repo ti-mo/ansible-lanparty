@@ -1,0 +1,10 @@
+---
+ts:
+  port: 9987
+  user: ts3
+  url: http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.12.2/teamspeak3-server_linux_amd64-3.0.12.2.tar.bz2
+  install_dir: /usr/local/teamspeak3
+  leading_dir: teamspeak3-server_linux-amd64
+  use_mysql: false
+  start_script: ts3server_startscript.sh
+  db_driver: mariadb
