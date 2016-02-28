@@ -28,7 +28,7 @@ lxc.kmsg = 0
 lxc.network.type = veth
 lxc.network.flags = up
 lxc.network.name = {{ name }}
-lxc.network.veth.pair = {{ item.key | hash('sha512') | truncate(8, true, "") }}-{{ name }}
+lxc.network.veth.pair = {{ item.key | hash('sha512') | truncate(5, true, "") }}-{{ name | truncate(10, true, "") }}
 lxc.network.script.up = /etc/lxc/ovs-up {{ lxc_bridge }} {{ if.vlan }}
 lxc.network.script.down = /etc/lxc/ovs-down
 
