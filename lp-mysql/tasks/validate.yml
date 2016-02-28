@@ -1,0 +1,6 @@
+---
+- name: Validate | Root Password
+  assert:
+    that:
+      - mysql.root_pass is defined
+    msg: "Set a MySQL root password in 'mysql.root_pass'"
