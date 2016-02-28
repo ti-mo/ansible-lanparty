@@ -1,4 +1,9 @@
 # {{ ansible_managed }}
+{% if ansible_distribution == 'Debian' %}
+{% set lxc_autostart_bin = 'lxc-autostart-helper' %}
+{% else %}
+{% set lxc_autostart_bin = 'lxc-containers' %}
+{% endif %}
 [Unit]
 Description=Custom LXC Autostart with OpenVSwitch Dependency
 After=network.target openvswitch-nonetwork.service
@@ -8,8 +13,8 @@ Requires=openvswitch-nonetwork.service
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/lib/x86_64-linux-gnu/lxc/lxc-devsetup
-ExecStart=/usr/lib/x86_64-linux-gnu/lxc/lxc-autostart-helper start
-ExecStop=/usr/lib/x86_64-linux-gnu/lxc/lxc-autostart-helper stop
+ExecStart=/usr/lib/x86_64-linux-gnu/lxc/{{ lxc_autostart_bin }} start
+ExecStop=/usr/lib/x86_64-linux-gnu/lxc/{{ lxc_autostart_bin }} stop
 StandardOutput=syslog
 StandardError=syslog
 
