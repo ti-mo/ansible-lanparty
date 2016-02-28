@@ -1,0 +1,7 @@
+---
+- name: Verify | Local NTP Server
+  assert:
+    that:
+      - ntp_servers is defined
+      - ntp_servers is iterable
+    msg: Define at least one (local) NTP server in 'ntp_servers'

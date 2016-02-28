@@ -1,18 +1,6 @@
 ---
-- name: Install ntp package
-  apt:
-    name=ntp state=present
-  tags: [ 'packages' ]
+- include: verify.yml
 
-- name: Install ntp.conf template
-  template: src=ntp.conf.j2 dest=/etc/ntp.conf
-  notify: restart ntp
-
-- name: Start ntp service
-  service:
-    name=ntp
-    state=started
-    enabled=true
-    pattern='/ntpd'
-  ignore_errors: true
-  tags: [ 'services' ]
+- include: install.yml
+  when: not (ansible_virtualization_type == 'lxc'
+              and ntp.mode == 'client')
