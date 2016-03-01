@@ -10,6 +10,13 @@
       'ipmitool', 'python-mysqldb' ]
   tags: [ 'packages' ]
 
+- name: Install | Directory
+  file:
+    state: directory
+    path: /opt/observium
+    owner: "{{ observium.user }}"
+    group: "{{ observium.user }}"
+
 - name: Install | LibreNMS Git Checkout
   git:
     repo: https://github.com/librenms/librenms
@@ -23,15 +30,13 @@
   copy:
     src: "files/images/{{ observium.title_image }}"
     dest: "{{ observium.install_dir }}/html/images"
-    owner: "{{ observium.user }}"
-    group: "{{ observium.user }}"
+  become_user: "{{ observium.user }}"
 
 - name: Install | Create Directories
   file:
     path: "{{ observium.install_dir }}/{{ item }}"
     state: directory
-    owner: "{{ observium.user }}"
-    group: "{{ observium.user }}"
+  become_user: "{{ observium.user }}"
   with_items:
     - rrd
     - logs
