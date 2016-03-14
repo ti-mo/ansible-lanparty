@@ -77,8 +77,8 @@
 
 # Destination ports to block
 {% for p in gw_blacklist.ports | default([]) %}
--A FORWARD -p tcp --dport {{ p }} -m set --match-set INT_NET src -m comment --comment "tcp_block_{{ p }}" -j REJECT
--A FORWARD -p udp --dport {{ p }} -m set --match-set INT_NET src -m comment --comment "udp_block_{{ p }}" -j REJECT
+-A FORWARD -p tcp --dport {{ p }} -m set ! --match-set INT_NET dst -m comment --comment "tcp_block_{{ p }}" -j REJECT
+-A FORWARD -p udp --dport {{ p }} -m set ! --match-set INT_NET dst -m comment --comment "udp_block_{{ p }}" -j REJECT
 {% endfor %}
 {% else %}
 # lp-gw Minimal Mode is activated
