@@ -41,7 +41,7 @@ ddns-rev-domainname = "in-addr.arpa.";
 # RNDC Key for Dynamic DNS
 key {{ ns.rndc.keyname }} {
   algorithm {{ ns.rndc.algo }};
-  secret {{ ns.rndc.key }};
+  secret "{{ ns.rndc.key }}";
 }
 
 # Forward DynDNS DNS Zone

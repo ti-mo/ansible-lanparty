@@ -1,4 +1,9 @@
 ---
+ns:
+  rndc:
+    algo: hmac-md5
+    keyname: lanparty
+
 dhcp:
   nameservers: []
   timeservers: []
