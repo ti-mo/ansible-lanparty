@@ -61,15 +61,15 @@ RATE_C1=${ETH_RATE} # Maximum interface speed
   $TC class add dev ${IFACE} parent 1: classid 1:1 hfsc sc rate ${RATE_C1}kbit ul rate ${RATE_C1}kbit
   $TC class add dev ${IFACE} parent 1:1 classid 1:2 hfsc sc rate ${RATE_C2}kbit ul rate ${RATE_C2}kbit
     $TC class add dev ${IFACE} parent 1:2 classid 1:11 hfsc sc rate ${RATE_C11}kbit
-      $TC qdisc add dev ${IFACE} parent 1:11 handle 11: fq_codel noecn limit 1200 flows 65535 target 5ms interval 10ms
+      $TC qdisc add dev ${IFACE} parent 1:11 handle 11: fq_codel noecn limit 1200 flows 65535 target 5ms
     $TC class add dev ${IFACE} parent 1:2 classid 1:12 hfsc sc dmax 60ms rate ${RATE_C12}kbit
-      $TC qdisc add dev ${IFACE} parent 1:12 handle 12: fq_codel noecn limit 1200 flows 65535 target 5ms interval 10ms
+      $TC qdisc add dev ${IFACE} parent 1:12 handle 12: fq_codel noecn limit 1200 flows 65535 target 5ms
     $TC class add dev ${IFACE} parent 1:2 classid 1:13 hfsc ls dmax 100ms rate ${RATE_C13}kbit
       $TC class add dev ${IFACE} parent 1:13 classid 1:21 hfsc ls rate ${RATE_C21}kbit
         $TC class add dev ${IFACE} parent 1:21 classid 1:31 hfsc sc rate ${RATE_C31}kbit
-          $TC qdisc add dev ${IFACE} parent 1:31 handle 31: fq_codel noecn limit 1200 flows 65535 target 5ms interval 20ms
+          $TC qdisc add dev ${IFACE} parent 1:31 handle 31: fq_codel noecn limit 1200 flows 65535 target 5ms
         $TC class add dev ${IFACE} parent 1:21 classid 1:32 hfsc ls dmax 10ms rate ${RATE_C32}kbit
-          $TC qdisc add dev ${IFACE} parent 1:32 handle 32: fq_codel noecn limit 1200 flows 65535 target 5ms interval 40ms
+          $TC qdisc add dev ${IFACE} parent 1:32 handle 32: fq_codel noecn limit 1200 flows 65535 target 5ms
       $TC class add dev ${IFACE} parent 1:13 classid 1:22 hfsc ls dmax 50ms rate ${RATE_C22}kbit
         $TC qdisc add dev ${IFACE} parent 1:22 handle 22: fq_codel noecn limit 1200 flows 65535 target 5ms
       $TC class add dev ${IFACE} parent 1:13 classid 1:23 hfsc ls rate ${RATE_C23}kbit
