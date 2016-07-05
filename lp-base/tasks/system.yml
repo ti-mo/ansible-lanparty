@@ -39,6 +39,6 @@
     sysctl_set: yes
     state: present
     reload: yes
-  with_items: kern.params
+  with_items: "{{ kern.params }}"
   when: ansible_virtualization_type != 'lxc'
   tags: [ 'kernel' ]
