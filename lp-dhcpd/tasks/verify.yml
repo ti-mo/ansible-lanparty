@@ -25,7 +25,7 @@
       - "item.value.address is defined"
       - "item.value.address | ipv4('network')"
     msg: "Invalid network address for dhcp.networks.{{ item.key }}"
-  with_dict: dhcp.networks
+  with_dict: "{{ dhcp.networks }}"
 
 - name: Verify | Network Pool Names and Addresses
   assert:
@@ -35,7 +35,7 @@
       - "{% for pool in item.value.pools %} item.value.pools.{{ loop.index0 }}.start | ipv4 {% if not loop.last %}and{%endif%}{% endfor %}"
       - "{% for pool in item.value.pools %} item.value.pools.{{ loop.index0 }}.end | ipv4 {% if not loop.last %}and{%endif%}{% endfor %}"
     msg: "Error in a pool for the '{{ item.key }}' network"
-  with_dict: dhcp.networks
+  with_dict: "{{ dhcp.networks }}"
 
 - name: Verify | RNDC Key
   assert:
