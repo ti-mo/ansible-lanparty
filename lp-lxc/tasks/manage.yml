@@ -13,20 +13,20 @@
     vg_name: "{{ lxc_vg | default('lxc') }}"
     state: started
   register: lxccreated
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
 
 - name: lxc | Render Configurations
   template:
     src: lxc-config.j2
     dest: "/var/lib/lxc/{{ item.key }}/config"
   register: lxcconfig
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
 
 - name: lxc | Debian | Render Network Configuration
   template:
     src: lxc-eni.j2
     dest: "/var/lib/lxc/{{ item.key }}/rootfs/etc/network/interfaces"
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
   when: item.value.store | default('dir') == 'dir' and
         item.value.distro | default('debian') == 'debian'
 
@@ -37,20 +37,20 @@
     name: "{{ item.item.key }}"
     state: restarted
   when: item.changed and lxc_restart == 'YES'
-  with_items: lxcconfig.results
+  with_items: "{{ lxcconfig.results }}"
 
 - name: lxc | Start All Defined Containers
   lxc_container:
     name: "{{ item.key }}"
     state: started
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
 
 - name: lxc | Root .ssh directory
   file:
     path: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh"
     state: directory
     mode: 0700
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
   when: item.value.store | default('dir') == 'dir'
 
 - name: lxc | Root authorized_keys
@@ -58,7 +58,7 @@
     src: ssh-keys.j2
     dest: "/var/lib/lxc/{{ item.key }}/rootfs/root/.ssh/authorized_keys"
     mode: 0600
-  with_dict: lxc_containers
+  with_dict: "{{ lxc_containers }}"
   when: item.value.store | default('dir') == 'dir'
 
 - name: lxc | Install basic packages when lxc_restart == YES
@@ -66,4 +66,4 @@
     name: "{{ item.item.key }}"
     container_command: "echo 'nameserver {{ resolvers.0 | default('8.8.8.8')}}' > /etc/resolv.conf; apt-get update; apt-get -q -y install sudo python"
   when: item.changed and lxc_restart == 'YES'
-  with_items: lxccreated.results
+  with_items: "{{ lxccreated.results }}"
