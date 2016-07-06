@@ -32,7 +32,14 @@
   apt:
     name: iptables-persistent
 
-- name: lxc | Run iptables-persistent for global kernel modules
+- name: lxc | Conntrack kernel module configuration
+  lineinfile:
+    dest: /etc/modprobe.d/lanparty.conf
+    line: "options nf_conntrack hashsize={{ gw_config.conntrack_max }}"
+    create: yes
+  when: gw_config is defined and gw_config.conntrack_max is defined
+
+- name: lxc | Run netfilter-persistent for kernel modules
   service:
     name: netfilter-persistent
     state: started
