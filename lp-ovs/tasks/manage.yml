@@ -2,12 +2,11 @@
 - name: Manage | Create Bridges
   openvswitch_bridge:
     bridge: "{{ item.name }}"
-  with_items: openvswitch
+  with_items: "{{ openvswitch }}"
 
-- name: Manage | Create Ports
-  openvswitch_port:
-    bridge: "{{ item.0.name }}"
-    port: "{{ item.1 }}"
-  with_subelements:
-    - openvswitch
-    - ports
+# Broken due to https://github.com/ansible/ansible-modules-extras/issues/2500
+# - name: Manage | Create Ports
+#   openvswitch_port:
+#     bridge: "{{ item.name }}"
+#     port: "{{ item.ports }}"
+#   with_items: "{{ openvswitch }}"

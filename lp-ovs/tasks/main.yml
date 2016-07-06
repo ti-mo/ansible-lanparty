@@ -14,7 +14,7 @@
       - "item.ports is iterable"
       - "item.ports is not string"
     msg: openvswitch.<item>.ports cannot be missing, empty or string
-  with_items: openvswitch
+  with_items: "{{ openvswitch }}"
 
 - include: install.yml
   tags: [ 'install' ]
