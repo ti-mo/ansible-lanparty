@@ -12,8 +12,9 @@ index.number_of_replicas: {{ (groups[elasticsearch_group] | count) - 1 }}
 
 # Networking
 network.bind_host: {{ elasticsearch.bind_host }}
-network.publish_host: {{ elasticsearch.publish_host }}
+network.publish_host: {{ elasticsearch.bind_host }}
 transport.bind_host: {{ elasticsearch.publish_host }}
+transport.publish_host: {{ elasticsearch.publish_host }}
 transport.tcp.port: {{ elasticsearch.tcp_port }}
 http.port: {{ elasticsearch.http_port }}
 
