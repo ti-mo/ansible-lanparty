@@ -1,5 +1,5 @@
 ---
-- name: lxc | Install lxc packages
+- name: lxc | Install LXC packages
   apt:
     name: "{{ item }}"
     update_cache: yes
@@ -13,7 +13,7 @@
   when: ansible_distribution == 'Debian'
   tags: [ 'packages' ]
 
-- name: lxc | Install lxc packages for Ubuntu
+- name: lxc | Install LXC packages for Ubuntu
   apt:
     name: "{{ item }}"
     update_cache: yes
@@ -53,25 +53,8 @@
     reload: yes
   tags: [ 'kernel' ]
   with_items:
-    - { name: 'net.netfilter.nf_conntrack_max', value: gw_config.conntrack_max }
-    - { name: 'net.netfilter.nf_conntrack_buckets', value: gw_config.conntrack_max }
+    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
   when: gw_config is defined and gw_config.conntrack_max is defined
-
-- name: lxc | Debian bug 808205 workaround (gcc >=5.1)
-  apt:
-    name: gcc
-    default_release: testing
-    state: latest
-  when: ansible_distribution == 'Debian'
-  tags: [ 'packages' ]
-
-- name: lxc | Unit w/ OVS Dependency
-  template:
-    src: lxc.unit.j2
-    dest: /etc/systemd/system/lxc.service
-  notify: reload daemons
-
-- meta: flush_handlers
 
 - name: lxc | Install OVS scripts
   template:
@@ -87,7 +70,15 @@
     executable: pip2
     name: lxc-python2
 
+- name: lxc | Unit w/ OVS Dependency
+  template:
+    src: lxc.unit.j2
+    dest: /etc/systemd/system/lxc-ovs.service
+  notify: reload daemons
+
+- meta: flush_handlers
+
 - name: lxc | Enable LXC Autostart
   service:
-    name: lxc
+    name: lxc-ovs
     enabled: true
