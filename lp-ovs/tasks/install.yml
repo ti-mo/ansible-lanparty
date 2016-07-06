@@ -15,9 +15,6 @@
 
 - name: Install | Enable Services
   service:
-    name: "{{ item }}"
+    name: openvswitch-switch
     state: started
     enabled: true
-  with_items:
-    - openvswitch-switch
-    - openvswitch-nonetwork
