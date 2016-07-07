@@ -54,3 +54,4 @@ kern:
     - { name: 'net.ipv4.conf.all.arp_filter', value: '1' }
     - { name: 'net.ipv4.conf.all.arp_notify', value: '1' }
     - { name: 'net.core.default_qdisc', value: 'fq_codel' }
+    - { name: 'vm.max_map_count', value: '262144' }
