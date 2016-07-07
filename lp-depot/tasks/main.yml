@@ -5,7 +5,7 @@
       - "ns.spoof.services.{{ item }}.domains is defined"
       - "ns.spoof.services.{{ item }}.domains is iterable"
     msg: Need list of caching domains to spoof to create nginx vhosts
-  with_items: depot_sites
+  with_items: "{{ depot_sites }}"
 
 - name: Depot | Log Directories
   file:
@@ -14,7 +14,7 @@
     owner: "{{ www_user }}"
     group: "{{ www_user }}"
     recurse: true
-  with_items: depot_sites
+  with_items: "{{ depot_sites }}"
 
 - name: Depot | Render Global Parameters
   template:
@@ -40,7 +40,7 @@
   template:
     src: "{{ item }}.site.j2"
     dest: "/etc/nginx/sites-available/depot-{{ item }}"
-  with_items: depot_sites
+  with_items: "{{ depot_sites }}"
   notify: reload nginx
 
 - name: Depot | Enable Sites
@@ -48,7 +48,7 @@
     state: link
     src: "/etc/nginx/sites-available/depot-{{ item }}"
     dest: "/etc/nginx/sites-enabled/depot-{{ item }}"
-  with_items: depot_sites
+  with_items: "{{ depot_sites }}"
   notify: reload nginx
 
 - name: Depot | Install Logrotate
