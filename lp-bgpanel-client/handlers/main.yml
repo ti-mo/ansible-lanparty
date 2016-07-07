@@ -1,8 +1,0 @@
----
-- name: reload daemons
-  shell: systemctl daemon-reload
-
-- name: restart php
-  service:
-    name: php-fpm
-    state: restarted
