@@ -47,10 +47,6 @@
       - internal_networks | length >= 1
     msg: "Supply a valid list of prefixes in `internal_networks`"
 
-- debug:
-    var: "{{ item | ipaddr('subnet') }}"
-  with_items: internal_networks
-
 - name: Validate | Prefixes in internal_networks need to be valid ipv4
   assert:
     that:
