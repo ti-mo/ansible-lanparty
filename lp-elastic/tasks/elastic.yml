@@ -12,7 +12,7 @@
 
 - name: elastic | Set Heap Size
   lineinfile:
-    line: "ES_HEAP_SIZE={{ (ansible_memtotal_mb | int * 0.75) | round | int }}m"
+    line: "ES_HEAP_SIZE={{ elasticsearch.memory | default('1024m') }}"
     regexp: '^\#?\s?ES_HEAP_SIZE'
     dest: /etc/default/elasticsearch
   notify: restart es
