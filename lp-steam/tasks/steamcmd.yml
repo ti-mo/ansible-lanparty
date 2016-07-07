@@ -11,7 +11,7 @@
   args:
     chdir: "{{ steamcmd_path }}"
   become_user: "{{ steamcmd_user }}"
-  with_dict: steam_games
+  with_dict: "{{ steam_games }}"
   when: steam_password is not defined or steam_password == ''
   tags: [ 'install', 'steamcmd' ]
 
@@ -20,7 +20,7 @@
   args:
     chdir: "{{ steamcmd_path }}"
   become_user: "{{ steamcmd_user }}"
-  with_dict: steam_games
+  with_dict: "{{ steam_games }}"
   when: steam_password is defined and steam_password != ''
   tags: [ 'install', 'steamcmd' ]
 
@@ -29,6 +29,6 @@
   args:
     chdir: "{{ steamcmd_path }}"
   become_user: "{{ steamcmd_user }}"
-  with_dict: steam_games
+  with_dict: "{{ steam_games }}"
   when: steam_update | default(false)
   tags: [ 'update', 'steamcmd' ]

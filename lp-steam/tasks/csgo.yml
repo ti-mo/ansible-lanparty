@@ -9,7 +9,7 @@
     dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/server_{{ item.id }}.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
-  with_items: csgo_server_instances
+  with_items: "{{ csgo_server_instances }}"
   tags: [ 'configs' ]
 
 - name: CSGO | Install esl5on5
@@ -45,7 +45,7 @@
     dest: "{{ steamcmd_path }}/games/csgo/env/env_{{ item.id }}"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
-  with_items: csgo_server_instances
+  with_items: "{{ csgo_server_instances }}"
   tags: [ 'config' ]
 
 - name: CSGO | systemd unit
@@ -59,4 +59,4 @@
     name: "csgo@{{ item.id }}"
     enabled: true
     state: started
-  with_items: csgo_server_instances
+  with_items: "{{ csgo_server_instances }}"
