@@ -4,16 +4,25 @@
     path: /var/lock/subsys/lxc
     state: absent
 
+- name: lxc | Find existing containers
+  stat:
+    path: "/var/lib/lxc/{{ item.key }}"
+  with_dict: "{{ lxc_containers }}"
+  register: lxcdirs
+
 - name: lxc | Create Containers
   lxc_container:
-    name: "{{ item.key }}"
-    template: "{{ item.value.distro | default('debian') }}"
-    template_options: "--release {{ item.value.release | default('jessie') }}"
-    backing_store: "{{ item.value.store | default('dir') }}"
+    name: "{{ item.item.key }}"
+    template: "{{ item.item.value.distro | default('debian') }}"
+    template_options: >
+      --release {{ item.item.value.release | default('jessie') }}
+      --packages sudo,python,inetutils-ping
+      --clean
+    backing_store: "{{ item.item.value.store | default('dir') }}"
     vg_name: "{{ lxc_vg | default('lxc') }}"
-    state: started
-  register: lxccreated
-  with_dict: "{{ lxc_containers }}"
+    state: stopped
+  when: not item.stat.exists
+  with_items: "{{ lxcdirs.results }}"
 
 - name: lxc | Render Configurations
   template:
@@ -60,10 +69,3 @@
     mode: 0600
   with_dict: "{{ lxc_containers }}"
   when: item.value.store | default('dir') == 'dir'
-
-- name: lxc | Install basic packages when lxc_restart == YES
-  lxc_container:
-    name: "{{ item.item.key }}"
-    container_command: "echo 'nameserver {{ resolvers.0 | default('8.8.8.8')}}' > /etc/resolv.conf; apt-get update; apt-get -q -y install sudo python"
-  when: item.changed and lxc_restart == 'YES'
-  with_items: "{{ lxccreated.results }}"
