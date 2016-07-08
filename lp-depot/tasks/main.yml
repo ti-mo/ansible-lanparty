@@ -42,6 +42,7 @@
     dest: "/etc/nginx/sites-available/depot-{{ item }}"
   with_items: "{{ depot_sites }}"
   notify: reload nginx
+  tags: [ 'spoof' ]
 
 - name: Depot | Enable Sites
   file:
