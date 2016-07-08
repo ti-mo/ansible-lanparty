@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 # Main Nginx Configuration, use sites-enabled/conf.d to install apps
 user {{ www_user | default('www-data') }};
-worker_processes {{ ansible_processor_vcpus | default(ansible_processor_count * ansible_processor_cores) }};
+worker_processes {{ nginx_worker_processes | default('auto') }};
 pid {{ nginx_pid | default('/var/run/nginx.pid') }};
 
 events {

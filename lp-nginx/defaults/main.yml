@@ -1,6 +1,7 @@
 ---
 nginx_disable_default: false
 nginx_openresty: false
+nginx_worker_processes: auto
 
 nginx_pid: /var/run/nginx.pid
 
