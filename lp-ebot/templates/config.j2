@@ -2,7 +2,7 @@
 
 [BDD]
 MYSQL_IP = "{{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}"
-MYSQL_PORT = "{{ mysql.port }}"
+MYSQL_PORT = "{{ mysql.port | default(3306) }}"
 MYSQL_USER = "{{ mysql.apps.ebot.user }}"
 MYSQL_PASS = "{{ mysql.apps.ebot.pass }}"
 MYSQL_BASE = "{{ mysql.apps.ebot.db }}"
