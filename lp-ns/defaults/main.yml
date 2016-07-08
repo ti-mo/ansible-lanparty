@@ -70,6 +70,8 @@ ns:
       origin:
         domains:
           - origin-a.akamaihd.net
+          - akamai.cdn.ea.com
+          - lvlt.cdn.ea.com
       twitch:
         domains:
           - usher.justin.tv
