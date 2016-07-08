@@ -183,8 +183,9 @@ COMMIT
 # Check which direction packet came from
 # Send packet through LS_IN or LS_OUT accordingly
 # Save the decision made in LS_IN or LS_OUT to the connection
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Packets" -m set --match-set INT_NET src -j LS_OUT
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Packets" -m set --match-set INT_NET dst -j LS_IN
+-A LS_NEW --comment "Local Connections" -m set --match-set INT_NET src,dst -j ACCEPT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Connections" -m set --match-set INT_NET src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Connections" -m set --match-set INT_NET dst -j LS_IN
 -A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
 
 ## Existing Connection
