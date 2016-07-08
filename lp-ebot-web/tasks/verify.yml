@@ -1,0 +1,10 @@
+---
+- name: Verify | eBot Websocket Endpoint
+  assert:
+      that: ebot_websocket_ip is defined or groups[ebot_inventory_group][0] is defined
+      msg: No eBot websocket endpoint configured or inferred
+
+- name: Verify | Check mysql.apps definition
+  assert:
+    that: "mysql.apps.ebot is defined"
+    msg: Define the ebot app in mysql.apps
