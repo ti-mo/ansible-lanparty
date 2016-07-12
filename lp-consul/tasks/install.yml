@@ -1,0 +1,36 @@
+---
+- name: Install | Install Package
+  apt:
+    name: consul
+
+- name: Install | Service Group
+  group:
+    name: consul
+    system: true
+
+- name: Install | Service User
+  user:
+    name: consul
+    group: consul
+    system: true
+    createhome: false
+
+- name: Install | consul.d Directory
+  file:
+    state: directory
+    path: /etc/consul.d
+
+- name: Install | /var/consul Directory
+  file:
+    state: directory
+    path: /var/consul
+    owner: consul
+    group: consul
+
+- name: Install | Render Unit File
+  template:
+    src: consul.unit.j2
+    dest: /etc/systemd/system/consul.service
+  notify: reload daemons
+
+- meta: flush_handlers

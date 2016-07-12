@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Consul agent
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=consul
+EnvironmentFile=-/etc/default/consul
+Environment=GOMAXPROCS=2
+ExecStart=/usr/local/bin/consul agent $OPTIONS -config-dir=/etc/consul.d -data-dir=/var/consul
+ExecReload=/bin/kill -HUP $MAINPID
+# https://github.com/hashicorp/consul/issues/750
+# SIGINT will gracefully (and permanently) remove the node from the cluster
+# Only gracefully remove followers from the cluster, use SIGTERM for server
+{% if consul_inventory_group in group_names %}
+KillSignal=SIGTERM
+{% else %}
+KillSignal=SIGINT
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

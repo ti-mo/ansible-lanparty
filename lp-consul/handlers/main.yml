@@ -1,0 +1,14 @@
+---
+- name: enable consul
+  service:
+    name: consul
+    state: started
+    enabled: true
+
+- name: reload daemons
+  shell: systemctl daemon-reload
+
+- name: restart consul
+  service:
+    name: consul
+    state: restarted
