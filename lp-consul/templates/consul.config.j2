@@ -1,5 +1,7 @@
 {
   "datacenter": "{{ consul_dc | default('lanparty') }}",
+  "rejoin_after_leave": true,
+  "encrypt": "{{ consul_secret }}",
 {% if consul_inventory_group in group_names %}
 {# Server Mode #}
   "server": true,
