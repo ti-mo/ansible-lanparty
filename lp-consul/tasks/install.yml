@@ -33,4 +33,18 @@
     dest: /etc/systemd/system/consul.service
   notify: reload daemons
 
+- name: Install | Render Nginx Site
+  template:
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-available/consul
+  when: consul_inventory_group in group_names
+  notify: reload nginx
+
+- name: Install | Nginx Site Symlink
+  file:
+    state: link
+    src: /etc/nginx/sites-available/consul
+    dest: /etc/nginx/sites-enabled/consul
+  when: consul_inventory_group in group_names
+
 - meta: flush_handlers

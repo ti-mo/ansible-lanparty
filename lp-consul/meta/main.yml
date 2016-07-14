@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: lp-nginx
+    nginx_disable_default: true
+    when: consul_inventory_group in group_names
