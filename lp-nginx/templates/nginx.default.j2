@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# Default site with stub status - implement your own if you disable default!
+
+server {
+  listen 80 default_server;
+  server_name _;
+
+  location /status {
+    stub_status;
+  }
+}

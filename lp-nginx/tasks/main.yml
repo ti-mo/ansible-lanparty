@@ -1,68 +1,9 @@
 ---
-- name: Nginx | Stop and disable Apache
-  service:
-    name: apache2
-    state: stopped
-    enabled: false
-  ignore_errors: true
+- include: install.yml
+  tags: [ 'install' ]
 
-- name: Nginx | Install Nginx
-  apt:
-    name: nginx
-  tags: [ 'packages' ]
-  when: nginx_openresty == false
+- include: configure.yml
+  tags: [ 'configure' ]
 
-- name: Nginx | Install OpenResty
-  apt:
-    name: openresty
-    force: yes
-    state: latest
-  tags: [ 'packages' ]
-  when: nginx_openresty
-
-- name: Nginx | Create Config Directories
-  file:
-    state: directory
-    path: /etc/nginx/{{ item }}
-  with_items:
-    - conf.d
-    - sites-enabled
-    - sites-available
-
-- name: Nginx | Render Configuration
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-  notify: restart nginx
-
-- name: Nginx | Disable Default Site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: reload nginx
-  when: nginx_disable_default
-
-- name: Nginx | Enable Service
-  service:
-    name: nginx
-    enabled: true
-  tags: [ 'services' ]
-
-- name: Nginx | Start Service
-  service:
-    name: nginx
-    state: started
-    enabled: true
-  when: start_nginx | default(true)
-  tags: [ 'services' ]
-
-- name: Nginx | Install Logrotate
-  template:
-    src: logrotate.j2
-    dest: /etc/logrotate.d/nginx
-    mode: 0644
-
-- name: Nginx | Enable Hourly Logrotate
-  template:
-    src: logrotate.hourly.j2
-    dest: /etc/cron.hourly/logrotate
+- include: run.yml
+  tags: [ 'run' ]

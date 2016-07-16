@@ -37,4 +37,8 @@ server {
 {% endfor %}
     deny all;
   }
+
+  location /status {
+    stub_status;
+  }
 }

@@ -1,0 +1,26 @@
+---
+- name: Nginx | Stop and disable Apache
+  service:
+    name: apache2
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Nginx | Install Nginx
+  apt:
+    name: nginx
+  tags: [ 'packages' ]
+  when: nginx_openresty == false
+
+- name: Nginx | Install OpenResty
+  apt:
+    name: openresty
+    force: yes
+    state: latest
+  tags: [ 'packages' ]
+  when: nginx_openresty
+
+- name: Nginx | Default Page
+  template:
+    src: index.default.j2
+    dest: /usr/local/nginx/html/index.html

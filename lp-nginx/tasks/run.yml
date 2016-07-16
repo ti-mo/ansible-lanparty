@@ -1,0 +1,14 @@
+---
+- name: Nginx | Enable Service
+  service:
+    name: nginx
+    enabled: true
+  tags: [ 'services' ]
+
+- name: Nginx | Start Service
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  when: start_nginx | default(true)
+  tags: [ 'services' ]
