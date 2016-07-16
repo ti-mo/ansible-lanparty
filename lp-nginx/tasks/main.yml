@@ -7,3 +7,7 @@
 
 - include: run.yml
   tags: [ 'run' ]
+
+- include: consul.yml
+  tags: [ 'consul' ]
+  when: consul_agent_enable | default(false) == true

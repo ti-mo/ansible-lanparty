@@ -4,3 +4,6 @@
 
 - name: reload nginx
   service: name=nginx state=reloaded
+
+- name: reload consul
+  service: name=consul state=reloaded

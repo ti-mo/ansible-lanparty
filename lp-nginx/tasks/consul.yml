@@ -1,0 +1,6 @@
+---
+- name: Consul | Nginx Service Definition
+  template:
+    src: consul.service.j2
+    dest: /etc/consul.d/services/nginx.json
+  notify: reload consul
