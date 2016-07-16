@@ -1,0 +1,8 @@
+---
+- name: Depot | Enable Sites
+  file:
+    state: link
+    src: "/etc/nginx/sites-available/depot-{{ item }}"
+    dest: "/etc/nginx/sites-enabled/depot-{{ item }}"
+  with_items: "{{ depot_sites }}"
+  notify: reload nginx
