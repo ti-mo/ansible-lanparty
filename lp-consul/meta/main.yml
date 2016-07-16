@@ -2,4 +2,5 @@
 dependencies:
   - role: lp-nginx
     nginx_disable_default: true
+    nginx_worker_processes: 2
     when: consul_inventory_group in group_names
