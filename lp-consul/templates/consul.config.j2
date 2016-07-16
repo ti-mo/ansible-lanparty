@@ -3,17 +3,17 @@
   "rejoin_after_leave": true,
   "encrypt": "{{ consul_secret }}",
   "disable_remote_exec": true,
-{% if consul_inventory_group in group_names %}
-{# Server Mode #}
-  "server": true,
-  "ui": true,
-  "bootstrap_expect": {{ groups[consul_inventory_group] | length }},
   "retry_join": [
 {% for h in groups[consul_inventory_group] %}
     "{{ hostvars[h]['ansible_default_ipv4']['address'] }}"{% if not loop.last %},
 {% endif %}
 {% endfor %}
-  ]
+  ],
+{% if consul_inventory_group in group_names %}
+{# Server Mode #}
+  "server": true,
+  "ui": true,
+  "bootstrap_expect": {{ groups[consul_inventory_group] | length }}
 {% else %}
 {# Client Mode #}
   "server": false
