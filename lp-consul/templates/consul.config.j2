@@ -3,6 +3,10 @@
   "rejoin_after_leave": true,
   "encrypt": "{{ consul_secret }}",
   "disable_remote_exec": true,
+{% if consul_interface is defined and
+    consul_interface in ansible_interfaces %}
+  "advertise_addr": "{{ hostvars[inventory_hostname]['ansible_' + consul_interface]['ipv4']['address'] }}",
+{% endif %}
   "retry_join": [
 {% for h in groups[consul_inventory_group] %}
     "{{ hostvars[h]['ansible_default_ipv4']['address'] }}"{% if not loop.last %},

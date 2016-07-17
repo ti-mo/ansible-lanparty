@@ -7,6 +7,12 @@ Run `consul keygen` to have Consul generate a value. Set the `consul_secret` var
 
 This is mandatory, `lp-consul` will throw an error when this secret is missing.
 
+## Specifying Advertised Interface
+
+The `consul_interface` parameter can be used to specify the network interface
+(eg. 'lan') to use to advertise to the cluster. This needs to be set on hosts
+with multiple network interfaces. (eg. ISP / firewalls)
+
 ## Server Nodes
 
 ### Inventory Group
