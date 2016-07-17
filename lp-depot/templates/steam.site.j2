@@ -14,7 +14,7 @@ server {
     proxy_cache steam;
 
     # Cache Settings
-    proxy_cache_key "$server_name$uri";
+    proxy_cache_key "$uri";
     proxy_cache_valid 200 7d;
 
     # Use proxy_cache method
@@ -28,7 +28,7 @@ server {
   location / {
     # Cache location
     proxy_cache other;
-    proxy_cache_key "$server_name$request_uri";
+    proxy_cache_key "$host$uri";
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;
