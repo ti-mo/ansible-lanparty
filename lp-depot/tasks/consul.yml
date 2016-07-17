@@ -1,0 +1,6 @@
+---
+- name: Consul | Cache Service
+  template:
+    src: consul.service.j2
+    dest: /etc/consul.d/services/cache.json
+  notify: reload consul

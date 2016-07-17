@@ -7,3 +7,6 @@
 
 - include: run.yml
   tags: [ 'run' ]
+
+- include: consul.yml
+  tags: [ 'consul' ]
