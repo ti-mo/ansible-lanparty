@@ -1,5 +1,6 @@
 {
   "datacenter": "{{ consul_dc | default('lanparty') }}",
+  "domain": "{{ consul_domain | default('consul') }}",
   "rejoin_after_leave": true,
   "encrypt": "{{ consul_secret }}",
   "disable_remote_exec": true,

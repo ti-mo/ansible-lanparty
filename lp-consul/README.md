@@ -13,6 +13,12 @@ The `consul_interface` parameter can be used to specify the network interface
 (eg. 'lan') to use to advertise to the cluster. This needs to be set on hosts
 with multiple network interfaces. (eg. ISP, firewalls, baremetals, ..)
 
+## DNS Domain
+
+`consul_domain` (default: 'consul'): shared parameter w/ `lp-ns`, specifies
+the NS domain the Consul cluster is authoritative for. In case of 'foo', eg.
+`nslookup nginx.service.foo`.
+
 ## Server Nodes
 
 ### Inventory Group
