@@ -43,3 +43,22 @@ Client nodes can be added by just applying `lp-consul` to them.
 They will join the cluster of the group of nodes defined in `consul_inventory_group` (default: `consul`).
 
 Clients gracefully leave the cluster upon termination as they are killed using SIGINT.
+
+### Integration with other roles
+
+Roles that want to install Consul health checks and service definitions should
+optionally depend on lp-consul like so:
+
+```
+# meta/main.yml
+dependencies:
+  - role: lp-consul
+    when: consul_agent_enable | default(false) == true
+```
+
+The Consul package will be installed, dirs in `/etc/consul.d` will be created
+and the health checks and service definitions can be safely dropped in `/etc/consul.d/checks` and `/etc/consul.d/services` accordingly.
+
+Build a similar condition to apply a playbook containing the checks and
+definitions to the system, eg. `consul.yml`. Setting `consul_agent_enable` on
+node level will install a Consul client and the checks. Also, write a handler.
