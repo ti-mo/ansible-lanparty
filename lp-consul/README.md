@@ -11,7 +11,7 @@ This is mandatory, `lp-consul` will throw an error when this secret is missing.
 
 The `consul_interface` parameter can be used to specify the network interface
 (eg. 'lan') to use to advertise to the cluster. This needs to be set on hosts
-with multiple network interfaces. (eg. ISP / firewalls)
+with multiple network interfaces. (eg. ISP, firewalls, baremetals, ..)
 
 ## Server Nodes
 
