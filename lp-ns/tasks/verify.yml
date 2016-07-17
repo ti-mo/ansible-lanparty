@@ -46,3 +46,10 @@
       - "ns.rndc.key is defined"
     msg: "Set `ns.rndc.key` to a valid RNDC key generated using `rndc-confgen -b 256`"
   when: dhcp.dyndns
+
+- name: Verify | Consul DNS Forwarding
+  assert:
+    that:
+      - consul_agent_enable | default(false) == true
+    msg: "`consul_publish_dns` is true but Consul agent is disabled on DNS node"
+  when: consul_publish_dns | default(false) == true

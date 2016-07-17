@@ -8,3 +8,12 @@ zone "{{ zone.name }}." IN {
     allow-update { none; };
 };
 {% endfor %}
+
+{% if consul_agent_enable | default(false) == true and
+    consul_publish_dns | default(false) == true %}
+zone "{{ consul_domain | default('consul') }}." IN {
+  type forward;
+  forward only;
+  forwarders { 127.0.0.1 port 8600; };
+};
+{% endif %}
