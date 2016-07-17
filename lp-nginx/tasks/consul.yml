@@ -1,4 +1,14 @@
 ---
+# Since lp-consul (server) depends on lp-nginx for locally proxying its web UI,
+# we cannot depend on lp-consul. This playbook is gated by consul_agent_enable,
+# so we assert that the package is installed at this point.
+
+- name: Consul | Check Package Installation
+  command: dpkg-query -l consul
+  register: deb_check
+  failed_when: "'no packages found' in deb_check.stderr"
+  changed_when: false
+
 - name: Consul | Nginx Service Definition
   template:
     src: consul.service.j2
