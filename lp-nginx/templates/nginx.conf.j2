@@ -29,6 +29,9 @@ http {
   # Ubiquitous Log Format
   log_format depot '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$upstream_cache_status" "$host" "$http_range"';
 
+  # Fix for httpoxy (CVE-2016-5385)
+  fastcgi_param HTTP_PROXY "";
+
   # Includes
   include /etc/nginx/conf.d/*.conf;
   include /etc/nginx/sites-enabled/*;
