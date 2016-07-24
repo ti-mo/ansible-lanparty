@@ -36,7 +36,7 @@
 
 # Hosts exempt from block rules
 {% for r in gw_whitelist | default([]) %}
--A FORWARD -s {{ r }} -j ACCEPT
+-A FORWARD -s {{ r }} -j RETURN
 {% endfor %}
 
 # Limit outgoing UDP conenction flooding
