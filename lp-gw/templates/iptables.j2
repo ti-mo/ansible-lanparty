@@ -112,13 +112,13 @@ COMMIT
 ## Minimal Mode DSCP -> NFMark translation
 # Minimal disables DSCP stripping, so marks will always be forwarded downstream
 {% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
--A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xffff
 {% endfor %}
 # Save fwmark to connmark for all outbound packets that differ
 {% for _, mark in gw_priorities.iteritems() %}
--A QOS_OUT -m mark --mark 0x{{ mark }}/0xf -m connmark ! --mark 0x{{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A QOS_OUT -m mark --mark 0x{{ mark }}/0xffff -m connmark ! --mark 0x{{ mark }}/0xffff -j CONNMARK --save-mark
 {% endfor %}
--A QOS_IN -j CONNMARK --restore-mark --nfmask 0xf --ctmask 0xf
+-A QOS_IN -j CONNMARK --restore-mark --nfmask 0xffff --ctmask 0xffff
 {% else %}
 
 # Link Selection Chains
@@ -158,12 +158,12 @@ COMMIT
 
 ## Save Packet Priority Mark to Connection
 {% for _, mark in gw_priorities.iteritems() %}
--A POSTROUTING -m mark --mark 0x{{ mark }}/0xf -m connmark ! --mark 0x{{ mark }}/0xf -j CONNMARK --save-mark --nfmask 0xf --ctmask 0xf
+-A POSTROUTING -m mark --mark 0x{{ mark }}/0xffff -m connmark ! --mark 0x{{ mark }}/0xffff -j CONNMARK --save-mark --nfmask 0xffff --ctmask 0xffff
 {% endfor %}
 
 ## Assign DSCP Mark
 {% for prio, mark in gw_priorities.iteritems() %}
--A POSTROUTING -m mark --mark 0x{{ mark }}/0xf -j DSCP --set-dscp {{ gw_dscp[prio] }}
+-A POSTROUTING -m mark --mark 0x{{ mark }}/0xffff -j DSCP --set-dscp {{ gw_dscp[prio] }}
 {% endfor %}
 
 ## Strip DSCP marks towards links with strip_dscp set
@@ -183,14 +183,14 @@ COMMIT
 # Check which direction packet came from
 # Send packet through LS_IN or LS_OUT accordingly
 # Save the decision made in LS_IN or LS_OUT to the connection
--A LS_NEW --comment "Local Connections" -m set --match-set INT_NET src,dst -j ACCEPT
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Outbound Connections" -m set --match-set INT_NET src -j LS_OUT
--A LS_NEW -m mark --mark 0x0/0xf0 -m comment --comment "Inbound Connections" -m set --match-set INT_NET dst -j LS_IN
--A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xf0 --ctmask 0xf0
+-A LS_NEW -m comment --comment "Local Connections" -m set --match-set INT_NET src -m set --match-set INT_NET dst -j ACCEPT
+-A LS_NEW -m mark --mark 0x0/0xffff0000 -m comment --comment "Outbound Connections" -m set --match-set INT_NET src -j LS_OUT
+-A LS_NEW -m mark --mark 0x0/0xffff0000 -m comment --comment "Inbound Connections" -m set --match-set INT_NET dst -j LS_IN
+-A LS_NEW -m comment --comment "Save Link Selection bit of packet to connection" -j CONNMARK --save-mark --nfmask 0xffff0000 --ctmask 0xffff0000
 
 ## Existing Connection
 # Connection is already known, restore our decision to the packet
--A LS_OPEN -m comment --comment "Restore full ctmark to packet" -j CONNMARK --restore-mark --nfmask 0xffffffff --ctmask 0xffffffff
+-A LS_OPEN -m comment --comment "Restore full ctmark to packet" -j CONNMARK --restore-mark
 
 ####
 # LS_IN
@@ -200,7 +200,7 @@ COMMIT
 # Mark packet based on WAN link where it came in
 {% for i, value in netif.iteritems() %}
 {% if value.route is defined and value.route is number %}
--A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route }}0/0xf0
+-A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route }}0000/0xffff0000
 {% endif %}
 {% endfor %}
 
@@ -211,14 +211,14 @@ COMMIT
 ## Dedicated Link Selection Exceptions
 # We might want to overrule the link selection algorithm
 {% for name, value in gw_force_routes.iteritems() %}
--A LS_OUT -m mark --mark 0x0/0xf0 -s {{ value.0 }} -m comment --comment "link_force_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_force_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0000/0xffff0000
 {% endfor %}
 
 ## Outgoing Link Selection
 # Select an ISP based on the packet's source IP
 # Does not clobber the selection made in "Dedicated Link Selection Exceptions"
 {% for name, value in gw_routes.iteritems() %}
--A LS_OUT -m mark --mark 0x00/0xf0 -s {{ value.0 }} -m comment --comment "link_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0/0xf0
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0000/0xffff0000
 {% endfor %}
 
 ## Smokeping Chain
@@ -227,7 +227,7 @@ COMMIT
 {% endfor %}
 
 # Default mark if no group matched
--A LS_OUT -m mark --mark 0x0/0xf0 -m comment --comment "err_default_link" -j MARK --set-xmark 0x{{ gw_priorities.trash }}0/0xf0
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -m comment --comment "err_default_link" -j RETURN
 
 ####
 # Quality of Service Chains
@@ -240,7 +240,7 @@ COMMIT
 ###
 ## Hosts Quality of Service
 {% for name, value in gw_host_priority.iteritems() %}
--A QOS_OUT -m mark --mark 0x0/0xf -s {{ value.0 }} -m comment --comment "qos_force_{{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] }}/0xf
+-A QOS_OUT -m mark --mark 0x0/0xffff -s {{ value.0 }} -m comment --comment "qos_force_{{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] }}/0xffff
 {% endfor %}
 
 # Strip DSCP marks from specific links
@@ -252,16 +252,16 @@ COMMIT
 ## DSCP -> NFMark
 # Obey DSCP marks sent by the previous trusted hop
 {% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
--A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xf
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xffff
 {% endfor %}
 
 ## Randomly check flows for obesity
 ## Only packets without DSCP headers will be candidates for demoting
 ## The chain is rate limited to avoid conntrack metadata lookups at (demote rule) times the packet rate
--A QOS_OUT -m dscp --dscp 0x0 -m mark ! --mark 0x0/0xf -m hashlimit --hashlimit-above 10/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name QOS_DEMOTE -j QOS_DEMOTE
+-A QOS_OUT -m dscp --dscp 0x0 -m mark ! --mark 0x0/0xffff -m hashlimit --hashlimit-above 10/second --hashlimit-burst 10 --hashlimit-mode srcip --hashlimit-srcmask 32 --hashlimit-name QOS_DEMOTE -j QOS_DEMOTE
 
 ## Take a journey through the services chain
--A QOS_OUT -m mark --mark 0x0/0xf -j QOS_SERVICES
+-A QOS_OUT -m mark --mark 0x0/0xffff -j QOS_SERVICES
 
 ###
 # QOS_IN
@@ -272,8 +272,8 @@ COMMIT
 -A QOS_IN -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
 
 ## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
--A QOS_IN -m mark --mark 0x0/0xf -m comment --comment "err_default_qos_in" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xf
--A QOS_OUT -m mark --mark 0x0/0xf -m comment --comment "err_default_qos_out" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xf
+-A QOS_IN -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_in" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xffff
+-A QOS_OUT -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_out" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xffff
 
 ####
 # Service Chains
@@ -284,14 +284,14 @@ COMMIT
 {% for name, value in netif.iteritems() if value.route is defined %}
 {% set netloop = loop %}
 {% for _, prio in gw_priorities|dictsort(false, 'value') %}
--A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xff
+-A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xffffffff
 {% endfor %}
 {% endfor %}
 
 ## Bandwidth Hogging Detection
 # [ from, to, threshold (bytes), direction ]
 {% for h in gw_trashing %}
--A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] }}/0xf -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xf
+-A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] }}/0xffff -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xffff
 {% endfor %}
 
 ## Jump to QOS_SERVICES subchains
@@ -304,28 +304,28 @@ COMMIT
   {%- if value.ports is defined %}
     {%- for p in value.ports %}
 {% if p.0 == 'icmp' %}
--A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+-A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
 {% elif p.0 == 'tcp' or p.0 == 'udp' %}
--A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+-A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
 {% elif p.0 == 'both' %}
--A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
--A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xf
+-A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
+-A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
 {% endif %}
     {%- endfor %}
   {%- endif %}
   {%- if value.sets is defined %}
     {%- for p in value.sets %}
 {% if p.0 == 'icmp' %}
--A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+-A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
 {% elif p.0 == 'tcp' or p.0 == 'udp' %}
--A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+-A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
 {% elif p.0 == 'both' %}
--A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
--A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xf
+-A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
+-A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
 {% endif %}
     {%- endfor %}
   {%- endif %}
--A SVC_{{ name | upper }} -m mark ! --mark 0x0/0xf -m comment --comment "svc_{{ name }}" -j ACCEPT
+-A SVC_{{ name | upper }} -m mark ! --mark 0x0/0xffff -m comment --comment "svc_{{ name }}" -j ACCEPT
 {% endfor %}
 
 {# End Minimal Mode Condition #}
