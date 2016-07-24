@@ -4,10 +4,10 @@
 # log_format depot '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$upstream_cache_status" "$host" "$http_range"';
 
 # Hash Cache Definitions
-proxy_cache_path  {{ depot_path }}/blizzard levels=2:2 keys_zone=blizzard:500m inactive=200d max_size=1500000m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
+proxy_cache_path  {{ depot_path }}/blizzard levels=2:2 keys_zone=blizzard:500m inactive=200d max_size=80g loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
 proxy_cache_path  {{ depot_path }}/steam levels=2:2 keys_zone=steam:500m inactive=200d max_size=1500000m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
 proxy_cache_path  {{ depot_path }}/origin levels=2:2 keys_zone=origin:500m inactive=200d max_size=500000m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
-proxy_cache_path  {{ depot_path }}/riot levels=2:2 keys_zone=riot:10m inactive=200d max_size=50000m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
-proxy_cache_path  {{ depot_path }}/windows levels=2:2 keys_zone=windows:10m inactive=200d max_size=50000m loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
+proxy_cache_path  {{ depot_path }}/riot levels=2:2 keys_zone=riot:10m inactive=200d max_size=5g loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
+proxy_cache_path  {{ depot_path }}/windows levels=2:2 keys_zone=windows:10m inactive=200d max_size=10g loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
 proxy_cache_path  {{ depot_path }}/other levels=2:2 keys_zone=other:100m inactive=72h max_size=10240m;
 proxy_temp_path   {{ depot_path }}/tmp;
