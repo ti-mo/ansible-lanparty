@@ -1,10 +1,43 @@
 ---
 depot_sites:
-  - steam
-  - blizzard
-  - origin
-  - riot
-  - windows
+  steam:
+    size: 250g
+    domains:
+      - content1.steampowered.com
+      - content2.steampowered.com
+      - content3.steampowered.com
+      - content4.steampowered.com
+      - content5.steampowered.com
+      - content6.steampowered.com
+      - content7.steampowered.com
+      - content8.steampowered.com
+      - steamcontent.com
+      - cs.steampowered.com
+      - clientconfig.akamai.steamstatic.com
+      - hsar.steampowered.com.edgesuite.net
+  origin:
+    size: 250g
+    domains:
+      - origin-a.akamaihd.net
+      - akamai.cdn.ea.com
+      - lvlt.cdn.ea.com
+  blizzard:
+    size: 80g
+    domains:
+      - dist.blizzard.com
+      - llnw.blizzard.com
+      - blzddist1-a.akamaihd.net
+      - blzddist2-a.akamaihd.net
+      - dist.blizzard.com.edgesuite.net
+  riot:
+    size: 5g
+    domains:
+      - l3cdn.riotgames.com
+      - news.cdn.leagueoflegends.com
+  windows:
+    size: 20g
+    domains:
+      - download.windowsupdate.com
 
 depot_resolvers:
   - 8.8.8.8
@@ -19,40 +52,3 @@ filebeat:
     type: nginx-access
     files:
       - "{{ depot_logdir }}/*/*.log"
-
-ns:
-  spoof:
-    services:
-      steam:
-        domains:
-          - content1.steampowered.com
-          - content2.steampowered.com
-          - content3.steampowered.com
-          - content4.steampowered.com
-          - content5.steampowered.com
-          - content6.steampowered.com
-          - content7.steampowered.com
-          - content8.steampowered.com
-          - steamcontent.com
-          - cs.steampowered.com
-          - clientconfig.akamai.steamstatic.com
-          - hsar.steampowered.com.edgesuite.net
-      blizzard:
-        domains:
-          - dist.blizzard.com
-          - llnw.blizzard.com
-          - blzddist1-a.akamaihd.net
-          - blzddist2-a.akamaihd.net
-          - dist.blizzard.com.edgesuite.net
-      origin:
-        domains:
-          - origin-a.akamaihd.net
-          - akamai.cdn.ea.com
-          - lvlt.cdn.ea.com
-      riot:
-        domains:
-          - l3cdn.riotgames.com
-          - news.cdn.leagueoflegends.com
-      windows:
-        domains:
-          - download.windowsupdate.com
