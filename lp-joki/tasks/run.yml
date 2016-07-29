@@ -1,0 +1,6 @@
+---
+- name: Run | Joki Service
+  service:
+    name: joki
+    state: started
+    enabled: true
