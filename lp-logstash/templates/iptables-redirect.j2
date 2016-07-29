@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A PREROUTING -p udp --dport 514 -j REDIRECT --to-port {{ logstash.syslog | default(5140) }}
+-A PREROUTING -p tcp --dport 514 -j REDIRECT --to-port {{ logstash.syslog | default(5140) }}
+COMMIT

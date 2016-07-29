@@ -1,0 +1,12 @@
+---
+- name: Run | LogStash Service
+  service:
+    name: logstash
+    state: started
+    enabled: true
+
+- name: Run | IPTables Service
+  service:
+    name: netfilter-persistent
+    state: started
+    enabled: true

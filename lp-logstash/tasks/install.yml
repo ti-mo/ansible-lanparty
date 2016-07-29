@@ -1,0 +1,16 @@
+---
+- name: Install | OpenJDK
+  apt:
+    name: openjdk-8-jre-headless
+    default_release: testing
+  tags: [ 'packages' ]
+
+- name: Install | LogStash Package
+  apt:
+    name: logstash
+  tags: [ 'packages' ]
+
+- name: Install | IPTables Package
+  apt:
+    name: iptables-persistent
+  tags: [ 'packages' ]

@@ -1,3 +1,6 @@
 ---
 - name: restart logstash
   service: name=logstash state=restarted
+
+- name: restore iptables
+  service: name=netfilter-persistent state=restarted
