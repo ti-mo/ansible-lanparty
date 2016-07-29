@@ -2,7 +2,7 @@
 - name: Depot | Ensure domain definitions in configuration
   assert:
     that:
-      - "depot_sites.{{ item }}.domains is defined"
-      - "depot_sites.{{ item }}.domains is iterable"
+      - "depot_sites.{{ item.key }}.domains is defined"
+      - "depot_sites.{{ item.key }}.domains is iterable"
     msg: Need list of caching domains to spoof to create nginx vhosts
   with_dict: "{{ depot_sites }}"

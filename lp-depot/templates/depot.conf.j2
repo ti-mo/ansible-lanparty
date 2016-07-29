@@ -4,7 +4,7 @@
 # log_format depot '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$upstream_cache_status" "$host" "$http_range"';
 
 # Hash Cache Definitions
-{% for site, value in depot_sites %}
+{% for site, value in depot_sites.iteritems() %}
 proxy_cache_path  {{ depot_path }}/{{ site }} levels=2:2 keys_zone={{ site }}:100m inactive=60d max_size={{ value.size }} loader_files=1000 loader_sleep=50ms loader_threshold=300ms;
 {% endfor %}
 
