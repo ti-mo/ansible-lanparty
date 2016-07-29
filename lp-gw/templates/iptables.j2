@@ -282,10 +282,11 @@ COMMIT
 ####
 
 ## Smokeping Probes
+# TODO: Write jinja filter to encode routes and prios into hex
 {% for name, value in netif.iteritems() if value.route is defined %}
 {% set netloop = loop %}
 {% for _, prio in gw_priorities|dictsort(false, 'value') %}
--A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}{{ prio }}/0xffffffff
+-A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}000{{ prio }}/0xffffffff
 {% endfor %}
 {% endfor %}
 
