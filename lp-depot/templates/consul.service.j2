@@ -1,7 +1,7 @@
 {
   "service": {
     "name": "cache",
-    "tags": {{ depot_sites | to_json }},
+    "tags": {{ depot_sites.keys() | to_json }},
     "port": 80,
     "enableTagOverride": false
   }
