@@ -10,6 +10,11 @@ hostname "{{ lp.name }} {{ item.rules | capitalize }} {{ steam_server_id }}.{{ i
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
 
+# Game server token
+{% if item.token is defined %}
+sv_setsteamaccount "{{ item.token }}"
+{% endif %}
+
 // Expose serverquery info
 host_players_show 2
 host_info_show 2
