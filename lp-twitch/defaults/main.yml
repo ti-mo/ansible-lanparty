@@ -24,6 +24,7 @@ ns:
     services:
       twitch:
         domains:
+          - usher.ttvnw.net
           - usher.justin.tv
           - usher.twitch.tv
           - hls.twitch.tv

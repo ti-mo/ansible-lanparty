@@ -74,6 +74,7 @@ ns:
           - lvlt.cdn.ea.com
       twitch:
         domains:
+          - usher.ttvnw.net
           - usher.justin.tv
           - usher.twitch.tv
           - hls.twitch.tv

@@ -14,7 +14,7 @@ server {
     proxy_cache twitch;
 
     # Cache Settings
-    proxy_cache_key "$server_name$uri";
+    proxy_cache_key "$uri";
     proxy_cache_valid 200 302 404 2m;
     proxy_cache_lock on;
 
