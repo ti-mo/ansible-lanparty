@@ -282,7 +282,6 @@ COMMIT
 ####
 
 ## Smokeping Probes
-# TODO: Write jinja filter to encode routes and prios into hex
 {% for name, value in netif.iteritems() if value.route is defined %}
 {% set netloop = loop %}
 {% for _, prio in gw_priorities|dictsort(false, 'value') %}
