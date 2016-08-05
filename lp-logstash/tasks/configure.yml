@@ -1,0 +1,15 @@
+---
+- name: Configure | Render Configurations
+  template:
+    src: "logstash/{{ item }}.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}.conf"
+  notify: restart logstash
+  with_items:
+    - syslog
+    - filebeat
+
+- name: Configure | Render IPTables Redirect
+  template:
+    src: iptables-redirect.j2
+    dest: /etc/iptables/rules.v4
+  notify: restore iptables

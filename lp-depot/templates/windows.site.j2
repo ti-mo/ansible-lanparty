@@ -2,7 +2,7 @@
 
 server {
   listen 80;
-  server_name .{{ ns.spoof.services.windows.domains | join(" .") }};
+  server_name .{{ depot_sites.windows.domains | join(" .") }};
 
   access_log {{ depot_logdir }}/windows/depot-access.log depot buffer=128k flush=1m;
   error_log {{ depot_logdir }}/windows/depot-error.log;

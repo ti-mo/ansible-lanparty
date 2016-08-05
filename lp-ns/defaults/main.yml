@@ -42,42 +42,45 @@ ns:
     # Directory to install spoofed zones to
     confdir: /etc/bind/spoof
     services:
-      steam:
-        domains:
-          - content1.steampowered.com
-          - content2.steampowered.com
-          - content3.steampowered.com
-          - content4.steampowered.com
-          - content5.steampowered.com
-          - content6.steampowered.com
-          - content7.steampowered.com
-          - content8.steampowered.com
-          - steamcontent.com
-          - cs.steampowered.com
-          - clientconfig.akamai.steamstatic.com
-          - hsar.steampowered.com.edgesuite.net
-      blizzard:
-        domains:
-          - dist.blizzard.com
-          - llnw.blizzard.com
-          - blzddist1-a.akamaihd.net
-          - blzddist2-a.akamaihd.net
-          - dist.blizzard.com.edgesuite.net
-      riot:
-        domains:
-          - l3cdn.riotgames.com
-          - news.cdn.leagueoflegends.com
-      origin:
-        domains:
-          - origin-a.akamaihd.net
-          - akamai.cdn.ea.com
-          - lvlt.cdn.ea.com
       twitch:
         domains:
+          - usher.ttvnw.net
           - usher.justin.tv
           - usher.twitch.tv
           - hls.twitch.tv
           - hls.ttvnw.net
-      windows:
-        domains:
-          - download.windowsupdate.com
+
+depot_sites:
+  steam:
+    domains:
+      - content1.steampowered.com
+      - content2.steampowered.com
+      - content3.steampowered.com
+      - content4.steampowered.com
+      - content5.steampowered.com
+      - content6.steampowered.com
+      - content7.steampowered.com
+      - content8.steampowered.com
+      - steamcontent.com
+      - cs.steampowered.com
+      - clientconfig.akamai.steamstatic.com
+      - hsar.steampowered.com.edgesuite.net
+  origin:
+    domains:
+      - origin-a.akamaihd.net
+      - akamai.cdn.ea.com
+      - lvlt.cdn.ea.com
+  blizzard:
+    domains:
+      - dist.blizzard.com
+      - llnw.blizzard.com
+      - blzddist1-a.akamaihd.net
+      - blzddist2-a.akamaihd.net
+      - dist.blizzard.com.edgesuite.net
+  riot:
+    domains:
+      - l3cdn.riotgames.com
+      - news.cdn.leagueoflegends.com
+  windows:
+    domains:
+      - download.windowsupdate.com

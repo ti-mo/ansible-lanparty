@@ -8,7 +8,7 @@
   template:
     src: zones/domains.zone.j2
     dest: "{{ ns.domains.confdir }}/{{ item.name }}.db"
-  with_items: ns.domains.zones
+  with_items: "{{ ns.domains.zones }}"
   notify: reload bind
   tags: [ 'zones' ]
 

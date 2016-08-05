@@ -1,7 +1,7 @@
 // {{ ansible_managed }}
 // {{ item.key }} service spoof zone
 {% if not item.value.dest | default(false) | ipv4 %}
-// This zone is disabled because no spoof target was found in ns.spoof.services.{{ item.key }}.dest
+// This zone is disabled because no spoof target was found for service {{ item.key }}
 {% endif %}
 {% for domain in item.value.domains %}
 // - {{ domain }}

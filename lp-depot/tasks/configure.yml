@@ -2,11 +2,11 @@
 - name: Depot | Log Directories
   file:
     state: directory
-    path: "{{ depot_logdir }}/{{ item }}"
+    path: "{{ depot_logdir }}/{{ item.key }}"
     owner: "{{ www_user }}"
     group: "{{ www_user }}"
     recurse: true
-  with_items: "{{ depot_sites }}"
+  with_dict: "{{ depot_sites }}"
 
 - name: Depot | Render Global Parameters
   template:
@@ -30,9 +30,9 @@
 
 - name: Depot | Render Site Templates
   template:
-    src: "{{ item }}.site.j2"
-    dest: "/etc/nginx/sites-available/depot-{{ item }}"
-  with_items: "{{ depot_sites }}"
+    src: "{{ item.key }}.site.j2"
+    dest: "/etc/nginx/sites-available/depot-{{ item.key }}"
+  with_dict: "{{ depot_sites }}"
   notify: reload nginx
   tags: [ 'spoof' ]
 

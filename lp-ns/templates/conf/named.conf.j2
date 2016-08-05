@@ -18,7 +18,12 @@ include "{{ ns.domains.confdir }}/domains.conf";
 include "{{ ns.dhcp.confdir }}/dhcp.conf";
 
 // Spoof Zones
-{% for name, svc in ns.spoof.services.iteritems() %}
+{% for name, _ in ns.spoof.services.iteritems() %}
+include "{{ ns.spoof.confdir }}/{{ name }}.conf";
+{% endfor %}
+
+// Cache / Depot Zones
+{% for name, _ in depot_sites.iteritems() %}
 include "{{ ns.spoof.confdir }}/{{ name }}.conf";
 {% endfor %}
 

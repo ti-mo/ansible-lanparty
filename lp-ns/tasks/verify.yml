@@ -31,14 +31,14 @@
     that:
       - "item.1.name is defined"
     msg: "Zone definition `ns.domains.zones.{{ item.0 }}` has no name"
-  with_indexed_items: ns.domains.zones
+  with_indexed_items: "{{ ns.domains.zones }}"
 
 - name: Verify | Zone Validation
   assert:
     that:
       - "item.1.records is defined and item.1.records is iterable"
     msg: "Define a record in `ns.domains.zones.{{ item.0 }}.records`"
-  with_indexed_items: ns.domains.zones
+  with_indexed_items: "{{ ns.domains.zones }}"
 
 - name: Verify | RNDC Key
   assert:
