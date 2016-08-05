@@ -9,12 +9,27 @@
     src: zones/spoof.zone.j2
     dest: "{{ ns.spoof.confdir }}/{{ item.key }}.db"
   when: item.value.dest | default() | ipv4
-  with_dict: ns.spoof.services
+  with_dict: "{{ ns.spoof.services }}"
   notify: reload bind
 
 - name: Spoof | Config Files
   template:
     src: conf/spoof.conf.j2
     dest: "{{ ns.spoof.confdir }}/{{ item.key }}.conf"
-  with_dict: ns.spoof.services
+  with_dict: "{{ ns.spoof.services }}"
+  notify: restart bind
+
+- name: Spoof | Depot Zone Files
+  template:
+    src: zones/spoof.zone.j2
+    dest: "{{ ns.spoof.confdir }}/{{ item.key }}.db"
+  when: item.value.dest | default() | ipv4
+  with_dict: "{{ depot_sites }}"
+  notify: reload bind
+
+- name: Spoof | Depot Config Files
+  template:
+    src: conf/spoof.conf.j2
+    dest: "{{ ns.spoof.confdir }}/{{ item.key }}.conf"
+  with_dict: "{{ depot_sites }}"
   notify: restart bind
