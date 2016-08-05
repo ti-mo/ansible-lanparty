@@ -27,8 +27,8 @@ start() {
 {% set pref = 10000 + value.route %}
   ip rule add pref {{ pref }} iif {{ name }} table main
 {% set pref = 20000 + value.route %}
-  echo "Adding rule {{ pref }} for fwmark 0x{{ value.route }}0000 for table {{ name }}"
-  ip rule add pref {{ pref }} fwmark 0x{{ value.route }}0000/0xffff0000 table {{ name }}
+  echo "Adding rule {{ pref }} for fwmark 0x{{ value.route | to_hex(width=4) }}0000 for table {{ name }}"
+  ip rule add pref {{ pref }} fwmark 0x{{ value.route | to_hex(width=4) }}0000/0xffff0000 table {{ name }}
 {% endif %}
 
 {%- endfor %}

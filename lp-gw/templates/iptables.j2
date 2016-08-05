@@ -113,11 +113,11 @@ COMMIT
 ## Minimal Mode DSCP -> NFMark translation
 # Minimal disables DSCP stripping, so marks will always be forwarded downstream
 {% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
--A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xffff
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark | to_hex(width=4) }}/0xffff
 {% endfor %}
 # Save fwmark to connmark for all outbound packets that differ
 {% for _, mark in gw_priorities.iteritems() %}
--A QOS_OUT -m mark --mark 0x{{ mark }}/0xffff -m connmark ! --mark 0x{{ mark }}/0xffff -j CONNMARK --save-mark
+-A QOS_OUT -m mark --mark 0x{{ mark | to_hex(width=4) }}/0xffff -m connmark ! --mark 0x{{ mark | to_hex(width=4) }}/0xffff -j CONNMARK --save-mark
 {% endfor %}
 -A QOS_IN -j CONNMARK --restore-mark --nfmask 0xffff --ctmask 0xffff
 {% else %}
@@ -159,12 +159,12 @@ COMMIT
 
 ## Save Packet Priority Mark to Connection
 {% for _, mark in gw_priorities.iteritems() %}
--A POSTROUTING -m mark --mark 0x{{ mark }}/0xffff -m connmark ! --mark 0x{{ mark }}/0xffff -j CONNMARK --save-mark --nfmask 0xffff --ctmask 0xffff
+-A POSTROUTING -m mark --mark 0x{{ mark | to_hex(width=4) }}/0xffff -m connmark ! --mark 0x{{ mark | to_hex(width=4) }}/0xffff -j CONNMARK --save-mark --nfmask 0xffff --ctmask 0xffff
 {% endfor %}
 
 ## Assign DSCP Mark
 {% for prio, mark in gw_priorities.iteritems() %}
--A POSTROUTING -m mark --mark 0x{{ mark }}/0xffff -j DSCP --set-dscp {{ gw_dscp[prio] }}
+-A POSTROUTING -m mark --mark 0x{{ mark | to_hex(width=4) }}/0xffff -j DSCP --set-dscp {{ gw_dscp[prio] }}
 {% endfor %}
 
 ## Strip DSCP marks towards links with strip_dscp set
@@ -201,7 +201,7 @@ COMMIT
 # Mark packet based on WAN link where it came in
 {% for i, value in netif.iteritems() %}
 {% if value.route is defined and value.route is number %}
--A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route }}0000/0xffff0000
+-A LS_IN -i {{ i }} -j MARK --set-xmark 0x{{ value.route | to_hex(width=4) }}0000/0xffff0000
 {% endif %}
 {% endfor %}
 
@@ -212,14 +212,14 @@ COMMIT
 ## Dedicated Link Selection Exceptions
 # We might want to overrule the link selection algorithm
 {% for name, value in gw_force_routes.iteritems() %}
--A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_force_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0000/0xffff0000
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_force_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] | to_hex(width=4) }}0000/0xffff0000
 {% endfor %}
 
 ## Outgoing Link Selection
 # Select an ISP based on the packet's source IP
 # Does not clobber the selection made in "Dedicated Link Selection Exceptions"
 {% for name, value in gw_routes.iteritems() %}
--A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] }}0000/0xffff0000
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] | to_hex(width=4) }}0000/0xffff0000
 {% endfor %}
 
 ## Smokeping Chain
@@ -241,7 +241,7 @@ COMMIT
 ###
 ## Hosts Quality of Service
 {% for name, value in gw_host_priority.iteritems() %}
--A QOS_OUT -m mark --mark 0x0/0xffff -s {{ value.0 }} -m comment --comment "qos_force_{{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] }}/0xffff
+-A QOS_OUT -m mark --mark 0x0/0xffff -s {{ value.0 }} -m comment --comment "qos_force_{{ name }}" -j MARK --set-xmark 0x{{ gw_priorities[value.1] | to_hex(width=4) }}/0xffff
 {% endfor %}
 
 # Strip DSCP marks from specific links
@@ -253,7 +253,7 @@ COMMIT
 ## DSCP -> NFMark
 # Obey DSCP marks sent by the previous trusted hop
 {% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
--A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark }}/0xffff
+-A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark | to_hex(width=4) }}/0xffff
 {% endfor %}
 
 ## Randomly check flows for obesity
@@ -273,8 +273,8 @@ COMMIT
 -A QOS_IN -m dscp ! --dscp 0x0 -j DSCP --set-dscp 0x0
 
 ## Trash packets that have default mark after restore in LS_OPEN in PREROUTING and QoS selection
--A QOS_IN -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_in" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xffff
--A QOS_OUT -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_out" -j MARK --set-xmark 0x{{ gw_priorities.trash }}/0xffff
+-A QOS_IN -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_in" -j MARK --set-xmark 0x{{ gw_priorities.trash | to_hex(width=4) }}/0xffff
+-A QOS_OUT -m mark --mark 0x0/0xffff -m comment --comment "err_default_qos_out" -j MARK --set-xmark 0x{{ gw_priorities.trash | to_hex(width=4) }}/0xffff
 
 ####
 # Service Chains
@@ -286,14 +286,14 @@ COMMIT
 {% for name, value in netif.iteritems() if value.route is defined %}
 {% set netloop = loop %}
 {% for _, prio in gw_priorities|dictsort(false, 'value') %}
--A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route }}000{{ prio }}/0xffffffff
+-A SVC_SMOKEPING -m dscp --dscp {{ netloop.index0 * loop.length + loop.index }} -j MARK --set-xmark 0x{{ value.route | to_hex(width=4) }}{{ prio | to_hex(width=4) }}/0xffffffff
 {% endfor %}
 {% endfor %}
 
 ## Bandwidth Hogging Detection
 # [ from, to, threshold (bytes), direction ]
 {% for h in gw_trashing %}
--A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] }}/0xffff -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] }}/0xffff
+-A QOS_DEMOTE -m mark --mark 0x{{ gw_priorities[h.0] | to_hex(width=4) }}/0xffff -m connbytes --connbytes {{ h.2 }} --connbytes-mode bytes --connbytes-dir {{ h.3 }} -j MARK --set-xmark 0x{{ gw_priorities[h.1] | to_hex(width=4) }}/0xffff
 {% endfor %}
 
 ## Jump to QOS_SERVICES subchains
@@ -306,24 +306,24 @@ COMMIT
   {%- if value.ports is defined %}
     {%- for p in value.ports %}
 {% if p.0 == 'icmp' %}
--A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
+-A SVC_{{ name | upper }} -p icmp -j MARK --set-xmark 0x{{ gw_priorities[p.2] | to_hex(width=4) }}/0xffff
 {% elif p.0 == 'tcp' or p.0 == 'udp' %}
--A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
+-A SVC_{{ name | upper }} -p {{ p.0 }} --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] | to_hex(width=4) }}/0xffff
 {% elif p.0 == 'both' %}
--A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
--A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] }}/0xffff
+-A SVC_{{ name | upper }} -p udp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] | to_hex(width=4) }}/0xffff
+-A SVC_{{ name | upper }} -p tcp --dport {{ p.1 }}{% if p.3 is defined %} --sport {{ p.3 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.2] | to_hex(width=4) }}/0xffff
 {% endif %}
     {%- endfor %}
   {%- endif %}
   {%- if value.sets is defined %}
     {%- for p in value.sets %}
 {% if p.0 == 'icmp' %}
--A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
+-A SVC_{{ name | upper }} -p icmp -m set --match-set {{ p.1 }} {{ p.2 }} -j MARK --set-xmark 0x{{ gw_priorities[p.4] | to_hex(width=4) }}/0xffff
 {% elif p.0 == 'tcp' or p.0 == 'udp' %}
--A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
+-A SVC_{{ name | upper }} -p {{ p.0 }} -m {{ p.0 }} -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] | to_hex(width=4) }}/0xffff
 {% elif p.0 == 'both' %}
--A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
--A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] }}/0xffff
+-A SVC_{{ name | upper }} -p udp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] | to_hex(width=4) }}/0xffff
+-A SVC_{{ name | upper }} -p tcp -m set --match-set {{ p.1 }} {{ p.2 }} --dport {{ p.3 }}{% if p.5 is defined %} --sport {{ p.5 }}{% endif %} -j MARK --set-xmark 0x{{ gw_priorities[p.4] | to_hex(width=4) }}/0xffff
 {% endif %}
     {%- endfor %}
   {%- endif %}
