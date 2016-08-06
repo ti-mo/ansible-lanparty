@@ -16,7 +16,7 @@
     name: "{{ item.value.db }}"
     state: present
   delegate_to: "{{ groups[mysql.backend_group][0] }}"
-  with_dict: mysql.apps
+  with_dict: "{{ mysql.apps }}"
 
 - name: Setup | Create DB users with IP
   mysql_user:
@@ -26,7 +26,7 @@
     host: "{{ ansible_default_ipv4.address }}"
     state: present
   delegate_to: "{{ groups[mysql.backend_group][0] }}"
-  with_dict: mysql.apps
+  with_dict: "{{ mysql.apps }}"
 
 - name: Setup | Create DB users with Hostname
   mysql_user:
@@ -36,7 +36,7 @@
     host: "{{ ansible_fqdn }}"
     state: present
   delegate_to: "{{ groups[mysql.backend_group][0] }}"
-  with_dict: mysql.apps
+  with_dict: "{{ mysql.apps }}"
 
 # The following is preserved as an example, maybe for future use
 # While it can serve as a generic DB schema installer, it's a little
