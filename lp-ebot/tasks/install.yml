@@ -20,7 +20,7 @@
 - name: Install | Git Checkout
   git:
     repo: https://github.com/ti-mo/eBot-CSGO.git
-    version: threads
+    version: master
     dest: "{{ ebot_install_dir }}"
   become_user: ebot
 
