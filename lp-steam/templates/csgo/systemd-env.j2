@@ -1,8 +1,8 @@
 # {{ ansible_managed }}
-GAMEPORT="+port {{ item.gameport }}"
-TVPORT="+tv_enable 1 +tv_port {{ item.gameport + 5 }}"
-SLOTS="-maxplayers_override {{ item.slots | default('12') }}"
-TICK="-tickrate {{ item.tickrate | default('128') }}"
+GAMEPORT="+port {{ item.value.gameport }}"
+TVPORT="+tv_enable 1 +tv_port {{ item.value.gameport + 5 }}"
+SLOTS="-maxplayers_override {{ item.value.slots | default('12') }}"
+TICK="-tickrate {{ item.value.tickrate | default('128') }}"
 AUTHKEY="{{ csgo_authkey | default('') }}"
 WS_COLLECTION="{{ csgo_workshop_collection | default('') }}"
 WS_START_MAP="{{ csgo_workshop_startmap | default('') }}"

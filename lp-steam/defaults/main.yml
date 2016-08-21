@@ -32,7 +32,7 @@ steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
 
 # --- CS:GO
 csgo_server_instances:
-  - id: 1
+  1:
     slots: 12
     gotv: true
     rules: grand

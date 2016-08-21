@@ -6,10 +6,10 @@
 - name: CSGO | Install Server Configs
   template:
     src: csgo/server.j2
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/server_{{ item.id }}.cfg"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/server_{{ item.key }}.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
-  with_items: "{{ csgo_server_instances }}"
+  with_dict: "{{ csgo_server_instances }}"
   tags: [ 'configs' ]
 
 - name: CSGO | Install esl5on5
@@ -42,10 +42,10 @@
 - name: CSGO | Server Environment Vars
   template:
     src: csgo/systemd-env.j2
-    dest: "{{ steamcmd_path }}/games/csgo/env/env_{{ item.id }}"
+    dest: "{{ steamcmd_path }}/games/csgo/env/env_{{ item.key }}"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
-  with_items: "{{ csgo_server_instances }}"
+  with_dict: "{{ csgo_server_instances }}"
   tags: [ 'config' ]
 
 - name: CSGO | systemd unit
@@ -56,7 +56,7 @@
 
 - name: CSGO | Enable and Start
   service:
-    name: "csgo@{{ item.id }}"
+    name: "csgo@{{ item.key }}"
     enabled: true
     state: started
-  with_items: "{{ csgo_server_instances }}"
+  with_dict: "{{ csgo_server_instances }}"
