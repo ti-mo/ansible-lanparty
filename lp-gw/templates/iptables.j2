@@ -344,7 +344,7 @@ COMMIT
 
 # NAT on all NAT-enabled interfaces
 {% endif %}
--A POSTROUTING -m set --match-set INT_NET src -o {{ name }} -j MASQUERADE
+-A POSTROUTING -m set --match-set RFC1918 src -o {{ name }} -j MASQUERADE
 {% if loop.last %}
 
 COMMIT
