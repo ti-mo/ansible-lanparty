@@ -10,7 +10,7 @@ Environment="LD_LIBRARY_PATH={{ ts.install_dir }}:{{ ts.install_dir }}/redist:$L
 {% if ts.use_mysql %}
 ExecStartPre=/bin/sh -c "until nc -z {{ ts_mysql_server }} {{ mysql.port | default(3306) }}; do sleep 10; echo 'TeamSpeak MySQL database unreachable, waiting for 10 sec'; done"
 {% endif %}
-ExecStart={{ ts.install_dir }}/ts3server inifile=ts3server.ini
+ExecStart={{ ts.install_dir }}/{{ ts.binary }} inifile=ts3server.ini
 
 [Install]
 WantedBy=multi-user.target
