@@ -7,6 +7,11 @@
     - bzip2
   tags: [ 'packages' ]
 
+- name: Install | Old compat (Lenny) MySQL Library
+  apt:
+    deb: http://archive.debian.org/debian/pool/main/m/mysql-dfsg-5.0/libmysqlclient15off_5.0.32-7etch12_amd64.deb
+  when: ts.mysql_compat | default(false)
+
 - name: Install | TeamSpeak3 User
   user:
     name: "{{ ts.user }}"
