@@ -9,6 +9,8 @@ server {
   root          {{ ebot_web_install_dir }}/web;
 
   location /status {
+    allow 127.0.0.1;
+    deny all;
     stub_status;
   }
 

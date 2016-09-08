@@ -6,6 +6,8 @@ server {
   server_name _;
 
   location /status {
+    allow 127.0.0.1;
+    deny all;
     stub_status;
   }
 }
