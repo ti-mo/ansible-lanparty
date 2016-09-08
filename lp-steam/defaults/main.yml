@@ -2,6 +2,8 @@
 # Used for servernames, change this per node
 steam_server_id: 1
 
+steamcmd_run: YES
+
 steamcmd_user: game
 steamcmd_createhome: no
 
