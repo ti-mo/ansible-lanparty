@@ -27,12 +27,6 @@
     state: directory
     path: "{{ ebot_web_log_dir }}"
 
-- name: Install | Disable default Nginx site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: reload nginx
-
 - name: Install | Nginx Site
   template:
     src: nginx.site.j2
