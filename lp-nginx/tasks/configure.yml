@@ -27,6 +27,14 @@
   notify: reload nginx
   when: nginx_disable_default
 
+- name: Nginx | Enable Default Site
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  notify: reload nginx
+  when: not nginx_disable_default
+
 - name: Nginx | Install Logrotate
   template:
     src: logrotate.j2
