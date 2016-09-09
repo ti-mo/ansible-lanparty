@@ -13,8 +13,12 @@ http {
   sendfile on;
   tcp_nopush on;
   tcp_nodelay on;
-  keepalive_timeout 65;
+
+  proxy_headers_hash_bucket_size 128;
   types_hash_max_size 2048;
+
+  # Enable thread pools
+  aio threads;
 
   gzip on;
   gzip_disable "msie6";
