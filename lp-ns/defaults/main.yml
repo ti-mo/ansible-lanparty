@@ -85,3 +85,4 @@ depot_sites:
   windows:
     domains:
       - download.windowsupdate.com
+      - download.microsoft.com

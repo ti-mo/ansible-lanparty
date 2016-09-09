@@ -39,6 +39,7 @@ depot_sites:
     size: 20g
     domains:
       - download.windowsupdate.com
+      - download.microsoft.com
 
 depot_resolvers:
   - 8.8.8.8
