@@ -82,6 +82,9 @@ gw_services:
   firefall:
     ports:
       - [ 'udp', '25000:25099', 'prio2' ]
+  runescape:
+    ports:
+      - [ 'both', '43594:43595', 'prio2' ]
   rleague:
     ports:
       - [ 'udp', '7000:9000', 'prio1' ]
@@ -91,6 +94,9 @@ gw_services:
   mc:
     ports:
       - [ 'both', '25561:25565', 'prio2' ]
+  hs:
+    sets:
+      - [ 'both', 'IPSET_GAME_BLIZZ', 'dst', '1119', 'prio2' ]
   hon:
     ports:
       - [ 'tcp', '11031', 'prio2' ]
@@ -118,9 +124,6 @@ gw_services:
   wow:
     sets:
       - [ 'tcp', 'IPSET_GAME_BLIZZ', 'dst', '3724', 'prio1' ]
-  ql:
-    ports:
-      - [ 'udp', '27000:27999', 'prio1' ]
 
 gw_ipsets:
   RFC1918:
