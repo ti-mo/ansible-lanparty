@@ -15,7 +15,7 @@
 - name: CSGO | Install esl5on5
   template:
     src: csgo/esl5on5.j2
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/esl5on5.cfg"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/rules_esl5on5.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
 

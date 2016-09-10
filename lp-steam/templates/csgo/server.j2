@@ -29,8 +29,8 @@ tv_snapshotrate "{{ csgo_gotv_snaprate | default(64) }}"
 tv_delaymapchange 1
 {% endif %}
 
-{% if item.value.coach is defined and item.value.coach %}
+{% if item.value.coach | default(false) %}
 sv_coaching_enabled 1
 {% endif %}
 
-exec esl5on5.cfg
+exec rules_{{ item.value.rules | default('esl5on5') }}.cfg
