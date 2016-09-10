@@ -7,6 +7,8 @@ After=network.target network-online.target
 User={{ steamcmd_user }}
 EnvironmentFile={{ steamcmd_path }}/games/csgo/env/env_%I
 ExecStart={{ steamcmd_path }}/games/csgo/srcds_linux $GAMEPORT $TV $TICK $SLOTS $WORKSHOP $CMDLINE +servercfgfile server_%I.cfg
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
