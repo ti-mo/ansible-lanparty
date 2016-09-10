@@ -19,7 +19,7 @@ sv_setsteamaccount "{{ item.value.token }}"
 host_players_show 2
 host_info_show 2
 
-{% if item.value.gotv is defined and item.value.gotv  %}
+{% if item.value.gotv | default(false)  %}
 tv_enable "1"
 tv_title "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.key }}"
 tv_name "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.key }}"
