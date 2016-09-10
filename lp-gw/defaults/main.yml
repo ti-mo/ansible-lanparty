@@ -94,9 +94,9 @@ gw_services:
   mc:
     ports:
       - [ 'both', '25561:25565', 'prio2' ]
-  hs:
+  sc2hs:
     sets:
-      - [ 'both', 'IPSET_GAME_BLIZZ', 'dst', '1119', 'prio2' ]
+      - [ 'both', 'IPSET_GAME_BLIZZ', 'dst', '1119:1120', 'prio1' ]
   hon:
     ports:
       - [ 'tcp', '11031', 'prio2' ]
@@ -104,9 +104,6 @@ gw_services:
   rift:
     ports:
       - [ 'tcp', '6520:6540', 'prio2' ]
-  sc2:
-    ports:
-      - [ 'both', '1119:1120', 'prio1' ]
   uplay:
     ports:
       - [ 'tcp', '13000', 'prio2' ]
