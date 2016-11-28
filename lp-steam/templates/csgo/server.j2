@@ -33,4 +33,10 @@ tv_delaymapchange 1
 sv_coaching_enabled 1
 {% endif %}
 
+sv_mincmdrate "{{ item.value.tickrate | default('128') }}"
+sv_minupdaterate "{{ item.value.tickrate | default('128') }}"
+
+sv_minrate 80000
+sv_maxrate 0
+
 exec rules_{{ item.value.rules | default('esl5on5') }}.cfg
