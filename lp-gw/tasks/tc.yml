@@ -20,7 +20,7 @@
   template:
     src: units/tc-env.j2
     dest: /etc/tc/{{ item.key }}
-  with_dict: netif
+  with_dict: "{{ netif }}"
   register: tcmod
   when: item.value.rate is defined and item.value.rate is number
 
@@ -29,12 +29,12 @@
     name: tc@{{ item.key }}
     state: started
     enabled: true
-  with_dict: netif
+  with_dict: "{{ netif }}"
   when: item.value.rate is defined and item.value.rate is number
 
 - name: TC | Reload Tree
   service:
     name: tc@{{ item.item.key }}
     state: restarted
-  with_items: tcmod.results
+  with_items: "{{ tcmod.results }}"
   when: item.changed

@@ -2,6 +2,8 @@
 # Used for servernames, change this per node
 steam_server_id: 1
 
+steamcmd_run: YES
+
 steamcmd_user: game
 steamcmd_createhome: no
 
@@ -32,7 +34,7 @@ steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
 
 # --- CS:GO
 csgo_server_instances:
-  - id: 1
+  1:
     slots: 12
     gotv: true
     rules: grand

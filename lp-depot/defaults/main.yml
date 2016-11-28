@@ -26,6 +26,7 @@ depot_sites:
     domains:
       - dist.blizzard.com
       - llnw.blizzard.com
+      - level3.blizzard.com
       - blzddist1-a.akamaihd.net
       - blzddist2-a.akamaihd.net
       - dist.blizzard.com.edgesuite.net
@@ -38,6 +39,7 @@ depot_sites:
     size: 20g
     domains:
       - download.windowsupdate.com
+      - download.microsoft.com
 
 depot_resolvers:
   - 8.8.8.8

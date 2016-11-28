@@ -12,15 +12,23 @@ server {
   location / {
     # Request Slicing
     # Supported in nginx 1.9.8
-    slice 1m;
+    #slice 1m;
 
     # Cache Location
     proxy_cache blizzard;
 
     # Cache Settings
-    proxy_cache_key   $uri$slice_range;
     proxy_cache_valid 200 206 7d;
-    proxy_set_header  Range $slice_range;
+    proxy_cache_key   "$uri $http_range";
+    proxy_set_header  Range $http_range;
+    proxy_set_header  If-Range $http_if_range;
+
+    # proxy_cache_key   $uri$slice_range;
+    # proxy_set_header  Range $slice_range;
+
+    # Issue #14 - bad Blizzard performance
+    proxy_set_header  User-Agent $http_user_agent;
+    proxy_http_version 1.1;
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;

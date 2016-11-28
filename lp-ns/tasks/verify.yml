@@ -17,7 +17,7 @@
     that:
       - "item | ipaddr('network')"
     msg: "{{ item }} is not a valid CIDR"
-  with_items: internal_networks
+  with_items: "{{ internal_networks }}"
 
 - name: Verify | Zones Definition
   assert:

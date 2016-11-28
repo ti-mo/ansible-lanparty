@@ -1,29 +1,35 @@
 # {{ ansible_managed }}
 
 server {
-    server_name   {{ ebot_web_domain }} _;
+  server_name   {{ ebot_web_domain }} _;
 
-    access_log    {{ ebot_web_log_dir }}/access.log;
-    error_log     {{ ebot_web_log_dir }}/error.log;
+  access_log    {{ ebot_web_log_dir }}/access.log;
+  error_log     {{ ebot_web_log_dir }}/error.log;
 
-    root          {{ ebot_web_install_dir }}/web;
+  root          {{ ebot_web_install_dir }}/web;
 
-    location ~ ^/(index|admin)\.php {
-        fastcgi_split_path_info ^(.+\.php)/?(.+)$;
-        fastcgi_param           PATH_INFO $fastcgi_path_info;
-        fastcgi_param           PATH_TRANSLATED $document_root$fastcgi_path_info;
-        fastcgi_param           HTTPS off;
+  location /status {
+    allow 127.0.0.1;
+    deny all;
+    stub_status;
+  }
 
-        fastcgi_pass            unix:/var/run/php5-fpm.sock;
-        include                 fastcgi.conf;
-    }
+  location ~ ^/(index|admin)\.php {
+    fastcgi_split_path_info ^(.+\.php)/?(.+)$;
+    fastcgi_param           PATH_INFO $fastcgi_path_info;
+    fastcgi_param           PATH_TRANSLATED $document_root$fastcgi_path_info;
+    fastcgi_param           HTTPS off;
 
-    location / {
-      index index.php;
-      try_files $uri /index.php?$args;
-    }
+    fastcgi_pass            unix:/var/run/php5-fpm.sock;
+    include                 fastcgi.conf;
+  }
 
-    location ~ /\.ht {
-      deny  all;
-    }
+  location / {
+    index index.php;
+    try_files $uri /index.php?$args;
+  }
+
+  location ~ /\.ht {
+    deny  all;
+  }
 }

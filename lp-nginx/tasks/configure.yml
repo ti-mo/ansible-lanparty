@@ -24,8 +24,16 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: reload nginx
+  notify: restart nginx
   when: nginx_disable_default
+
+- name: Nginx | Enable Default Site
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  notify: restart nginx
+  when: not nginx_disable_default
 
 - name: Nginx | Install Logrotate
   template:
