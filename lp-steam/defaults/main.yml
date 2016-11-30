@@ -43,7 +43,7 @@ csgo_warmod: false
 csgo_mm_version: 1.10.6
 csgo_mm_url: http://incline.eu/ansible-lanparty/mmsource-{{ csgo_mm_version }}-linux.tar.gz
 
-csgo_sm_version: 1.8.0-git5923
+csgo_sm_version: 1.8.0-git5961
 csgo_sm_url: http://www.sourcemod.net/smdrop/1.8/sourcemod-{{ csgo_sm_version }}-linux.tar.gz
 
 csgo_wm_url: http://warmod.bitbucket.org/plugins/warmod.smx
