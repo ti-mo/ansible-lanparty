@@ -5,7 +5,7 @@
 mm_basedir "/dev/null"
 {% endif %}
 
-hostname "{{ lp.name }} {{ item.value.rules | capitalize }} {{ steam_server_id }}.{{ item.key }}"
+hostname "{{ lp.name }} {{ item.value.rules | default('esl5on5') | capitalize }} {{ steam_server_id }}.{{ item.key }}"
 
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"

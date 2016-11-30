@@ -35,7 +35,6 @@ csgo_server_instances:
   1:
     slots: 12
     gotv: true
-    rules: grand
     gameport: 27015
     warmod: false
     coach: true
