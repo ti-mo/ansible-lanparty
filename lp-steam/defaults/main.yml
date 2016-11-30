@@ -20,10 +20,8 @@ steamcmd_url: http://media.steampowered.com/installer/{{ steamcmd_filename }}
 steam_games: { }
   # csgo:
     # id: 740
-    # fullname: "Counter-Strike: Global Offensive"
   # ql:
     # id: 349090
-    # fullname: "Quake Live"
 
 steam_validate: false
 
