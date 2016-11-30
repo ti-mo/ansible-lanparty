@@ -1,6 +1,6 @@
 ---
 - include: warmod.yml
-  when: csgo_warmod is defined and csgo_warmod
+  when: csgo_warmod | default(false)
   tags: warmod
 
 - name: CSGO | Install Server Configs
@@ -19,14 +19,20 @@
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
 
-- name: CSGO | esl5on5 convenience symlink
+# This is to prevent WarMod from installing its own gamemode_competitive_server.cfg
+# including lower tickrates, which is very bad practice.
+# esl5on5 symlink is provided for convenience.
+- name: CSGO | esl5on5 aliases
   file:
     state: link
     force: yes
     src: "{{ steamcmd_path }}/games/csgo/csgo/cfg/rules_esl5on5.cfg"
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/esl5on5.cfg"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/cfg/{{ item }}.cfg"
     owner: "{{ steamcmd_user }}"
     group: "{{ steamcmd_user }}"
+  with_items:
+    - esl5on5
+    - gamemode_competitive_server
 
 - name: CSGO | Download CSay
   get_url:
