@@ -1,5 +1,10 @@
 # {{ ansible_managed }}
 
+# Keep a client-side HTTP/1.1 alive until closed by the client
+# This is to work around buggy clients not expecting a "Connection: close"
+# after 100 requests and not bothering to re-initiate (Blizzard Web Client)
+keepalive_requests 1000000;
+
 # Upstream Configuration
 proxy_next_upstream error timeout http_404;
 proxy_pass http://$host$request_uri;
