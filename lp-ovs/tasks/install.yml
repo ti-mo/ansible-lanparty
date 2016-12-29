@@ -3,15 +3,13 @@
   apt:
     name: openvswitch-switch
 
-- name: Install | Custom NoNet Unit File
-  template:
-    src: ovs-nonet.unit.j2
-    dest: /etc/systemd/system/openvswitch-nonetwork.service
-
-- name: Install | Custom Internal Unit File
+- name: Install | Custom Unit File
   template:
     src: ovs.unit.j2
     dest: /etc/systemd/system/openvswitch-switch.service
+  notify: reload daemons
+
+- meta: flush_handlers
 
 - name: Install | Enable Services
   service:

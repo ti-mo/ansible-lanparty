@@ -1,13 +1,16 @@
 [Unit]
 Description=Open vSwitch
-After=local-fs.target systemd-tmpfiles-setup.service
-Requires=openvswitch-nonetwork.service
+Before=network-pre.target
+Wants=network-pre.target
+DefaultDependencies=no
 
 [Service]
 Type=oneshot
-ExecStart=/bin/true
-ExecStop=/bin/true
 RemainAfterExit=yes
+EnvironmentFile=-/etc/default/openvswitch-switch
+ExecStart=/usr/share/openvswitch/scripts/ovs-ctl start \
+          --system-id=random $OVS_CTL_OPTS
+ExecStop=/usr/share/openvswitch/scripts/ovs-ctl stop
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network.target
