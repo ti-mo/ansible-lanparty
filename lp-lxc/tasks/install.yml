@@ -70,14 +70,6 @@
     executable: pip2
     name: lxc-python2
 
-- name: lxc | Unit w/ OVS Dependency
-  template:
-    src: lxc.unit.j2
-    dest: /etc/systemd/system/lxc-ovs.service
-  notify: reload daemons
-
-- meta: flush_handlers
-
 - name: lxc | Enable LXC Autostart
   service:
     name: lxc-ovs
