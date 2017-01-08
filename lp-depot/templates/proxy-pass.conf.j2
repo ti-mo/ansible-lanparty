@@ -1,5 +1,9 @@
 # {{ ansible_managed }}
 
+# Offer keepalive connections to clients that want to make use of them
+# Greatly improves efficiency across the board for larger deployments
+proxy_http_version 1.1;
+
 # Keep a client-side HTTP/1.1 alive until closed by the client
 # This is to work around buggy clients not expecting a "Connection: close"
 # after 100 requests and not bothering to re-initiate (Blizzard Web Client)
