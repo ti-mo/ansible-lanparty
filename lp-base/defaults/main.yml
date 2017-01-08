@@ -16,14 +16,14 @@ apt:
       - suite: lanparty
         site: pkg.incline.eu
     stable:
-      - suite: stable contrib
+      - suite: jessie contrib
         site: ftp.be.debian.org/debian
     testing:
       - suite: testing contrib
         site: ftp.be.debian.org/debian
   security:
     debian:
-      - suite: stable/updates
+      - suite: jessie/updates
         site: security.debian.org
   elastic:
     filebeat:
