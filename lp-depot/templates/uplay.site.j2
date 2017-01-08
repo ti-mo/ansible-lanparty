@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name .{{ depot_sites.uplay.domains | join(" .") }};
+
+  access_log {{ depot_logdir }}/uplay/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/uplay/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }};
+
+  location / {
+    # Cache Location
+    proxy_cache uplay;
+
+    # Use slicing method for this site
+    include depot/proxy-slice.conf;
+
+    # Use proxy_cache method
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+}

@@ -34,7 +34,16 @@ depot_sites:
     size: 5g
     domains:
       - l3cdn.riotgames.com
+      - worldwide.l3cdn.riotgames.com
       - news.cdn.leagueoflegends.com
+  sony:
+    size: 100g
+    domains:
+      - pls.patch.station.sony.com
+  uplay:
+    size: 100g
+    domains:
+      - cdn.ubi.com
   windows:
     size: 20g
     domains:

@@ -41,14 +41,7 @@ ns:
   spoof:
     # Directory to install spoofed zones to
     confdir: /etc/bind/spoof
-    services:
-      twitch:
-        domains:
-          - usher.ttvnw.net
-          - usher.justin.tv
-          - usher.twitch.tv
-          - hls.twitch.tv
-          - hls.ttvnw.net
+    services: {}
 
 depot_sites:
   steam:
@@ -81,7 +74,16 @@ depot_sites:
   riot:
     domains:
       - l3cdn.riotgames.com
+      - worldwide.l3cdn.riotgames.com
       - news.cdn.leagueoflegends.com
+  sony:
+    size: 100g
+    domains:
+      - pls.patch.station.sony.com
+  uplay:
+    size: 100g
+    domains:
+      - cdn.ubi.com
   windows:
     domains:
       - download.windowsupdate.com
