@@ -10,16 +10,13 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location /depot {
-    # Cache Location
     proxy_cache steam;
 
-    # No slicing for this site
     include depot/proxy-noslice.conf;
 
     # Ignore upstream Expires header choose use our own
     proxy_ignore_headers Expires;
 
-    # Use proxy_cache method
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }

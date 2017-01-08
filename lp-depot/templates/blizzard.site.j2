@@ -10,13 +10,10 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
-    # Cache Location
     proxy_cache blizzard;
 
-    # Use slicing method for this site
     include depot/proxy-slice.conf;
 
-    # Use proxy_cache method
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }

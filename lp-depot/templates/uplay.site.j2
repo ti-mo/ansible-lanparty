@@ -13,10 +13,8 @@ server {
     # Cache Location
     proxy_cache uplay;
 
-    # Use slicing method for this site
-    include depot/proxy-slice.conf;
+    include depot/proxy-noslice.conf;
 
-    # Use proxy_cache method
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }

@@ -10,16 +10,13 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
-    # Cache Location
     proxy_cache sony;
 
-    # Use slicing method for this site
     include depot/proxy-slice.conf;
 
     # Extra Cache Settings
     proxy_ignore_headers Expires Cache-Control;
 
-    # Use proxy_cache method
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }
