@@ -43,7 +43,7 @@ depot_sites:
   uplay:
     size: 100g
     domains:
-      - cdn.ubi.com
+      - uplaypc-s-ubisoft.cdn.ubi.com
   windows:
     size: 20g
     domains:
