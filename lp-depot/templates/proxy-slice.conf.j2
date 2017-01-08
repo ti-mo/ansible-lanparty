@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+# Request slicing, supported since nginx 1.9.8
+slice 1m;
+
+# Cache Settings
+proxy_cache_key   $uri$slice_range;
+proxy_cache_valid 200 206 7d;
+proxy_set_header  Range $slice_range;

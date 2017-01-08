@@ -10,19 +10,15 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location /depot {
-    # Cache location
     proxy_cache steam;
 
-    # Cache Settings
-    proxy_cache_key "$uri";
-    proxy_cache_valid 200 7d;
-
-    # Use proxy_cache method
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include depot/proxy-noslice.conf;
 
     # Ignore upstream Expires header choose use our own
     proxy_ignore_headers Expires;
+
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
   }
 
   location / {

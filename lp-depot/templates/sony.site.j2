@@ -2,15 +2,15 @@
 
 server {
   listen 80;
-  server_name .{{ depot_sites.origin.domains | join(" .") }};
+  server_name .{{ depot_sites.sony.domains | join(" .") }};
 
-  access_log {{ depot_logdir }}/origin/depot-access.log depot buffer=128k flush=1m;
-  error_log {{ depot_logdir }}/origin/depot-error.log;
+  access_log {{ depot_logdir }}/sony/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/sony/depot-error.log;
 
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
-    proxy_cache origin;
+    proxy_cache sony;
 
     include depot/proxy-slice.conf;
 

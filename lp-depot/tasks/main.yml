@@ -9,4 +9,5 @@
   tags: [ 'run' ]
 
 - include: consul.yml
+  when: consul_agent_enable | default(false) == true
   tags: [ 'consul' ]

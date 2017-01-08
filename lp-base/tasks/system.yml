@@ -14,12 +14,14 @@
 - name: System | Set Hostname
   hostname:
     name: "{{ inventory_hostname }}.{{ domains.lan }}"
+  when: ansible_virtualization_type != 'lxc'
   tags: [ 'hostname' ]
 
 - name: System | Persist Hostname
   copy:
     dest: /etc/hostname
     content: "{{ inventory_hostname }}.{{ domains.lan }}"
+  when: ansible_virtualization_type != 'lxc'
   tags: [ 'hostname' ]
 
 - name: System | Modify Grub Boot Delay

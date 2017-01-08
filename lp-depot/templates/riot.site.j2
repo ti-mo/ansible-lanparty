@@ -10,12 +10,10 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
-    # Cache location
     proxy_cache riot;
-    proxy_cache_key "$uri";
-    proxy_cache_valid 200 7d;
 
-    # Use proxy_cache method
+    include depot/proxy-noslice.conf;
+
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }

@@ -26,6 +26,8 @@
   with_items:
     - proxy-cache
     - proxy-pass
+    - proxy-slice
+    - proxy-noslice
   notify: reload nginx
 
 - name: Depot | Render Site Templates
