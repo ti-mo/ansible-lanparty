@@ -10,21 +10,11 @@ server {
   resolver {{ depot_resolvers | join(" ") }};
 
   location / {
-    # Request Slicing
-    # Supported in nginx 1.9.8
-    slice 1m;
-
     # Cache Location
     proxy_cache blizzard;
 
-    # Cache Settings
-    proxy_cache_valid 200 206 7d;
-
-    proxy_cache_key   $uri$slice_range;
-    proxy_set_header  Range $slice_range;
-
-    # Issue #14
-    proxy_hide_header ETag;
+    # Use slicing method for this site
+    include depot/proxy-slice.conf;
 
     # Use proxy_cache method
     include depot/proxy-cache.conf;

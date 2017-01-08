@@ -11,6 +11,10 @@ proxy_pass http://$host$request_uri;
 proxy_redirect off;
 proxy_ignore_client_abort on;
 
+# Issue #14 - Blizzard downloads halting
+# This also impacts Origin, so we disable ETags across the board
+proxy_hide_header ETag;
+
 # Upstream request headers
 proxy_set_header Host $host;
 proxy_set_header X-Real-IP $remote_addr;
