@@ -43,6 +43,9 @@ trusted_networks: []
 
 logstash: { }
 
+cpu:
+  governor: performance
+
 kern:
   params:
     - { name: 'net.ipv4.neigh.default.gc_thresh1', value: '2048' }
