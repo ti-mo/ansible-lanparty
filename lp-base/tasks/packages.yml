@@ -84,6 +84,14 @@
   when: ansible_virtualization_type == 'VMware'
   tags: [ 'packages' ]
 
+- name: Global | Baremetal-only packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - cpufrequtils
+  when: ansible_virtualization_type != 'lxc' and ansible_virtualization_type != 'VMware'
+  tags: [ 'packages' ]
+
 - name: Global | Networking Packages
   apt:
     name: "{{ item }}"

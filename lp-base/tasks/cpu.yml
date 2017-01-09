@@ -1,0 +1,12 @@
+- name: CPU | Set Governor persistent for baremetal
+  lineinfile:
+    dest: /etc/default/cpufrequtils
+    line: 'GOVERNOR="{{ cpu.governor }}"'
+    create: yes
+  when: ansible_virtualization_type != 'lxc' and ansible_virtualization_type != 'VMware'
+
+- name: CPU | Set governor at runtime for baremetal
+  shell: "for ((i=0;i<$(nproc);i++)); do cpufreq-set -c $i -r -g {{ cpu.governor }}; done;"
+  args:
+    executable: /bin/bash
+  ignore_errors: True
