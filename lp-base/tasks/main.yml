@@ -20,7 +20,6 @@
 - include: motd.yml
   tags: [ 'motd' ]
 
-# RSyslog Daemon
 - include: rsyslog.yml
   tags: [ 'syslog', 'rsyslog' ]
 

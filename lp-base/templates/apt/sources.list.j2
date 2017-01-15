@@ -1,10 +1,9 @@
-# {{ ansible_managed}}
+# {{ ansible_managed }}
+# Package sources for {{ item.key }}
+{% set s = item.value %}
 
-{% if item.value is defined %}
-{% for s in item.value %}
-deb     http://{{ s.site }} {{ s.suite }} main
-{% if s.src | default(false) %}
-deb-src http://{{ s.site }} {{ s.suite }} main
-{% endif %}
-{% endfor %}
+deb http://{{ s.site | default('httpredir.debian.org/debian') }} {{ s.distro | default(item.key) }} {{ s.components | default(['main']) | join(' ') }}
+
+{% if s.source | default(false) %}
+deb-src http://{{ s.site | default('httpredir.debian.org/debian') }} {{ s.distro | default(item.key) }} {{ s.components | default(['main']) | join(' ') }}
 {% endif %}

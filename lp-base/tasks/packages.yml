@@ -11,59 +11,29 @@
     state: absent
   when: omit_apt_cache is defined and omit_apt_cache
 
+- name: Global | apt GPG Keys
+  apt_key:
+    url: "{{ item }}"
+    validate_certs: yes
+  with_items: "{{ apt_keys | default([]) }}"
+
 - name: Debian | Remove Default sources.list
   file:
     path: /etc/apt/sources.list
     state: absent
-  when: ansible_distribution == 'Debian'
 
 - name: Global | apt preferences.d
   template:
     src: apt/pref.j2
     dest: "/etc/apt/preferences.d/{{ item.key }}.pref"
-  with_dict: "{{ apt.prefs }}"
+  with_dict: "{{ apt_sources }}"
 
-- name: Debian | apt preferences.d (Debian-Security)
-  template:
-    src: apt/pref.j2
-    dest: /etc/apt/preferences.d/security.pref
-  when: ansible_distribution == 'Debian'
-  notify: update apt
-
-- name: Debian | apt sources.list (Debian-Security)
-  template:
-    src: apt/sources.list.j2
-    dest: /etc/apt/sources.list.d/security.list
-  with_dict: "{{ apt.security }}"
-  when: ansible_distribution == 'Debian'
-  notify: update apt
-
-- name: Global | apt sources.list
+- name: Global | apt sources.list.d/
   template:
     src: apt/sources.list.j2
     dest: "/etc/apt/sources.list.d/{{ item.key }}.list"
-  with_dict: "{{ apt.sources }}"
-  when: ansible_distribution == 'Debian'
+  with_dict: "{{ apt_sources }}"
   notify: update apt
-
-- name: Global | apt sources.list (Contrib)
-  template:
-    src: apt/sources.list.j2
-    dest: "/etc/apt/sources.list.d/{{ item.key }}.list"
-  with_dict: "{{ apt.contrib | default({}) }}"
-  notify: update apt
-
-- name: Global | elastic apt repositories
-  template:
-    src: apt/sources.elastic.j2
-    dest: "/etc/apt/sources.list.d/elastic.list"
-  notify: update apt
-
-- name: Global | apt GPG Keys
-  apt_key:
-    url: "{{ item.url }}"
-    validate_certs: no
-  with_items: "{{ apt.gpg_keys | default([]) }}"
 
 - meta: flush_handlers
 
@@ -73,23 +43,11 @@
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
   with_items:
-    [ 'sudo', 'rsyslog', 'iputils-arping', 'tcpdump', 'ethtool',
-      'dnsutils', 'git', 'htop', 'hping3', 'zsh', 'curl', 'ntpdate',
-      'mailutils', 'python-mysqldb', 'ntp', 'locales' ]
+    [ 'sudo', 'git', 'htop', 'zsh', 'curl', 'locales' ]
   tags: [ 'packages' ]
 
 - name: Global | VMware-only packages
   apt:
     name: open-vm-tools
   when: ansible_virtualization_type == 'VMware'
-  tags: [ 'packages' ]
-
-- name: Global | Networking Packages
-  apt:
-    name: "{{ item }}"
-  with_items:
-    - vlan
-    - ifenslave
-    - bridge-utils
-  when: ansible_virtualization_type != 'lxc'
   tags: [ 'packages' ]

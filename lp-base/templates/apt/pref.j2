@@ -5,17 +5,11 @@ does not support publishing with the 'archive' (a=) parameter.
 Since the distribution's name is fixed to 'lanparty', we hardcode it here.
 http://unix.stackexchange.com/questions/84804/pinning-and-local-repos
 #}
+
 Package: *
-{% if item is defined %}
 {% if item.key == 'lanparty' %}
 Pin: release n=lanparty
-{% elif item.key == 'elastic' %}
-Pin: origin packages.elastic.co
-{% else %}
-Pin: release a={{ item.key }}
 {% endif %}
-Pin-Priority: {{ item.value }}
-{% else %}
-Pin: release l=Debian-Security
-Pin-Priority: 550
-{% endif %}
+Pin: origin {{ item.value.site | default('httpredir.debian.org/debian') | split_url }}
+Pin: release a={{ item.value.distro | default(item.key) }}
+Pin-Priority: {{ item.value.priority | default(500) }}
