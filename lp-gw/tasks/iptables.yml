@@ -38,7 +38,7 @@
     sysctl_set: yes
     reload: yes
   tags: [ 'kernel' ]
-  when: ansible_virtualization_type != 'lxc'
+  when: not ansible_container
   with_items:
     - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
     - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }

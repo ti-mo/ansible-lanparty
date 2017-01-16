@@ -14,14 +14,14 @@
 - name: System | Set Hostname
   hostname:
     name: "{{ inventory_hostname }}.{{ domains.lan }}"
-  when: ansible_virtualization_type != 'lxc'
+  when: ansible_metal or ansible_vm
   tags: [ 'hostname' ]
 
 - name: System | Persist Hostname
   copy:
     dest: /etc/hostname
     content: "{{ inventory_hostname }}.{{ domains.lan }}"
-  when: ansible_virtualization_type != 'lxc'
+  when: ansible_metal or ansible_vm
   tags: [ 'hostname' ]
 
 - name: System | Modify Grub Boot Delay
@@ -30,7 +30,7 @@
     regexp: "^\\#?GRUB_TIMEOUT"
     line: "GRUB_TIMEOUT={{ grub_timeout | default(1) }}"
   notify: make grub
-  when: ansible_virtualization_type != 'lxc'
+  when: ansible_metal or ansible_vm
   tags: [ 'grub' ]
 
 - name: System | IP Kernel Parameters
@@ -41,5 +41,5 @@
     state: present
     reload: yes
   with_items: "{{ kern.params }}"
-  when: ansible_virtualization_type != 'lxc'
+  when: ansible_metal or ansible_vm
   tags: [ 'kernel' ]

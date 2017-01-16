@@ -1,6 +1,7 @@
 ---
 - include: verify.yml
 
+# Do not install NTP clients in containers
 - include: install.yml
-  when: not (ansible_virtualization_type == 'lxc'
-              and ntp.mode == 'client')
+  when: not (ansible_container and
+             ntp.mode == 'client')

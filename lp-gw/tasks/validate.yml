@@ -4,7 +4,7 @@
     that:
       - item.value.mac is not defined
     msg: "Renaming container interfaces is not recommended - interface names can be set in the lp-lxc configuration"
-  when: ansible_virtualization_type == 'lxc'
+  when: ansible_container
   with_dict: "{{ netif }}"
 
 - name: Validate | No MAC spoofing in LXC
@@ -12,7 +12,7 @@
     that:
       - item.value.macspoof is not defined
     msg: "MAC spoofing LXC container interfaces is not recommended - do this in your lp-lxc configuration"
-  when: ansible_virtualization_type == 'lxc'
+  when: ansible_container
   with_dict: "{{ netif }}"
 
 - name: Validate | Route on static interface needs nexthop

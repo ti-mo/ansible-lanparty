@@ -24,7 +24,7 @@
     state: present
     reload: yes
   tags: [ 'kernel' ]
-  when: ansible_virtualization_type != 'lxc'
+  when: not ansible_container
   with_items:
     - { name: 'net.ipv4.neigh.default.gc_thresh1', value: '2048' }
     - { name: 'net.ipv4.neigh.default.gc_thresh2', value: '3072' }

@@ -9,7 +9,7 @@ Interval 10.0
   This plugin generates many series that are identical across all containers on one host.
   Read the metrics of the host system instead for accurate readings.
 #}
-{% if ansible_virtualization_type != 'lxc' %}LoadPlugin cpu{% endif %}
+{% if not ansible_container %}LoadPlugin cpu{% endif %}
 
 LoadPlugin load
 LoadPlugin interface

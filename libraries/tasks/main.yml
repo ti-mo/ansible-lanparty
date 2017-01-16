@@ -1,0 +1,37 @@
+---
+# All three of these facts are mutually exclusive
+- name: Libs | Define Facts
+  set_fact:
+    ansible_container: False
+    ansible_metal: False
+    ansible_vm: False
+
+# Since there doesn't seem to be a way to set facts based
+# on other facts from a module, do this instead
+# facts.py will never return lxc or docker 'host'
+- name: Libs | Set is_container
+  set_fact:
+    ansible_container: True
+  when:
+    ansible_virtualization_role == 'guest' and
+    (ansible_virtualization_type == 'lxc' or
+     ansible_virtualization_type == 'docker' or
+     ansible_virtualization_type == 'systemd')
+
+# We run Linux only, facts.py checks /proc/modules
+# for the KVM module first and returns
+- name: Libs | Set is_metal
+  set_fact:
+    ansible_metal: True
+  when:
+    ansible_virtualization_role == 'host' and
+    ansible_virtualization_type == 'kvm'
+
+- name: Libs | Set is_vm
+  set_fact:
+    ansible_vm: True
+  when:
+    ansible_virtualization_role == 'guest' and
+    (ansible_virtualization_type == 'VMware' or
+     ansible_virtualization_type == 'xen' or
+     ansible_virtualization_type == 'kvm')

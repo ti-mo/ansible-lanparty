@@ -4,6 +4,6 @@
     |  | \____ \      Distro:  {{ ansible_distribution }} {{ ansible_distribution_version }} ({{ ansible_distribution_release }}) - {{ ansible_kernel }}
     |  |_|  |_> >     Host:    {{ inventory_hostname }}.{{ domains.lan }} ({{ ansible_default_ipv4.address | default('<unassigned>')}})
     |____/   __/      Gateway: {{ ansible_default_ipv4.gateway | default('<unassigned>') }} ({{ ansible_default_ipv4.alias }})
-         |__|         Infra:   {% if ansible_virtualization_type == 'lxc' %}LXC Container{% elif ansible_virtualization_type == 'VMware' %}{{ ansible_product_name }}{% else %}Baremetal{% endif %}
+         |__|         Infra:   {% if ansible_container %}Container{% elif ansible_vm %}{{ ansible_product_name }}{% elif ansible_metal %}Baremetal{% else %}Unknown{% endif %}
 
 
