@@ -22,8 +22,7 @@ apt_sources:
     priority: 400
 
 apt_keys:
-  - https://pkg.incline.eu/GPG-KEY-lanparty
-  - https://packages.elasticsearch.org/GPG-KEY-elasticsearch
+  lanparty: https://pkg.incline.eu/GPG-KEY-lanparty
 
 trusted_networks: []
 

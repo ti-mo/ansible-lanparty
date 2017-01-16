@@ -13,6 +13,3 @@
 
 - name: restart rsyslog
   service: name=rsyslog state=restarted
-
-- name: update apt
-  apt: update_cache=true

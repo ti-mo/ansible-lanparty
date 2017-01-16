@@ -1,0 +1,43 @@
+---
+- name: Apt | Check apt_sources
+  assert:
+    that: apt_sources is defined
+    msg: lp-apt called without setting apt_sources, exiting
+
+- name: Apt | Configure APT-Cacher-NG Proxy
+  template:
+    src: apt.conf.j2
+    dest: /etc/apt/apt.conf.d/69apt-cacher-ng
+  when: not omit_apt_cache | default(false)
+
+- name: Apt | Remove APT Proxy
+  file:
+    path: /etc/apt/apt.conf.d/69apt-cacher-ng
+    state: absent
+  when: omit_apt_cache | default(false)
+
+- name: Apt | apt GPG Keys
+  apt_key:
+    url: "{{ item.value }}"
+    validate_certs: yes
+  with_dict: "{{ apt_keys | default({}) }}"
+
+- name: Apt | Remove Default sources.list
+  file:
+    path: /etc/apt/sources.list
+    state: absent
+
+- name: Apt | apt preferences.d
+  template:
+    src: pref.j2
+    dest: "/etc/apt/preferences.d/{{ item.key }}.pref"
+  with_dict: "{{ apt_sources }}"
+
+- name: Apt | apt sources.list.d/
+  template:
+    src: sources.list.j2
+    dest: "/etc/apt/sources.list.d/{{ item.key }}.list"
+  with_dict: "{{ apt_sources }}"
+  notify: update apt
+
+- meta: flush_handlers
