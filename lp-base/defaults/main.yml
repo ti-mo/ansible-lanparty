@@ -3,7 +3,6 @@ lp:
   contact: admin@example.lan
 
 apt_cache_valid: 1200
-apt_cache_port: 3142
 
 apt_sources:
   lanparty:
