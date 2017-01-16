@@ -1,4 +1,4 @@
-Consul Service Discovery
+lp-consul - Consul Service Discovery
 ===
 
 ## Generating a secret
