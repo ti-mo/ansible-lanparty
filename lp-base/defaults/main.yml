@@ -23,6 +23,8 @@ apt_sources:
 apt_keys:
   lanparty: https://pkg.incline.eu/GPG-KEY-lanparty
 
+governor_preferred: performance
+
 trusted_networks: []
 
 logstash: { }

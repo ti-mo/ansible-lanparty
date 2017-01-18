@@ -1,0 +1,24 @@
+---
+# This relies on facts emitted from custom lanparty_facts module
+- name: CPUPower | Check if preferred_governor is supported
+  assert:
+    that: governor_preferred | default('performance') in ansible_governors
+    msg: "Preferred governor '{{ governor_preferred | default('performance') }}' not supported on system"
+
+- name: CPUPower | Install Package
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - linux-cpupower
+    - cpupower-common
+
+- name: CPUPower | Configuration
+  template:
+    src: cpupower.j2
+    dest: /etc/default/cpupower
+  notify: restart cpupower
+
+- name: CPUPower | Enable Service
+  service:
+    name: cpupower
+    enabled: true

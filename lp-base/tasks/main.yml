@@ -11,6 +11,10 @@
 - include: system.yml
   tags: [ 'system' ]
 
+- include: cpupower.yml
+  when: ansible_metal and ansible_cpufreq
+  tags: [ 'cpupower' ]
+
 - include: packages.yml
   tags: [ 'packages' ]
 

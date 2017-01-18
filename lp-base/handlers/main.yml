@@ -7,3 +7,8 @@
 
 - name: restart rsyslog
   service: name=rsyslog state=restarted
+
+- name: restart cpupower
+  service:
+    name: cpupower
+    state: restarted
