@@ -7,7 +7,9 @@
   template:
     src: ovs.unit.j2
     dest: /etc/systemd/system/openvswitch-switch.service
-  notify: reload daemons
+  notify:
+    - reload daemons
+    - enable openvswitch
 
 - meta: flush_handlers
 

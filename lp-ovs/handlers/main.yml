@@ -1,3 +1,6 @@
 ---
 - name: reload daemons
   shell: systemctl daemon-reload
+
+- name: enable openvswitch
+  shell: systemctl enable openvswitch-switch.service
