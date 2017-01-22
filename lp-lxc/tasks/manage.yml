@@ -13,11 +13,12 @@
 - name: lxc | Create Containers
   lxc_container:
     name: "{{ item.item.key }}"
-    template: "{{ item.item.value.distro | default('debian') }}"
+    template: download
     template_options: >
+      --dist {{ item.item.value.distro | default('debian') }}
       --release {{ item.item.value.release | default('jessie') }}
-      --packages sudo,python,inetutils-ping
-      --clean
+      --arch {{ item.item.value.arch | default('amd64') }}
+    container_command: "apt-get install sudo python inetutils-ping openssh-server"
     backing_store: "{{ item.item.value.store | default('dir') }}"
     vg_name: "{{ lxc_vg | default('lxc') }}"
     state: stopped
