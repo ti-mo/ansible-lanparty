@@ -1,7 +1,8 @@
 [Unit]
 Description=Open vSwitch
-Before=network-pre.target
-Wants=network-pre.target
+Before=networking.service
+After=local-fs.target
+AssertPathExists=/run/openvswitch/db.sock
 DefaultDependencies=no
 
 [Service]
@@ -11,6 +12,7 @@ EnvironmentFile=-/etc/default/openvswitch-switch
 ExecStart=/usr/share/openvswitch/scripts/ovs-ctl start \
           --system-id=random $OVS_CTL_OPTS
 ExecStop=/usr/share/openvswitch/scripts/ovs-ctl stop
+TimeoutStartSec=10
 
 [Install]
-WantedBy=network.target
+WantedBy=networking.service
