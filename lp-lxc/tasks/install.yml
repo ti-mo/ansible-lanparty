@@ -58,5 +58,5 @@
 
 - name: lxc | Enable LXC Autostart
   service:
-    name: lxc-ovs
+    name: lxc
     enabled: true
