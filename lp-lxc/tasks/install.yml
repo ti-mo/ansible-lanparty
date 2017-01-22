@@ -4,26 +4,12 @@
     name: "{{ item }}"
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
-    default_release: testing
+    default_release: "{{ lxc_release | default('jessie-backports') }}"
   with_items:
-    - lxc-dev
     - lxc
+    - lxc-dev
     - python-pip
     - python-dev
-  when: ansible_distribution == 'Debian'
-  tags: [ 'packages' ]
-
-- name: lxc | Install LXC packages for Ubuntu
-  apt:
-    name: "{{ item }}"
-    update_cache: yes
-    cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
-  with_items:
-    - lxc-dev
-    - lxc
-    - python-pip
-    - python-dev
-  when: ansible_distribution == 'Ubuntu'
   tags: [ 'packages' ]
 
 # We need the ip_tables kernel module family loaded
