@@ -2,8 +2,12 @@
 # Package sources for {{ item.key }}
 {% set s = item.value %}
 
+{% if s.enabled | default(true) %}
 deb http://{{ s.site | default('httpredir.debian.org/debian') }} {{ s.distro | default(item.key) }} {{ s.components | default(['main']) | join(' ') }}
 
 {% if s.source | default(false) %}
 deb-src http://{{ s.site | default('httpredir.debian.org/debian') }} {{ s.distro | default(item.key) }} {{ s.components | default(['main']) | join(' ') }}
 {% endif %}
+{% else %}
+# Package site '{{ item.key }}' is disabled
+{% endif%}
