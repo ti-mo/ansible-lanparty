@@ -16,6 +16,7 @@ apt_sources:
     priority: 550
   testing:
     priority: 250
+    enabled: false
   backports:
     distro: jessie-backports
     priority: 400
