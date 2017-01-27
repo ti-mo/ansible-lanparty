@@ -8,8 +8,6 @@
   with_items:
     - lxc
     - lxc-dev
-    - python-pip
-    - python-dev
   tags: [ 'packages' ]
 
 # We need the ip_tables kernel module family loaded
@@ -50,6 +48,17 @@
   with_items:
     - ovs-up
     - ovs-down
+
+# Required for building lxc-python2 for Ansible
+- name: lxc | Install pip and python-dev for Ansible module
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid | default('86400') }}"
+  with_items:
+    - python-pip
+    - python-dev
+  tags: [ 'packages' ]
 
 - name: lxc | Python Bindings
   pip:
