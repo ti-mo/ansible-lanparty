@@ -39,8 +39,8 @@
     reload: yes
   tags: [ 'kernel' ]
   with_items:
-    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
-  when: gw_config is defined and gw_config.conntrack_max is defined
+    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max | default(300000) }}" }
+    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max | default(300032) }}" }
 
 - name: lxc | Install OVS scripts
   template:
