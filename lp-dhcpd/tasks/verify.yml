@@ -10,7 +10,7 @@
     that:
       - "item | ipv4"
     msg: "{{ item }} is not a valid IPv4 address"
-  with_items: resolvers
+  with_items: "{{ resolvers }}"
 
 - name: Verify | Need at least one network
   assert:
@@ -42,4 +42,4 @@
     that:
       - "ns.rndc.key is defined"
     msg: "Set `ns.rndc.key` to a valid RNDC key generated using `rndc-confgen -b 256`"
-  when: dhcp.dyndns | default(false)
+  when: "{{ dhcp.dyndns | default(false) }}"
