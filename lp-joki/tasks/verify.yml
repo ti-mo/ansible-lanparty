@@ -15,7 +15,7 @@
       - item.value.fullname is defined
       - item.value.address is defined
     msg: Error in Joki targets configuration in `ping_targets`
-  with_dict: ping_targets | default({})
+  with_dict: "{{ ping_targets | default({}) }}"
 
 - name: Verify | Priorities Defined
   assert:
@@ -29,4 +29,4 @@
       - item.value is defined
       - item.value | int
     msg: "Error in item {{ item.key }} in `gw_priorities` on Joki host"
-  with_dict: gw_priorities
+  with_dict: "{{ gw_priorities }}"
