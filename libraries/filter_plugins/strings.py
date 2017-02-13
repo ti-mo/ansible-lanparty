@@ -15,11 +15,23 @@ def to_hex(a, width=4):
 
   return format(a, '0{}x'.format(width))
 
+# Strip leading slash
+def lstrip_slash(s):
+  if s.startswith('/'):
+    return s[1:]
+
+# Strip trailing slash
+def rstrip_slash(s):
+  if s.endswith('/'):
+    return s[:-1]
+
 class FilterModule(object):
   ''' ansible-lanparty string filters '''
 
   def filters(self):
     return {
       'split_url': split_url,
-      'to_hex': to_hex
+      'to_hex': to_hex,
+      'lstrip_slash': lstrip_slash,
+      'rstrip_slash': rstrip_slash
     }
