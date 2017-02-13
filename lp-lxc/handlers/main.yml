@@ -1,3 +1,6 @@
 ---
 - name: reload daemons
   command: systemctl daemon-reload
+
+- name: modprobe conntrack
+  command: "modprobe nf_conntrack hashsize={{ gw_config.conntrack_max | default(300032) }}"

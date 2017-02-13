@@ -10,5 +10,9 @@
 - include: install.yml
   tags: [ 'install' ]
 
+- include: conntrack.yml
+  tags: [ 'conntrack' ]
+  when: gw_config is defined
+
 - include: manage.yml
   tags: [ 'manage' ]
