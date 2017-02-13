@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{% if item.value.mounts | default({}) %}
+{% set mounts = item.value.mounts | default({}) %}
+
+{% for key, mount in mounts.iteritems() %}
+{% set opts = mount.opts | default(['bind']) %}
+{% set fstype = mount.fstype | default('none') %}
+{% if opts == ['bind'] %}{% set opts = ['bind','create=dir'] %}{% endif %}
+# {{ key }}
+{{ mount.path }} {{ mount.dest | default(mount.path) | lstrip_slash }} {{ fstype | default('none') }} {{ opts | join(',') }}
+
+{% endfor %}
+{% else %}
+# No 'mount' key found in container '{{ item.key }}'
+{% endif %}

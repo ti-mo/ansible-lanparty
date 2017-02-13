@@ -14,5 +14,8 @@
   tags: [ 'conntrack' ]
   when: gw_config is defined
 
+- include: credentials.yml
+  tags: [ 'credentials' ]
+
 - include: manage.yml
   tags: [ 'manage' ]

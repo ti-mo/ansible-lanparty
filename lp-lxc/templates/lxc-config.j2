@@ -9,7 +9,9 @@ lxc.rootfs = /dev/{{ lxc_vg }}/{{ item.key }}
 lxc.include = /usr/share/lxc/config/{{ item.distro | default('debian') }}.common.conf
 
 # Container specific configuration
-# lxc.mount = /var/lib/lxc/{{ item.key }}/fstab
+lxc.mount.entry = /var/lib/lxc/files/ssh root/.ssh none bind,ro,create=dir 0 0
+lxc.mount = /var/lib/lxc/{{ item.key }}/fstab
+
 lxc.utsname = {{ item.key }}
 lxc.arch = amd64
 lxc.autodev = 1
