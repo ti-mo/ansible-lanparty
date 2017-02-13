@@ -1,16 +1,16 @@
 ---
-- name: lxc | Clean up stale LXC subsystem lock
+- name: Manage | Clean up stale LXC subsystem lock
   file:
     path: /var/lock/subsys/lxc
     state: absent
 
-- name: lxc | Find existing containers
+- name: Manage | Find existing containers
   stat:
     path: "/var/lib/lxc/{{ item.key }}"
   with_dict: "{{ lxc_containers }}"
   register: lxcdirs
 
-- name: lxc | Create Containers
+- name: Manage | Create Containers
   lxc_container:
     name: "{{ item.item.key }}"
     template: download
@@ -38,7 +38,7 @@
   register: lxcconfig
   with_dict: "{{ lxc_containers }}"
 
-- name: lxc | Debian | Render Network Configuration
+- name: Manage | Debian | Render Network Configuration
   template:
     src: lxc-eni.j2
     dest: "/var/lib/lxc/{{ item.key }}/rootfs/etc/network/interfaces"

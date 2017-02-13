@@ -1,5 +1,5 @@
 ---
-- name: lxc | Install LXC packages
+- name: Install | LXC packages
   apt:
     name: "{{ item }}"
     update_cache: yes
@@ -20,7 +20,7 @@
     - ovs-down
 
 # Required for building lxc-python2 for Ansible
-- name: lxc | Install pip and python-dev for Ansible module
+- name: Install | Install pip and python-dev for Ansible module
   apt:
     name: "{{ item }}"
     update_cache: yes
@@ -30,12 +30,12 @@
     - python-dev
   tags: [ 'packages' ]
 
-- name: lxc | Python Bindings
+- name: Install | Python Bindings
   pip:
     executable: pip2
     name: lxc-python2
 
-- name: lxc | Enable LXC Autostart
+- name: Install | Enable LXC Autostart
   service:
     name: lxc
     enabled: true

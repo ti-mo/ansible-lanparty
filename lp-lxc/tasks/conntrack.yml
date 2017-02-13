@@ -1,7 +1,7 @@
 ---
 # We need the ip_tables kernel module family loaded
 # so LXC containers can use them.
-- name: Install | Conntrack kernel module configuration
+- name: Conntrack | Kernel module configuration
   lineinfile:
     dest: /etc/modprobe.d/lanparty.conf
     line: "options nf_conntrack hashsize={{ gw_config.conntrack_max | default(300032) }}"
@@ -10,7 +10,7 @@
 
 - meta: flush_handlers
 
-- name: Install | Set conntrack kernel parameters for lp-gw
+- name: Conntrack | Kernel parameters
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
