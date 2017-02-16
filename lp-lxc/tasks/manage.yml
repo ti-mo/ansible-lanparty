@@ -18,12 +18,12 @@
       --dist {{ item.item.value.distro | default('debian') }}
       --release {{ item.item.value.release | default('jessie') }}
       --arch {{ item.item.value.arch | default('amd64') }}
-    container_command: "apt-get install sudo python inetutils-ping openssh-server"
     backing_store: "{{ item.item.value.store | default('dir') }}"
     vg_name: "{{ lxc_vg | default('lxc') }}"
     state: stopped
   when: not item.stat.exists
   with_items: "{{ lxcdirs.results }}"
+  register: lxccreate
 
 - name: Manage | Container Mounts
   template:
@@ -60,3 +60,16 @@
     name: "{{ item.key }}"
     state: started
   with_dict: "{{ lxc_containers }}"
+
+- name: Manage | Install Basic Packages
+  lxc_container:
+    name: "{{ item.lxc_container.name }}"
+    container_command: |
+      DEBIAN_FRONTEND=noninteractive \
+      apt-get -y install \
+        sudo \
+        python \
+        openssh-server \
+        ca-certificates
+  with_items: "{{ lxccreate.results }}"
+  when: item.lxc_container is defined
