@@ -40,8 +40,8 @@
   tags: [ 'kernel' ]
   when: not ansible_container
   with_items:
-    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max }}" }
-    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max }}" }
+    - { name: 'net.netfilter.nf_conntrack_max', value: "{{ gw_config.conntrack_max | default(300000) }}" }
+    - { name: 'net.netfilter.nf_conntrack_buckets', value: "{{ gw_config.conntrack_max | default(300032) }}" }
 
 - name: IPTables | NetFilter Kernel Parameters
   sysctl:
