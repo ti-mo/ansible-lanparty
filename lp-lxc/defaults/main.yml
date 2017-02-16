@@ -1,5 +1,3 @@
 ---
 lxc_restart: false
 lxc_release: jessie-backports
-
-gw_config: {}
