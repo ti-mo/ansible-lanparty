@@ -1,3 +1,6 @@
+{% if consul_servers | default([]) | length == 0 %}
+{% set consul_servers = groups[consul_inventory_group] | map('extract', hostvars, ['ansible_default_ipv4', 'address'] ) | list | filter_empty %}
+{% endif %}
 {
   "datacenter": "{{ consul_dc | default('lanparty') }}",
   "domain": "{{ consul_domain | default('consul') }}",
@@ -9,8 +12,8 @@
   "advertise_addr": "{{ hostvars[inventory_hostname]['ansible_' + consul_interface]['ipv4']['address'] }}",
 {% endif %}
   "retry_join": [
-{% for h in groups[consul_inventory_group] %}
-    "{{ hostvars[h]['ansible_default_ipv4']['address'] }}"{% if not loop.last %},
+{% for h in consul_servers | default([]) %}
+    "{{ h }}"{% if not loop.last %},
 {% endif %}
 {% endfor %}
   ],
@@ -18,7 +21,7 @@
 {# Server Mode #}
   "server": true,
   "ui": true,
-  "bootstrap_expect": {{ groups[consul_inventory_group] | length }}
+  "bootstrap_expect": {{ consul_servers | default([]) | length }}
 {% else %}
 {# Client Mode #}
   "server": false

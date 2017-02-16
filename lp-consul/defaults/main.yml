@@ -1,3 +1,5 @@
 ---
 consul_inventory_group: consul
 consul_dc: lanparty
+
+consul_servers: []

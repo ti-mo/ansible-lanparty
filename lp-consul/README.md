@@ -32,6 +32,20 @@ lp-consul-02
 lp-consul-03
 ```
 
+### Overriding Server List
+
+The list of servers that is rendered into `retry_join` can be overridden by
+setting `consul_servers`, for example:
+
+```
+consul_servers:
+  - 10.0.0.1
+  - 10.0.0.2
+  - 10.0.0.3
+```
+
+This will prevent errors detecting peers using hostvar lookups.
+
 ### Server Shutdown
 
 Server nodes do not gracefully leave the cluster when the `consul` service stops [due to the following bug](https://github.com/hashicorp/consul/issues/750) and a couple of related issues. Servers are supposed to be up and should not change addresses.
