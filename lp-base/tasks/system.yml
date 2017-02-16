@@ -3,6 +3,7 @@
   template:
     src: resolvconf.j2
     dest: /etc/resolv.conf
+  ignore_errors: "{{ ansible_container }}"
   tags: [ 'dns' ]
 
 - name: System | Hosts File
