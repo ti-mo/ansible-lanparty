@@ -28,8 +28,6 @@ steam_validate: false
 steam_rcon: steamrcon
 steam_svpassword: steamwar
 
-steam_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
-
 # --- CS:GO
 csgo_server_instances:
   1:
@@ -38,6 +36,9 @@ csgo_server_instances:
     gameport: 27015
     warmod: false
     coach: true
+
+csgo_csay: false
+csgo_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
 
 csgo_warmod: false
 csgo_mm_version: 1.10.6

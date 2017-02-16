@@ -1,7 +1,7 @@
 ---
 - name: CSGO | Download CSay
   get_url:
-    url: "{{ steam_csay_url }}"
+    url: "{{ csgo_csay_url }}"
     dest: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
   when: csgo_csay | default(false)
 
