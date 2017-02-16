@@ -9,10 +9,15 @@ def append(l, item):
 
   return l
 
+# Filter empty strings from a list
+def filter_empty(l):
+  return [x for x in l if len(x) > 0]
+
 class FilterModule(object):
   ''' ansible-lanparty list filters '''
 
   def filters(self):
     return {
-      'append': append
+      'append': append,
+      'filter_empty': filter_empty
     }
