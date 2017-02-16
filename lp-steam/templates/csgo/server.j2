@@ -10,12 +10,16 @@ hostname "{{ lp.name }} {{ item.value.rules | default('esl5on5') | capitalize }}
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
 
-{% if item.value.token is defined %}
+{% if item.value.lan | default(false) %}
+# LAN mode overridden on instance
+sv_lan 1
+{% elif item.value.token is defined %}
 # Game server token
 sv_setsteamaccount "{{ item.value.token }}"
 sv_lan 0
 {% else %}
-sv_lan 1
+# No LAN override, no gameserver token, using anonymous
+sv_lan 0
 {% endif %}
 
 // Expose serverquery info
@@ -24,12 +28,18 @@ host_info_show 2
 
 {% if item.value.gotv | default(false)  %}
 tv_enable "1"
+tv_delaymapchange "1"
 tv_title "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.key }}"
 tv_name "{{ lp.name }} GOTV {{ steam_server_id }}.{{ item.key }}"
 tv_password "{{ csgo_gotv_password | default('stream') }}"
 tv_maxclients "{{ csgo_gotv_maxclients | default(4) }}"
 tv_snapshotrate "{{ csgo_gotv_snaprate | default(64) }}"
-tv_delaymapchange 1
+tv_autorecord "{{ item.value.record | default(true) | ternary(1, 0) }}"
+tv_advertise_watchable "{{ item.value.gotv_advertise | default(false) | ternary(1, 0) }}"
+tv_timeout "{{ csgo_gotv_timeout | default(60) }}"
+tv_delay "{{ csgo_gotv_delay | default(120) }}"
+tv_maxrate "{{ csgo_gotv_maxrate | default(200000) }}"
+tv_relayvoice "{{ csgo_gotv_relayvoice | default(false) | ternary(1, 0) }}"
 {% endif %}
 
 {% if item.value.coach | default(false) %}
@@ -41,5 +51,25 @@ sv_minupdaterate "{{ item.value.tickrate | default('128') }}"
 
 sv_minrate 80000
 sv_maxrate 0
+
+sv_hibernate_postgame_delay 180
+
+sv_pure 1
+sv_pure_kick_clients 1
+
+{% if item.value.backup | default(false) %}
+# Drops all round backups in a directory per server
+mp_backup_round_auto 1
+mp_backup_round_file "round_backups/server_{{ item.key }}"
+mp_backup_round_file_pattern "%prefix%/{{ csgo_backup_round_file_pattern }}"
+{% endif %}
+
+{% if item.value.overtime | default(false) %}
+mp_overtime_enable 1
+{% endif %}
+
+{% if csgo_log | default(false) %}
+log on
+{% endif %}
 
 exec rules_{{ item.value.rules | default('esl5on5') }}.cfg

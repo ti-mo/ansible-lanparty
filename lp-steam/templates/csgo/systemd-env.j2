@@ -4,4 +4,4 @@ TV="{% if item.value.gotv | default(false) %}+tv_enable 1 +tv_port {{ item.value
 SLOTS="-maxplayers_override {{ item.value.slots | default('12') }}"
 TICK="-tickrate {{ item.value.tickrate | default('128') }}"
 LD_LIBRARY_PATH="{{ steamcmd_path }}/games/csgo:{{ steamcmd_path }}/games/csgo/bin"
-CMDLINE="-game csgo -usercon -console -nobots +ip 0.0.0.0 +game_type 0 +game_mode 1 +sv_lan 1 {% if csgo_authkey | length > 0 %}-authkey {{ csgo_authkey | default('') }} +host_workshop_collection {{ csgo_workshop_collection | default('') }} +workshop_start_map {{ csgo_workshop_startmap | default('') }}{% else %}+map de_dust2{% endif %}"
+CMDLINE="-game csgo -usercon -console -nobots +ip 0.0.0.0 +game_type 0 +game_mode 1 +sv_lan 0 {% if csgo_authkey | length > 0 %}-authkey {{ csgo_authkey | default('') }} +host_workshop_collection {{ csgo_workshop_collection | default('') }} +workshop_start_map {{ csgo_workshop_startmap | default('') }}{% else %}+map {{ csgo_default_map | default('de_dust2') }}{% endif %}"

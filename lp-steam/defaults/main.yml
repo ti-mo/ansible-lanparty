@@ -32,10 +32,15 @@ steam_svpassword: steamwar
 csgo_server_instances:
   1:
     slots: 12
+    lan: false
     gotv: true
     gameport: 27015
     warmod: false
     coach: true
+    backup: false
+    overtime: false
+    record: false
+    gotv_advertise: true
 
 csgo_csay: false
 csgo_csay_url: http://www.esport-tools.net/download/CSay-CSGO.zip
@@ -52,6 +57,15 @@ csgo_wm_url: http://warmod.bitbucket.org/plugins/warmod.smx
 csgo_authkey: ""
 csgo_workshop_collection: ""
 csgo_workshop_startmap: ""
+csgo_default_map: "de_dust2"
+csgo_backup_pattern: "%date%_%time%_%map%_round%round%_score_%score1%_%score2%.txt"
+csgo_log: false
+
+csgo_gotv_timeout: 60
+csgo_gotv_maxrate: 200000
+csgo_gotv_relayvoice: false
+csgo_gotv_delay: 120
+csgo_gotv_snaprate: 64
 
 csgo_gotv_password: stream
 csgo_gotv_maxclients: 4
