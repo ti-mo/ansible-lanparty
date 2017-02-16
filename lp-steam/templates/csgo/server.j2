@@ -10,12 +10,16 @@ hostname "{{ lp.name }} {{ item.value.rules | default('esl5on5') | capitalize }}
 rcon_password "{{ steam_rcon }}"
 sv_password "{{ steam_svpassword }}"
 
-{% if item.value.token is defined %}
+{% if item.value.lan | default(false) %}
+# LAN mode overridden on instance
+sv_lan 1
+{% elif item.value.token is defined %}
 # Game server token
 sv_setsteamaccount "{{ item.value.token }}"
 sv_lan 0
 {% else %}
-sv_lan 1
+# No LAN override, no gameserver token, using anonymous
+sv_lan 0
 {% endif %}
 
 // Expose serverquery info
