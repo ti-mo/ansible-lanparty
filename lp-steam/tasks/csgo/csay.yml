@@ -1,0 +1,23 @@
+---
+- name: CSGO | Download CSay
+  get_url:
+    url: "{{ steam_csay_url }}"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
+  when: csgo_csay | default(false)
+
+- name: CSGO | Install CSay
+  unarchive:
+    copy: no
+    creates: "{{ steamcmd_path }}/games/csgo/csgo/addons/CSay.so"
+    src: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/"
+  when: csgo_csay | default(false)
+  become_user: "{{ steamcmd_user }}"
+
+- name: CSGO | Manage CSay state
+  file:
+    name: "{{ steamcmd_path }}/games/csgo/csgo/addons/CSay.{{ item }}"
+    state: absent
+  when: not csgo_csay | default(false)
+  tags: csay
+  with_items: [ dll, so, vdf ]

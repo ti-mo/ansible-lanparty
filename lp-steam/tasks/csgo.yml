@@ -1,7 +1,10 @@
 ---
-- include: warmod.yml
+- include: csgo/warmod.yml
   when: csgo_warmod | default(false)
   tags: warmod
+
+- include: csgo/csay.yml
+  tags: csay
 
 - name: CSGO | Install Server Configs
   template:
@@ -33,19 +36,6 @@
   with_items:
     - esl5on5
     - gamemode_competitive_server
-
-- name: CSGO | Download CSay
-  get_url:
-    url: "{{ steam_csay_url }}"
-    dest: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
-
-- name: CSGO | Install CSay
-  unarchive:
-    copy: no
-    creates: "{{ steamcmd_path }}/games/csgo/csgo/addons/CSay.so"
-    src: "{{ steamcmd_path }}/games/csgo/csgo_csay.zip"
-    dest: "{{ steamcmd_path }}/games/csgo/csgo/"
-  become_user: "{{ steamcmd_user }}"
 
 - name: CSGO | Environment Vars Directory
   file:
