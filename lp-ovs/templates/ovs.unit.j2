@@ -12,7 +12,8 @@ EnvironmentFile=-/etc/default/openvswitch-switch
 ExecStart=/usr/share/openvswitch/scripts/ovs-ctl start \
           --system-id=random $OVS_CTL_OPTS
 ExecStop=/usr/share/openvswitch/scripts/ovs-ctl stop
-TimeoutStartSec=10
+# Wait for max. 60 seconds for lazy drivers (eg. bnx2)
+TimeoutStartSec=60
 
 [Install]
 WantedBy=networking.service
