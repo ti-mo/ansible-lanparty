@@ -15,6 +15,14 @@
   with_dict: "{{ csgo_server_instances }}"
   tags: [ 'configs' ]
 
+- name: CSGO | Create Round Backup Directories
+  file:
+    dest: "{{ steamcmd_path }}/games/csgo/csgo/round_backups/server_{{ item.key }}"
+    state: directory
+    owner: "{{ steamcmd_user }}"
+    group: "{{ steamcmd_user }}"
+  with_dict: "{{ csgo_server_instances }}"
+
 - name: CSGO | Install esl5on5
   template:
     src: csgo/esl5on5.j2
