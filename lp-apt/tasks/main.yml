@@ -16,6 +16,14 @@
     state: absent
   when: omit_apt_cache | default(false)
 
+# Some images don't come with ca-certificates installed,
+# preventing apt_key installations from encrypted sources
+# Try a best-effort apt-get here, and fail gracefully
+- name: Apt | Install ca-certificates
+  apt:
+    name: ca-certificates
+  ignore_errors: true
+
 - name: Apt | apt GPG Keys
   apt_key:
     url: "{{ item.value }}"
