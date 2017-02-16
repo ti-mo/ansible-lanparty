@@ -5,6 +5,15 @@
   lineinfile:
     dest: /etc/modprobe.d/lanparty.conf
     line: "options nf_conntrack hashsize={{ gw_config.conntrack_max | default(300032) }}"
+    regexp: '^\#?\w?options nf_conntrack'
+    create: yes
+  notify: modprobe conntrack
+
+- name: Conntrack | modules-load.d configuration
+  lineinfile:
+    dest: /etc/modules-load.d/lanparty.conf
+    line: 'nf_conntrack'
+    regexp: '^\#?\w?nf_conntrack'
     create: yes
   notify: modprobe conntrack
 
