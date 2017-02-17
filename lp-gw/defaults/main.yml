@@ -11,7 +11,9 @@ gw_blacklist:
 
 gw_nameservers: []
 
+gw_overrides: {}
 gw_routes: {}
+gw_ipset_routes: {}
 gw_force_routes: {}
 gw_host_priority: {}
 

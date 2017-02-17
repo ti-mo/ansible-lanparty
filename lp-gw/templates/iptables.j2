@@ -102,6 +102,7 @@ COMMIT
 # :: mangle.FORWARD ::
 # Execute QoS Priority Selection
 # Used in Minimal Mode and Full Mode
+# Do not move into gw_config.minimal block!
 ####
 
 ## Match against IPSet with internal networks (INT_NET)
@@ -115,12 +116,19 @@ COMMIT
 {% for prio, mark in gw_priorities.iteritems() if gw_config.translate_dscp %}
 -A QOS_OUT -m dscp --dscp {{ gw_dscp[prio] }} -j MARK --set-xmark 0x{{ mark | to_hex(width=4) }}/0xffff
 {% endfor %}
+
 # Save fwmark to connmark for all outbound packets that differ
 {% for _, mark in gw_priorities.iteritems() %}
 -A QOS_OUT -m mark --mark 0x{{ mark | to_hex(width=4) }}/0xffff -m connmark ! --mark 0x{{ mark | to_hex(width=4) }}/0xffff -j CONNMARK --save-mark
 {% endfor %}
 -A QOS_IN -j CONNMARK --restore-mark --nfmask 0xffff --ctmask 0xffff
+
 {% else %}
+##
+# Full Mode
+# - Prerouting: link selection (in/out -> new/open -> save)
+# - Forward: QoS classifier (services -> demote)
+# - Postrouting: save packet to connmark -> tag DSCP -> strip DSCP
 
 # Link Selection Chains
 :LS_IN - [0:0]
@@ -195,7 +203,7 @@ COMMIT
 
 ####
 # LS_IN
-# Triggered in mangle.LS_IN
+# Triggered in mangle.LS_NEW
 ####
 ## Incoming packet
 # Mark packet based on WAN link where it came in
@@ -209,15 +217,36 @@ COMMIT
 # LS_OUT
 # Triggered in mangle.LS_NEW
 ####
-## Dedicated Link Selection Exceptions
-# We might want to overrule the link selection algorithm
+## Link Selection Exceptions
+
+# Complete link and QoS overrides - does not clobber
+# - src_addr: source address of the rule
+# - proto: (optional) protocol - default tcp
+# - dst_ipset: (optional) ipset to match the destination against
+# - dst_port: (optional) destination port
+# - link: the exit link to assign this connection to (needs to exist on the node)
+# - qos: the QoS class to classify this connection into
+{% for name, value in gw_overrides.iteritems() if value.src_addr is defined %}
+-A LS_OUT -m mark --mark 0x0/0xffffffff -s {{ value.src_addr }} -p {{ value.proto | default('tcp') }} -m comment --comment "override_{{ name }}"{% if value.dst_ipset | default(None) %} -m set --match-set {{ value.dst_ipset }} dst{% endif %}{% if value.dst_port | default(None) %} --dport {{ value.dst_port }}{% endif %} -j MARK --set-xmark 0x{{ netif[value.link]['route'] | default(0) | to_hex(width=4) }}{{ gw_priorities[value.qos] | default(0) | to_hex(width=4) }}/0xffffffff
+{% endfor %}
+
+# Force a link to be assigned to a specific source IP - does not clobber
 {% for name, value in gw_force_routes.iteritems() %}
 -A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_force_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] | to_hex(width=4) }}0000/0xffff0000
 {% endfor %}
 
 ## Outgoing Link Selection
+# Select an ISP based on the destination IPset - does not clobber
+# - dst_ipset: destination IPset to match against
+# - link: the exit link to bind this connection to (needs to exist on the node)
+# - proto: (optional) protocol - default tcp
+# - dst_port: (optional) destination port
+{% for name, value in gw_ipset_routes.iteritems() if value.dst_ipset is defined and value.link is defined %}
+-A LS_OUT -m mark --mark 0x0/0xffff0000 -m set --match-set {{ value.dst_ipset }} dst -p {{ value.proto | default('tcp') }}{% if value.dst_port | default(None) %} --dport {{ value.dst_port }}{% endif %} -m comment --comment "dst_route_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.link]['route'] | to_hex(width=4) }}0000/0xffff0000
+{% endfor %}
+
 # Select an ISP based on the packet's source IP
-# Does not clobber the selection made in "Dedicated Link Selection Exceptions"
+# Does not clobber the selections made above
 {% for name, value in gw_routes.iteritems() %}
 -A LS_OUT -m mark --mark 0x0/0xffff0000 -s {{ value.0 }} -m comment --comment "link_{{ name }}" -j MARK --set-xmark 0x{{ netif[value.1]['route'] | to_hex(width=4) }}0000/0xffff0000
 {% endfor %}
