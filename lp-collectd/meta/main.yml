@@ -1,3 +1,4 @@
 ---
 dependencies:
   - libraries
+  - { role: lp-consul, when: (consul_agent_enable | default(false)) }

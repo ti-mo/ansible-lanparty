@@ -1,0 +1,6 @@
+---
+- name: Consul | Collectd Check
+  template:
+    src: consul.check.j2
+    dest: /etc/consul.d/checks/collectd.json
+  notify: reload consul
