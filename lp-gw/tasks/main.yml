@@ -20,3 +20,6 @@
 
 - include: tc.yml
   tags: [ 'tc' ]
+
+- include: collectd.yml
+  tags: [ 'collectd' ]

@@ -1,0 +1,8 @@
+---
+- name: Collectd | Render Configuration
+  template:
+    src: collectd.j2
+    dest: /etc/collectd.d/netlink.conf
+  notify: restart collectd
+
+- meta: flush_handlers

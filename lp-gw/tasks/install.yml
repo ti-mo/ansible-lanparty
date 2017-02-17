@@ -26,9 +26,3 @@
     src: dhclient.j2
     dest: /etc/dhcp/dhclient.conf
   notify: warn dhclient
-
-- name: Install | collectd configuration
-  template:
-    src: collectd.j2
-    dest: /etc/collectd.d/netlink.conf
-  notify: restart collectd
