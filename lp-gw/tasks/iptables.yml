@@ -3,6 +3,7 @@
   template:
     src: iptables.j2
     dest: "{{ iptables_path | default('/etc/iptables/rules.v4') }}"
+    validate: iptables-restore -t %s
   notify: restore iptables
   tags: [ 'iptables' ]
 
