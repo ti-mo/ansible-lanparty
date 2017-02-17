@@ -22,3 +22,5 @@
     name: ipset
     state: started
     enabled: true
+
+- meta: flush_handlers

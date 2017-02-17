@@ -55,3 +55,5 @@
     - { name: 'net.netfilter.nf_conntrack_icmp_timeout', value: '5' }
     - { name: 'net.netfilter.nf_conntrack_udp_timeout', value: '10' }
     - { name: 'net.netfilter.nf_conntrack_udp_timeout_stream', value: '60' }
+
+- meta: flush_handlers
