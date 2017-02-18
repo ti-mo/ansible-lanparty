@@ -1,0 +1,12 @@
+---
+- name: Nginx | Render InfluxDB Site
+  template:
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-available/influxdb
+  notify: reload nginx
+
+- name: Nginx | InfluxDB Site Symlink
+  file:
+    state: link
+    src: /etc/nginx/sites-available/influxdb
+    dest: /etc/nginx/sites-enabled/influxdb

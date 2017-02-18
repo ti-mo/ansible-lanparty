@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+# Nginx proxy for InfluxDB
+
+upstream influxdb {
+  server 127.0.0.1:8086;
+  keepalive 15;
+}
+
+server {
+  listen          80 default_server;
+  server_name     _;
+
+  proxy_set_header  X-Real-IP  $remote_addr;
+  proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header  Host $http_host;
+
+  location / {
+    proxy_pass http://influxdb;
+    proxy_read_timeout 5;
+    proxy_buffering off;
+
+    # Access Control
+    allow 127.0.0.1;
+{% for n in trusted_networks | default([]) %}
+    allow {{ n }};
+{% endfor %}
+    deny all;
+  }
+
+  location /status {
+    allow 127.0.0.1;
+    deny all;
+    stub_status;
+  }
+}

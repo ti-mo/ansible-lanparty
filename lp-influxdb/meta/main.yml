@@ -1,3 +1,7 @@
 ---
 dependencies:
-  - { role: lp-collectd, skip_config: true }
+  - role: lp-collectd
+    skip_config: true
+  - role: lp-nginx
+    nginx_disable_default: true
+    nginx_worker_processes: 2

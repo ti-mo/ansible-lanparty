@@ -35,9 +35,14 @@ reporting-disabled = false
 
   purge-interval = "1h"
 
-[cluster]
-  shard-writer-timeout = "5s" # The time within which a remote shard must respond to a write request. 
-  write-timeout = "10s" # The time within which a write request must complete on the cluster.
+[coordinator]
+  write-timeout = "10s"
+  max-concurrent-queries = 0
+  query-timeout = "0"
+  log-queries-after = "0"
+  max-select-point = 0
+  max-select-series = 0
+  max-select-buckets = 0
 
 [retention]
   enabled = true
@@ -53,23 +58,17 @@ reporting-disabled = false
   store-database = "_internal" # The destination database for recorded statistics
   store-interval = "10s" # The interval at which to record statistics
 
-[admin]
-  enabled = true
-  bind-address = ":{{ influx_admin_port | default(8083) }}"
-  https-enabled = false
-  https-certificate = "/etc/ssl/influxdb.pem"
-
 [http]
   enabled = true
-  bind-address = ":{{ influx_http_port | default(8086) }}"
+  bind-address = "127.0.0.1:{{ influx_http_port | default(8086) }}"
   auth-enabled = false
   log-enabled = true
   write-tracing = false
-  pprof-enabled = false
+  pprof-enabled = true
   https-enabled = false
   https-certificate = "/etc/ssl/influxdb.pem"
 
-[collectd]
+[[collectd]]
   enabled = true
   port = {{ influxdb_server_port | default(25826) }}
   database = "collectd_db"
@@ -83,10 +82,6 @@ reporting-disabled = false
 [continuous_queries]
   log-enabled = true
   enabled = true
-  recompute-previous-n = 2
-  recompute-no-older-than = "10m"
-  compute-runs-per-interval = 10
-  compute-no-more-than = "2m"
 
 {% for db, port in influx_udp_listeners.iteritems() %}
 [[udp]]
