@@ -2,7 +2,6 @@
 - name: elastic | Install OpenJDK
   apt:
     name: openjdk-8-jre-headless
-    default_release: testing
   tags: [ 'packages' ]
 
 - name: elastic | Install elasticsearch
