@@ -102,7 +102,9 @@ subnet {{ nattrs.address | ipaddr('network') }} netmask {{ nattrs.address | ipad
 {% for pool in nattrs.pools %}
     pool {
         range {{ pool.start }} {{ pool.end }};
-{% if nattrs.classes | default(true) and pool.class | default(true) %}allow members of "{{ pool.name }}";{% endif %}
+{% if nattrs.classes | default(true) and pool.class | default(true) %}
+        allow members of "{{ pool.name }}";
+{% endif %}
 {% for allow in pool.allow | default([]) %}
         allow members of "{{ allow }}";
 {% endfor %}
