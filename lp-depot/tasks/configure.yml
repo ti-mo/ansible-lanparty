@@ -21,7 +21,7 @@
 
 - name: Depot | Render Proxy Parameters
   template:
-    src: "{{ item }}.conf.j2"
+    src: "includes/{{ item }}.conf.j2"
     dest: "/etc/nginx/depot/{{ item }}.conf"
   with_items:
     - proxy-cache
