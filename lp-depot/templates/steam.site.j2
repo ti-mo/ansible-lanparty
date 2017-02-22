@@ -9,6 +9,8 @@ server {
 
   resolver {{ depot_resolvers | join(" ") }};
 
+  include depot/proxy-base.conf;
+
   location /depot {
     proxy_cache steam;
 

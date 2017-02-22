@@ -24,6 +24,7 @@
     src: "includes/{{ item }}.conf.j2"
     dest: "/etc/nginx/depot/{{ item }}.conf"
   with_items:
+    - proxy-base
     - proxy-cache
     - proxy-pass
     - proxy-slice
