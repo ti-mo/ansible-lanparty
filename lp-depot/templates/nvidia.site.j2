@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+server {
+  listen 80;
+  server_name .{{ depot_sites.nvidia.domains | join(" .") }};
+
+  access_log {{ depot_logdir }}/nvidia/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/nvidia/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }};
+
+  proxy_cache nvidia;
+
+  include depot/proxy-base.conf;
+
+  location / {
+
+    include depot/proxy-slice.conf;
+
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+}

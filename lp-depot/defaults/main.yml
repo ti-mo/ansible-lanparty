@@ -30,6 +30,14 @@ depot_sites:
       - blzddist1-a.akamaihd.net
       - blzddist2-a.akamaihd.net
       - dist.blizzard.com.edgesuite.net
+  nvidia:
+    size: 10g
+    domains:
+      - uk.download.nvidia.com
+      - us.download.nvidia.com
+      - cn.download.nvidia.com
+      - tw.download.nvidia.com
+      - international-gfe.download.nvidia.com
   riot:
     size: 5g
     domains:
