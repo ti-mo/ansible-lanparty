@@ -39,7 +39,23 @@ depot_sites:
   sony:
     size: 100g
     domains:
-      - pls.patch.station.sony.com
+      - fus01.ps4.update.playstation.net
+      - feu01.ps4.update.playstation.net
+      - fuk01.ps4.update.playstation.net
+      - fsa01.ps4.update.playstation.net
+      - fus01.ps3.update.playstation.net
+      - feu01.ps3.update.playstation.net
+      - fuk01.ps3.update.playstation.net
+      - fsa01.ps3.update.playstation.net
+      - apollo.dl.playstation.net
+      - apollo2.dl.playstation.net
+      - nsx.np.dl.playstation.net
+      - nsx-e.np.dl.playstation.net
+      - psn-rsc.prod.dl.playstation.net
+      - tmdb.np.dl.playstation.net
+      - ares.dl.playstation.net
+      - zeus.dl.playstation.net
+      - gs2.ww.prod.dl.playstation.net
   uplay:
     size: 100g
     domains:
