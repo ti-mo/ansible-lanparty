@@ -61,7 +61,7 @@ sv_pure_kick_clients 1
 # Drops all round backups in a directory per server
 mp_backup_round_auto 1
 mp_backup_round_file "round_backups/server_{{ item.key }}"
-mp_backup_round_file_pattern "%prefix%/{{ csgo_backup_pattern }}"
+mp_backup_round_file_pattern "{{ csgo_backup_pattern }}"
 {% endif %}
 
 {% if item.value.overtime | default(false) %}
