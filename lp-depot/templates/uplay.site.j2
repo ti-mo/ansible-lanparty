@@ -9,9 +9,11 @@ server {
 
   resolver {{ depot_resolvers | join(" ") }};
 
+  proxy_cache uplay;
+
+  include depot/proxy-base.conf;
+
   location / {
-    # Cache Location
-    proxy_cache uplay;
 
     include depot/proxy-noslice.conf;
 

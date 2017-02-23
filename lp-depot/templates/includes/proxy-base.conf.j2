@@ -11,7 +11,6 @@ keepalive_requests 1000000;
 
 # Upstream Configuration
 proxy_next_upstream error timeout http_404;
-proxy_pass http://$host$request_uri;
 proxy_redirect off;
 proxy_ignore_client_abort on;
 

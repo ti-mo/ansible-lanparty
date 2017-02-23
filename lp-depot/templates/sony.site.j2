@@ -1,5 +1,8 @@
 # {{ ansible_managed }}
 
+# Credits go to D. Porter from Q-Con
+# Endorse at https://github.com/Q-Con/qcacher
+
 server {
   listen 80;
   server_name .{{ depot_sites.sony.domains | join(" .") }};
@@ -9,15 +12,82 @@ server {
 
   resolver {{ depot_resolvers | join(" ") }};
 
-  location / {
-    proxy_cache sony;
+  proxy_cache sony;
+
+  include depot/proxy-base.conf;
+
+  # Patch manifests
+  location ~ ^/update/ps(3|4)/list/ {
+
+    include depot/proxy-noslice.conf;
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+
+    # Override cache valid time in proxy-noslice
+    proxy_cache_valid 200 1m;
+  }
+
+  # Patch binaries
+  location ~ ^/update/ps(3|4)/image/ {
 
     include depot/proxy-slice.conf;
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+  }
+
+  # PSN Title Metadata
+  # PS3 at /tmdb/
+  # PS4 at /tmdb2/
+  location ~ ^/tmdb2? {
+
+    include depot/proxy-noslice.conf;
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+
+    # Handle redirects to 3rd party CDNs
+    error_page 301 302 307 = @redirect;
+    recursive_error_pages on;
+    proxy_intercept_errors on;
+
+    proxy_cache_valid 200 1m;
+  }
+
+  # PSN app content
+  location ~ ^/(cdn|gs2)/ {
+
+    include depot/proxy-slice.conf;
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
+
+    # Handle redirects to 3rd party CDNs
+    error_page 301 302 307 = @redirect;
+    recursive_error_pages on;
+    proxy_intercept_errors on;
+
+    # PSN's Cache-Control and Expires are restrictive
+    proxy_ignore_headers Expires Cache-Control;
+  }
+
+  # Process a redirect and cache the response
+  location @redirect {
+
+    include depot/proxy-slice.conf;
+    include depot/proxy-cache.conf;
+
+    # PSN's Cache-Control and Expires are restrictive
+    proxy_ignore_headers Expires Cache-Control;
+
+    set $location $upstream_http_location;
+    proxy_pass $location;
+  }
+
+  location / {
+
+    include depot/proxy-slice.conf;
+    include depot/proxy-cache.conf;
+    include depot/proxy-pass.conf;
 
     # Extra Cache Settings
     proxy_ignore_headers Expires Cache-Control;
-
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
   }
 }

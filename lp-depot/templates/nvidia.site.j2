@@ -2,14 +2,14 @@
 
 server {
   listen 80;
-  server_name .{{ depot_sites.blizzard.domains | join(" .") }};
+  server_name .{{ depot_sites.nvidia.domains | join(" .") }};
 
-  access_log {{ depot_logdir }}/blizzard/depot-access.log depot buffer=128k flush=1m;
-  error_log {{ depot_logdir }}/blizzard/depot-error.log;
+  access_log {{ depot_logdir }}/nvidia/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/nvidia/depot-error.log;
 
   resolver {{ depot_resolvers | join(" ") }};
 
-  proxy_cache blizzard;
+  proxy_cache nvidia;
 
   include depot/proxy-base.conf;
 

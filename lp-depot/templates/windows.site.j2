@@ -9,14 +9,13 @@ server {
 
   resolver {{ depot_resolvers | join(" ") }};
 
-  location / {
-    # Cache Location
-    proxy_cache windows;
+  proxy_cache windows;
 
-    # Use slicing method for this site
+  include depot/proxy-base.conf;
+
+  location / {
     include depot/proxy-slice.conf;
 
-    # Use proxy_cache method
     include depot/proxy-cache.conf;
     include depot/proxy-pass.conf;
   }
