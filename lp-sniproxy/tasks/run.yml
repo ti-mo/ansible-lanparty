@@ -1,0 +1,6 @@
+---
+- name: Run | Ensure Service
+  service:
+    name: sniproxy
+    state: started
+    enabled: true

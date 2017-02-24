@@ -14,12 +14,14 @@ InfluxDB Back-end
 At present, the only configuration variables are:
 
 ```
-influxdb_server: 127.0.0.1
-influxdb_server_port: 25826
+collectd_targets:
+  example:
+    address: 1.2.3.4
+    port: 25826
 ```
 
-`influxdb_server` has no default and needs to be set in order for the `network`
-plugin to be activated. `influxdb_server_port` defaults to 25826.
+`collectd_targets` defaults to an empty hash and needs to be set in order for
+the `network` plugin to be activated. `port` defaults to 25826.
 
 Skipping Configuration
 ---
