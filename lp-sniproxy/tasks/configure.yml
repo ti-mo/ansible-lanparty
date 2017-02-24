@@ -1,0 +1,6 @@
+---
+- name: Configure | Render Configuration
+  template:
+    src: sniproxy.j2
+    dest: /etc/sniproxy.conf
+  notify: restart sniproxy

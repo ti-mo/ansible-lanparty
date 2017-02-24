@@ -1,0 +1,10 @@
+---
+- name: Install | SNIProxy Package
+  apt:
+    name: sniproxy
+
+- name: Install | Render Unit File
+  template:
+    src: sniproxy.unit.j2
+    dest: /etc/systemd/system/sniproxy.service
+  notify: reload daemons

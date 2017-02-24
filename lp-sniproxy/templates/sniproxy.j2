@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+
+user nobody
+pidfile /var/tmp/sniproxy.pid
+
+resolver {
+    nameserver 8.8.8.8
+    search example.com
+    mode ipv4_only
+}
+
+error_log {
+    filename /var/log/sniproxy/error.log
+    priority notice
+}
+
+access_log {
+    filename /var/log/sniproxy/access.log
+}
+
+listen 0.0.0.0:443 {
+    proto tls
+}
+
+table {
+    .* *:443
+}

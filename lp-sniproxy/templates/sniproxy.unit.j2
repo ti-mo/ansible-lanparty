@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+[Unit]
+Description=SNIProxy
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/sbin/sniproxy -f
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

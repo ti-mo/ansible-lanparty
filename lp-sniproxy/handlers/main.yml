@@ -1,0 +1,8 @@
+---
+- name: restart sniproxy
+  service:
+    name: sniproxy
+    state: restarted
+
+- name: reload daemons
+  command: systemctl daemon-reload

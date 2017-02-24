@@ -1,0 +1,9 @@
+---
+- include: install.yml
+  tags: [ 'install' ]
+
+- include: configure.yml
+  tags: [ 'configure' ]
+
+- include: run.yml
+  tags: [ 'run' ]
