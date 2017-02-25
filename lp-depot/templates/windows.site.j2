@@ -7,7 +7,7 @@ server {
   access_log {{ depot_logdir }}/windows/depot-access.log depot buffer=128k flush=1m;
   error_log {{ depot_logdir }}/windows/depot-error.log;
 
-  resolver {{ depot_resolvers | join(" ") }};
+  resolver {{ depot_resolvers | join(" ") }} ipv6=off;
 
   proxy_cache windows;
 

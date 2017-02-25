@@ -7,7 +7,7 @@ server {
   access_log {{ depot_logdir }}/steam/depot-access.log depot buffer=128k flush=1m;
   error_log {{ depot_logdir }}/steam/depot-error.log;
 
-  resolver {{ depot_resolvers | join(" ") }};
+  resolver {{ depot_resolvers | join(" ") }} ipv6=off;
 
   include depot/proxy-base.conf;
 
