@@ -4,6 +4,9 @@ user {{ www_user | default('www-data') }};
 worker_processes {{ nginx_worker_processes | default('auto') }};
 pid {{ nginx_pid | default('/var/run/nginx.pid') }};
 
+# Increase the open file limit for workers
+worker_rlimit_nofile {{ nginx_file_limit | default(16000) }};
+
 events {
   worker_connections 1024;
 }
