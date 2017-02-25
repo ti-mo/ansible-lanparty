@@ -22,7 +22,7 @@ depot_sites:
       - akamai.cdn.ea.com
       - lvlt.cdn.ea.com
   blizzard:
-    size: 80g
+    size: 200g
     domains:
       - dist.blizzard.com
       - llnw.blizzard.com
