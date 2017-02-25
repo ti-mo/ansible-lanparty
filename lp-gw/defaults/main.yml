@@ -96,6 +96,9 @@ gw_services:
   grwild:
     ports:
       - [ 'udp', '3074:3083', 'prio2' ]
+  h1z1:
+    ports:
+      - [ 'udp', '20040:20199', 'prio2' ]
   mc:
     ports:
       - [ 'both', '25561:25565', 'prio2' ]
@@ -109,6 +112,9 @@ gw_services:
   rift:
     ports:
       - [ 'tcp', '6520:6540', 'prio2' ]
+  rust:
+    ports:
+      - [ 'udp', '28015', 'prio2' ]
   uplay:
     ports:
       - [ 'tcp', '14000', 'prio2' ]
