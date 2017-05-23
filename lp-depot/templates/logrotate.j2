@@ -19,7 +19,7 @@
   endscript
 
   # Nginx package should do this
-  #  postrotate
-  #    invoke-rc.d nginx rotate >/dev/null 2>&1
-  #  endscript
+  postrotate
+    invoke-rc.d nginx rotate >/dev/null 2>&1
+  endscript
 }
