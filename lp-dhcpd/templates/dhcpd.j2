@@ -119,3 +119,12 @@ subnet {{ nattrs.address | ipaddr('network') }} netmask {{ nattrs.address | ipad
 }
 
 {% endfor %}
+
+{% if dhcp.reservations is defined %}
+{% for reservation in dhcp.reservations %}
+host {{ reservation.name }} {
+    hardware ethernet {{ reservation.mac }};
+    fixed-address {{ reservation.ip }};
+}
+{% endfor %}
+{% endif %}
