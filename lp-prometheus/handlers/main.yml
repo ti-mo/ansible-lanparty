@@ -1,0 +1,8 @@
+- name: reload prometheus
+  service: name=prometheus state=reloaded
+
+- name: restart prometheus
+  service: name=prometheus state=restarted
+
+- name: update apt
+  command: apt-get update

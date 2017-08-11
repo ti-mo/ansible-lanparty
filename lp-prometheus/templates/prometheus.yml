@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 1s
+
+rule_files:
+  - life.rules
+  - alert.rules
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+{%for host in groups['prometheus'] %}
+        - {{host}}:9090
+{%endfor%}
