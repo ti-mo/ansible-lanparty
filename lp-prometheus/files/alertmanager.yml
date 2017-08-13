@@ -1,0 +1,26 @@
+global:
+  slack_api_url: https://hooks.slack.com/services/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
+
+route:
+  group_by: ['alertname']
+  group_wait: 2s
+  group_interval: 6s
+  receiver: FoM-network
+  routes:
+    - match:
+        contact: fom
+      receiver: FoM-network
+      continue: true
+
+receivers:
+- name: 'FoM-network'
+  slack_configs:
+    - username: 'Prometheus'
+      channel: '#network-alerts'
+      send_resolved: true
+      title: "[{{ .Status | toUpper }}] -> {{ .CommonAnnotations.summary }}"
+      text: "{{ .CommonAnnotations.description }}"
+  webhook_configs:
+    - url: http://10.3.10.10:18081/alerts
+      send_resolved: true
+      

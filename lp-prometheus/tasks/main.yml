@@ -1,0 +1,2 @@
+- include: prometheus-install.yml
+  become: true
