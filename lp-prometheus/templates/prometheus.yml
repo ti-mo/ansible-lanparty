@@ -1,0 +1,93 @@
+global:                                                                         
+  scrape_interval: 1m                                                           
+  scrape_timeout: 10s                                                           
+  evaluation_interval: 5s
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+{%for host in groups['alertmanager']%}
+        - {{host}}:9093
+{%endfor%}
+    scheme: http
+    timeout: 15s
+
+rule_files:
+  - home.rules
+
+remote_write:
+  - url: "http://{{prometheus_host}}:9201/write"
+
+remote_read:
+  - url: "http://{{prometheus_host}}:9201/read"
+
+scrape_configs:
+  - job_name: node-exporter             
+    static_configs: 
+      - targets:
+{%for host in groups['nodes']%}
+        - {{host}}:9100
+{%endfor%}
+
+  - job_name: container-exporter        
+    static_configs: 
+      - targets:
+{%for host in groups['docker']%}
+        - {{host}}:9104
+{%endfor%}
+
+  - job_name: snmp  
+    scrape_interval: 30s                
+    scrape_timeout: 15s                 
+    metrics_path: /snmp                 
+    params:         
+      module: [default]                 
+    tls_config:     
+      insecure_skip_verify: true        
+    static_configs: 
+      - targets:    
+{%for host in groups['snmp-targets']%}
+        - {{host}}
+{%endfor%}
+    relabel_configs:                    
+      - source_labels: [__address__]    
+        regex: (.*?)(:80)?              
+        target_label: __param_target    
+        replacement: $1                 
+      - source_labels: [__param_target] 
+        regex: (.*) 
+        target_label: instance          
+        replacement: $1                 
+      - source_labels: []               
+        regex: (.*) 
+        target_label: __address__       
+        replacement: {{snmp_exp_host}}:9116    
+      
+  - job_name: blackbox-icmp             
+    scrape_interval: 5s
+    metrics_path: /probe                
+    params:         
+      module: [icmp]                    
+    static_configs: 
+      - targets:    
+{%for host in groups['network-devices'] %}
+        - {{host}}
+{%endfor%}
+{%for host in groups['ping-targets'] %}
+        - {{host}}
+{%endfor%}
+    relabel_configs:                    
+      - source_labels: [__address__]    
+        regex: (.*) 
+        target_label: __param_target    
+        replacement: ${1}               
+      - source_labels: [__param_target] 
+        regex: (.*) 
+        target_label: instance          
+        replacement: ${1}               
+      - source_labels: []               
+        regex: .*   
+        target_label: __address__       
+        replacement: {{blackbox_exp_host}}:9115  # Blackbox exporter.
+        

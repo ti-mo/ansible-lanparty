@@ -1,0 +1,6 @@
+prometheus_version: 1.7.1
+alertmanager_version: 0.8.0
+
+prometheus_host: localhost
+blackbox_exp_host: localhost
+snmp_exp_host: localhost

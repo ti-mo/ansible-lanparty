@@ -1,0 +1,14 @@
+[Unit]
+Description=Prometheus monitoring system way of handling alerts
+
+[Service]
+ExecStart=/etc/init.d/alertmanager start
+ExecStop=/etc/init.d/alertmanager stop
+ExecReload=/etc/init.d/alertmanager reload
+PIDFile=/var/run/alertmanager.pid
+RemainAfterExit=no
+Restart=always
+Type=forking
+
+[Install]
+WantedBy=multi-user.target

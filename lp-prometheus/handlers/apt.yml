@@ -1,0 +1,7 @@
+- name: update apt
+  command: apt-get update
+
+- name: update os
+  apt:
+    update_cache: yes
+    upgrade: dist
