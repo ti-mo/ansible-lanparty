@@ -1,0 +1,14 @@
+[Unit]
+Description=Prometheus monitoring system
+
+[Service]
+ExecStart=/etc/init.d/prometheus start
+ExecStop=/etc/init.d/prometheus stop
+ExecReload=/etc/init.d/prometheus reload
+PIDFile=/var/run/prometheus.pid
+RemainAfterExit=no
+Restart=always
+Type=forking
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+# Alert for any instance that is unreachable for >5 minutes.
+ALERT IcmpPingFail
+  IF probe_success == 0
+  FOR 5s
+  LABELS { 
+    severity = "critical",
+    contact = "fom",
+  }
+  ANNOTATIONS {
+    summary = "Device {{ $labels.instance }} down",
+    description = "{{ $labels.instance }} has failed to respond to ICMP.",
+  }
+
+# Alert for any instance that have a median request latency >1s.
+ALERT MemHigh
+  IF node_memory_Active/1e9 >= 10
+  FOR 15m
+  LABELS { 
+    severity = "warning",
+    contact = "fom",
+  }
+  ANNOTATIONS {
+    summary = "Device {{ $labels.instance }} has high mem usage",
+    description = "{{ $labels.instance }} has high mem usage: {{ $value }}",
+  }
+  

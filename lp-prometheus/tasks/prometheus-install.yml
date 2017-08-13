@@ -1,0 +1,79 @@
+- name: make groups
+  group:
+    name: prometheus
+    state: present
+
+- name: make users
+  user: name=prometheus shell=/bin/false groups=prometheus createhome=yes state=present
+
+- name: prometheus | get prometheus from github
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v{{prometheus_version}}/prometheus-{{prometheus_version}}.linux-amd64.tar.gz
+    dest: /home/prometheus
+
+- name: prometheus | unpack the release
+  unarchive:
+    remote_src: yes
+    src: /home/prometheus/prometheus-{{prometheus_version}}.linux-amd64.tar.gz
+    dest: /home/prometheus
+
+- name: prometheus | copy bin to /usr/sbin
+  copy:
+    remote_src: yes
+    src: /home/prometheus/prometheus-{{prometheus_version}}.linux-amd64/prometheus
+    dest: /usr/sbin
+    owner: prometheus
+    group: prometheus
+    mode: u+rwx
+
+- name: alertmanager | get alertmanager from github
+  get_url:
+    url: https://github.com/prometheus/alertmanager/releases/download/v{{alertmanager_version}}/alertmanager-{{alertmanager_version}}.linux-amd64.tar.gz
+    dest: /home/prometheus
+
+- name: alertmanager | unpack the release
+  unarchive:
+    remote_src: yes
+    src: /home/prometheus/alertmanager-{{alertmanager_version}}.linux-amd64.tar.gz
+    dest: /home/prometheus
+
+- name: alertmanager | copy bin to /usr/sbin
+  copy:
+    remote_src: yes
+    src: /home/prometheus/alertmanager-{{alertmanager_version}}.linux-amd64/alertmanager
+    dest: /usr/sbin
+    owner: prometheus
+    group: prometheus
+    mode: u+rwx
+
+- name: setup init.d scripts
+  copy: src={{item}}.sh dest=/etc/init.d/{{item}} mode=u+rwx
+  with_items:
+    - alertmanager
+    - prometheus
+
+- name: setup systemctl service
+  copy: src={{item}}.service dest=/etc/systemd/system/{{item}}.service
+  with_items:
+    - alertmanager
+    - prometheus
+
+- name: prometheus | Create prometheus config
+  template: 
+    src: templates/prometheus.yml 
+    dest: /etc/prometheus/prometheus.yml
+
+- name: prometheus | Copy rules
+  copy: src={{item}} dest=/etc/prometheus/{{item}}
+  with_items:
+    - home.rules
+
+- name: alertmanager | Copy alertmanager config
+  copy: src=alertmanager.yml dest=/etc/alertmanager/alertmanager.yml
+
+- name: prometheus | Start prometheus
+  service: name=prometheus state=started enabled=yes
+
+- name: alertmanager | Start alertmanager
+  service: name=alertmanager state=started enabled=yes
+    
