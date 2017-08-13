@@ -1,10 +1,21 @@
 global:
   scrape_interval: 10s
-  evaluation_interval: 1s
+  scrape_timeout: 5s   
+  evaluation_interval: 5s
 
 rule_files:
   - life.rules
   - alert.rules
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+{%for host in groups['alertmanager']%}
+        - {{host}}:9093
+{%endfor%}
+    scheme: http
+    timeout: 15s
 
 scrape_configs:
   - job_name: 'prometheus'

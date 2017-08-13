@@ -33,11 +33,5 @@
 - name: Prometheus | Start prometheus
   service: name=prometheus state=started enabled=yes
 
-- name: Pushgateway | Start pushgateway
-  service: name=pushgateway state=started enabled=yes
-
-- name: Pushgateway | Start alertmanager
+- name: Alertmanager | Start alertmanager
   service: name=alertmanager state=started enabled=yes
-
-- name: Node-exporter | Start node-exporter
-  service: name=node-exporter state=started enabled=yes
