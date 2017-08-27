@@ -9,6 +9,12 @@ dhcp:
   timeservers: []
   dyndns: false
 
+  # Hand out fixed IPs to hosts
+  reservations: []
+    # - name: example_host
+    #   mac: f0:0b:ar
+    #   ip: 1.2.3.4
+
   # Using standard, used to be interim
   updatestyle: standard
   leasetime: 86400
