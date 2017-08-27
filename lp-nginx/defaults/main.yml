@@ -5,5 +5,8 @@ nginx_worker_processes: auto
 
 nginx_pid: /var/run/nginx.pid
 
+nginx_users: {}
+  # user: password
+
 www_user: www-data
 www_group: www-data
