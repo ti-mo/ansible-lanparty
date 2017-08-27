@@ -14,6 +14,12 @@
     dest: /etc/nginx/nginx.conf
   notify: reload nginx
 
+- name: Nginx | Render htpasswd
+  template:
+    src: htpasswd.j2
+    dest: /et/nginx/htpasswd
+  notify: reload nginx
+
 - name: Nginx | Render Defaults
   template:
     src: nginx.default.j2
