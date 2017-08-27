@@ -1,4 +1,2 @@
 ---
-logstash_group: logstash
-logstash:
-  beats: 5044
+elasticsearch_group: elastic

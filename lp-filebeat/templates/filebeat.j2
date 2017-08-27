@@ -1,4 +1,5 @@
 # {{ ansible_managed }}
+
 filebeat:
   prospectors:
 {% for name, value in filebeat.iteritems() | default({}) %}
@@ -12,6 +13,10 @@ filebeat:
 {% endfor %}
 {% endfor %}
 
-output:
-  logstash:
-    hosts: [ "{{ logstash_host }}:{{ logstash.beats }}" ]
+output.elasticsearch:
+  hosts: [
+{% for h in groups[elasticsearch_group] %}
+    "http://{{ hostvars[h]['ansible_default_ipv4']['address'] }}:80"{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
+  index: "{{ filebeat_index | default('filebeat-%{+yyyy.MM.dd}') }}"
