@@ -1,6 +1,7 @@
 ---
 bind_logdir: /var/log/named
 
+filebeat_index: "bind-%{+yyyy.MM.dd}"
 filebeat:
   dns:
     type: bind-query

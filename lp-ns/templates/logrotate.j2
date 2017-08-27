@@ -2,10 +2,10 @@
 
 {{ bind_logdir }}/*.log
 {
-  size 10M
-  weekly
+  size 50M
+  daily
   missingok
-  rotate 15
+  rotate 5
   compress
   notifempty
   create 0644 bind bind
