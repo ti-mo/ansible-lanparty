@@ -1,10 +1,4 @@
 ---
+kibana_name: lanparty Kibana
 kibana_domain: kibana.example.lan
-kibana_install_dir: /opt/kibana
-kibana_user: kibana
 kibana_port: 5601
-
-kibana_version: 4.3.1
-kibana_url: "https://download.elastic.co/kibana/kibana/kibana-{{ kibana_version }}-linux-x64.tar.gz"
-
-kibana_pidfile: "{{ kibana_install_dir }}/kibana.pid"

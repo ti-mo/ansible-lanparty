@@ -1,0 +1,6 @@
+---
+- name: Run | Ensure Service
+  service:
+    name: kibana
+    state: started
+    enabled: true

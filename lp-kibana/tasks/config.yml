@@ -1,0 +1,19 @@
+---
+- name: Install | Nginx Site
+  template:
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-available/kibana
+  notify: reload nginx
+
+- name: Install | Enable Nginx Site
+  file:
+    state: link
+    src: /etc/nginx/sites-available/kibana
+    dest: /etc/nginx/sites-enabled/kibana
+  notify: restart nginx
+
+- name: Install | Render Configuration
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+  notify: restart kibana

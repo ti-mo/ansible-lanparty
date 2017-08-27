@@ -1,0 +1,4 @@
+---
+- name: Install | Kibana
+  apt:
+    name: kibana
