@@ -82,6 +82,7 @@ depot_path: /var/lib/nginx
 depot_logdir: /var/log/depot
 depot_logrotate_size: 200M
 
+filebeat_index: "depot-%{+yyyy.MM.dd}"
 filebeat:
   depot:
     type: nginx-access
