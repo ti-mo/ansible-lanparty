@@ -5,7 +5,13 @@
 start() {
 {% for name, value in netif.iteritems() %}
 
-  # Add routes to internal networks to the default routing table
+# Disable offloading for interfaces
+{% if value.offloading | default(true) %}
+echo "Disabling NIC offloading for interface {{ name }}."
+/sbin/ethtool -K {{ name }} gso off gro off tso off lro off ufo off
+{% endif %}
+
+# Add routes to internal networks to the default routing table
 {% if value.internal is defined and value.internal %}
 {#
   Run an extra check to make sure we don't falsely add an internal route
@@ -21,7 +27,7 @@ start() {
 
   # Add external routes to their own routing table
   # Send returning packets to the 'main' table with internal routes
-{%- if value.route is defined and value.addr != 'dhcp' %}
+{% if value.route is defined and value.addr != 'dhcp' %}
   echo "Adding default route via {{ value.nexthop }} to table {{ name }}"
   ip route add default via {{ value.nexthop }} table {{ name }}
 {% set pref = 10000 + value.route %}
