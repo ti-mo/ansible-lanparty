@@ -9,17 +9,15 @@
     name: elasticsearch
   tags: [ 'packages' ]
 
-- name: elastic | Set Heap Size
-  lineinfile:
-    line: "ES_HEAP_SIZE={{ elasticsearch.memory | default('1024m') }}"
-    regexp: '^\#?\s?ES_HEAP_SIZE'
-    dest: /etc/default/elasticsearch
-  notify: restart es
-
-- name: elastic | Render Configuration
+- name: elastic | Render elasticsearch.yml
   template:
     src: es.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
+
+- name: elastic | Render jvm.options
+  template:
+    src: jvm.options.j2
+    dest: /etc/elasticsearch/jvm.options
   notify: restart es
 
 - name: elastic | Start Service

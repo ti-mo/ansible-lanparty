@@ -5,4 +5,5 @@ elasticsearch:
   publish_host: '{{ ansible_default_ipv4.address }}'
   tcp_port: 9300
   http_port: 9200
-  memory: 1024m
+  heap: 1g
+  jvm_custom_parameters: ''

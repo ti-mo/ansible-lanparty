@@ -4,12 +4,6 @@
 cluster.name: {{ elasticsearch.cluster }}
 node.name: "{{ inventory_hostname }}"
 
-# Indexing/Sharding
-index.number_of_shards: 5
-# We want each index to be replicated on exactly one node
-# Setting this to <es_servers> - 1 ensures green cluster state
-index.number_of_replicas: {{ (groups[elasticsearch_group] | count) - 1 }}
-
 # Networking
 network.bind_host: {{ elasticsearch.bind_host }}
 network.publish_host: {{ elasticsearch.bind_host }}
@@ -25,8 +19,7 @@ http.port: {{ elasticsearch.http_port }}
 
 # Discovery
 discovery.zen.minimum_master_nodes: {{ elasticsearch.min_masters | default('1') }}
-discovery.zen.ping.timeout: {{ elasticsearch.timeout | default('3') }}s
-discovery.zen.ping.multicast.enabled: {{ elasticsearch.multicast | default('false') }}
+discovery.zen.ping_timeout: {{ elasticsearch.timeout | default('3') }}s
 {% if elasticsearch_group is defined and groups[elasticsearch_group] | length > 1 %}
 discovery.zen.ping.unicast.hosts: [
 {% for h in groups[elasticsearch_group] %}
