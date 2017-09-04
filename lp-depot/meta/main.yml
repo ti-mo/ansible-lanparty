@@ -1,6 +1,5 @@
 ---
 dependencies:
-  - { role: lp-consul, when: consul_agent_enable | default(false) == true }
   - { role: lp-nginx, start_nginx: false, nginx_disable_default: false }
   - { role: lp-sniproxy }
   - { role: lp-filebeat }

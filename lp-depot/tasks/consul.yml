@@ -4,3 +4,4 @@
     src: consul.service.j2
     dest: /etc/consul.d/services/cache.json
   notify: reload consul
+  when: consul_agent_enable | default(false)
