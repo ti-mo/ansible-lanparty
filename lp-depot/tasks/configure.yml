@@ -19,18 +19,6 @@
     state: directory
     path: /etc/nginx/depot
 
-- name: Depot | Render Proxy Parameters
-  template:
-    src: "includes/{{ item }}.conf.j2"
-    dest: "/etc/nginx/depot/{{ item }}.conf"
-  with_items:
-    - proxy-base
-    - proxy-cache
-    - proxy-pass
-    - proxy-slice
-    - proxy-noslice
-  notify: reload nginx
-
 - name: Depot | Render Site Templates
   template:
     src: "{{ item.key }}.site.j2"

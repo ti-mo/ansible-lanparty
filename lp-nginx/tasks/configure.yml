@@ -21,6 +21,18 @@
   notify: reload nginx
   when: nginx_users
 
+- name: Nginx | Snippets
+  template:
+    src: "snippets/{{ item }}.conf.j2"
+    dest: "/etc/nginx/snippets/{{ item }}.conf"
+  with_items:
+    - proxy-base
+    - proxy-cache
+    - proxy-pass
+    - proxy-slice
+    - proxy-noslice
+  notify: reload nginx
+
 - name: Nginx | Render Defaults
   template:
     src: nginx.default.j2

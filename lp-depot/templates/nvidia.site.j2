@@ -11,13 +11,13 @@ server {
 
   proxy_cache nvidia;
 
-  include depot/proxy-base.conf;
+  include snippets/proxy-base.conf;
 
   location / {
 
-    include depot/proxy-slice.conf;
+    include snippets/proxy-slice.conf;
 
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
   }
 }

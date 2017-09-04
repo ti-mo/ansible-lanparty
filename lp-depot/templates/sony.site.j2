@@ -14,14 +14,14 @@ server {
 
   proxy_cache sony;
 
-  include depot/proxy-base.conf;
+  include snippets/proxy-base.conf;
 
   # Patch manifests
   location ~ ^/update/ps(3|4)/list/ {
 
-    include depot/proxy-noslice.conf;
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-noslice.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
 
     # Override cache valid time in proxy-noslice
     proxy_cache_valid 200 1m;
@@ -30,9 +30,9 @@ server {
   # Patch binaries
   location ~ ^/update/ps(3|4)/image/ {
 
-    include depot/proxy-slice.conf;
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-slice.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
   }
 
   # PSN Title Metadata
@@ -40,9 +40,9 @@ server {
   # PS4 at /tmdb2/
   location ~ ^/tmdb2? {
 
-    include depot/proxy-noslice.conf;
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-noslice.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
 
     # Handle redirects to 3rd party CDNs
     error_page 301 302 307 = @redirect;
@@ -55,9 +55,9 @@ server {
   # PSN app content
   location ~ ^/(cdn|gs2)/ {
 
-    include depot/proxy-slice.conf;
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-slice.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
 
     # Handle redirects to 3rd party CDNs
     error_page 301 302 307 = @redirect;
@@ -71,8 +71,8 @@ server {
   # Process a redirect and cache the response
   location @redirect {
 
-    include depot/proxy-slice.conf;
-    include depot/proxy-cache.conf;
+    include snippets/proxy-slice.conf;
+    include snippets/proxy-cache.conf;
 
     # PSN's Cache-Control and Expires are restrictive
     proxy_ignore_headers Expires Cache-Control;
@@ -83,9 +83,9 @@ server {
 
   location / {
 
-    include depot/proxy-slice.conf;
-    include depot/proxy-cache.conf;
-    include depot/proxy-pass.conf;
+    include snippets/proxy-slice.conf;
+    include snippets/proxy-cache.conf;
+    include snippets/proxy-pass.conf;
 
     # Extra Cache Settings
     proxy_ignore_headers Expires Cache-Control;
