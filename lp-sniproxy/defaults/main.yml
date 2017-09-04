@@ -1,0 +1,6 @@
+---
+# Entries to add to the pattern table. 'pattern' can be a Perl regex,
+# eg. ^(.+\.)?example\.com$ to match example.com including all subdomains.
+sniproxy_rules:
+  - pattern: ".*"
+    target: "*:443"

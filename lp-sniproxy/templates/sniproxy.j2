@@ -1,11 +1,9 @@
 # {{ ansible_managed }}
 
 user nobody
-pidfile /var/tmp/sniproxy.pid
 
 resolver {
     nameserver 8.8.8.8
-    search example.com
     mode ipv4_only
 }
 
@@ -23,5 +21,7 @@ listen 0.0.0.0:443 {
 }
 
 table {
-    .* *:443
+{% for r in sniproxy_rules | default([]) %}
+    {{ r.pattern }} {{ r.target }}
+{% endfor %}
 }
