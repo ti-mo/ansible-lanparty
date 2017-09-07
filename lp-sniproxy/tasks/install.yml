@@ -8,3 +8,5 @@
     src: sniproxy.unit.j2
     dest: /etc/systemd/system/sniproxy.service
   notify: reload daemons
+
+- meta: flush_handlers
