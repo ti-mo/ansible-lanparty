@@ -2,13 +2,15 @@
 [Unit]
 Description=Counter-Strike: Global Offensive Gameserver
 After=network.target network-online.target
+StartLimitInterval=600
+StartLimitBurst=20
 
 [Service]
 User={{ steamcmd_user }}
 EnvironmentFile={{ steamcmd_path }}/games/csgo/env/env_%I
 ExecStart={{ steamcmd_path }}/games/csgo/srcds_linux $GAMEPORT $TV $TICK $SLOTS $WORKSHOP $CMDLINE +servercfgfile server_%I.cfg
 Restart=always
-RestartSec=3
+RestartSec=30
 
 [Install]
 WantedBy=multi-user.target
