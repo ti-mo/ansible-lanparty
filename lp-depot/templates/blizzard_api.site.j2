@@ -18,7 +18,7 @@ server {
     proxy_cache_key   $uri;
     proxy_cache_valid 200 5s;
 
-    include snippets/proxy-cache.conf;
+    proxy_cache_lock on;
 
     proxy_pass http://$host:1119$request_uri;
   }
