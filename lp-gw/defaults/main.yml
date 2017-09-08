@@ -61,6 +61,9 @@ gw_services:
       - [ 'udp', 'IPSET_GAME_BLIZZ', 'dst', '5060:5062', 'prio2' ]
       - [ 'udp', 'IPSET_GAME_BLIZZ', 'dst', '6052', 'prio2' ]
       - [ 'tcp', 'IPSET_GAME_BLIZZ', 'dst', '6113', 'prio2' ]
+  bdesert:
+    ports:
+      - [ 'tcp', '9991:9993', 'prio2' ]
   brawl:
     ports:
       - [ 'tcp', '23000:23010', 'prio2' ]
