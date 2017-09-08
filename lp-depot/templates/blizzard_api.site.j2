@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+
+server {
+  listen 1119;
+
+  server_name .{{ depot_sites.blizzard_api.domains | join(" .") }};
+
+  access_log {{ depot_logdir }}/blizzard_api/depot-access.log depot buffer=128k flush=1m;
+  error_log {{ depot_logdir }}/blizzard_api/depot-error.log;
+
+  resolver {{ depot_resolvers | join(" ") }} ipv6=off;
+
+  proxy_cache blizzard_api;
+
+  include snippets/proxy-base.conf;
+
+  location / {
+    proxy_cache_key   $uri;
+    proxy_cache_valid 200 5s;
+
+    include snippets/proxy-cache.conf;
+
+    proxy_pass http://$host:1119$request_uri;
+  }
+}
