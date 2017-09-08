@@ -1,0 +1,3 @@
+dependencies:
+  - lp-mysql-client
+  - lp-nginx

@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+
+server {
+  listen      80;
+
+  server_name {{ observium.url | default('nms.example.lan') }};
+
+  root        {{ observium.install_dir }}/html/;
+  index       index.php;
+
+  access_log  {{ observium.install_dir }}/logs/access_log;
+  error_log   {{ observium.install_dir }}/logs/error_log;
+
+  location / {
+    try_files $uri $uri/ @librenms;
+
+    # Access Control
+    allow 127.0.0.1;
+    allow {{ ansible_default_ipv4.address }};
+{% for n in trusted_networks | default([]) %}
+    allow {{ n }};
+{% endfor %}
+    deny all;
+  }
+
+  location ~ \.php {
+    include fastcgi.conf;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
+  }
+
+  location ~ /\.ht {
+    deny all;
+  }
+
+  location @librenms {
+    rewrite api/v0(.*)$ /api_v0.php/$1 last;
+    rewrite ^(.+)$ /index.php/$1 last;
+  }
+}

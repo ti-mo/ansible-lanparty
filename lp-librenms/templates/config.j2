@@ -7,6 +7,9 @@
 $config['mydomain'] = "{{ domains.lan }}";
 $config['title_image'] = "images/{{ observium.title_image }}";
 
+### User LibreNMS will run as
+$config['user'] = 'www-data';
+
 ### Database config
 $config['db_host'] = "{{ hostvars[groups[mysql.backend_group][0]]['ansible_default_ipv4']['address'] }}";
 $config['db_user'] = "{{ mysql.apps.observium.user }}";
@@ -14,9 +17,9 @@ $config['db_pass'] = "{{ mysql.apps.observium.pass }}";
 $config['db_name'] = "{{ mysql.apps.observium.db }}";
 
 ### Memcached config - We use this to store realtime usage
-$config['memcached']['enable']  = FALSE;
-$config['memcached']['host']    = "localhost";
-$config['memcached']['port']    = 11211;
+// $config['memcached']['enable']  = FALSE;
+// $config['memcached']['host']    = "localhost";
+// $config['memcached']['port']    = 11211;
 
 ### Locations - it is recommended to keep the default
 $config['install_dir']  = "{{ observium.install_dir }}";
@@ -54,5 +57,3 @@ $config['poller_modules']['unix-agent'] = 1;
 # Feature Toggles
 # $config['enable_map'] = false;
 # $config['enable_syslog'] = false;
-
-?>

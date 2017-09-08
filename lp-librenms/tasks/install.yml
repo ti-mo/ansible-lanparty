@@ -3,7 +3,7 @@
   apt:
     name: "{{ item }}"
   with_items:
-    [ 'apache2', 'libapache2-mod-php5', 'php5-cli', 'php5-mysql', 'php5-json',
+    [ 'php5-fpm', 'php5-cli', 'php5-mysql', 'php5-json', 'php5-curl',
       'php5-gd', 'php5-snmp', 'php-pear', 'php-net-ipv4', 'php-net-ipv6',
       'snmp', 'graphviz', 'php5-mcrypt', 'mysql-client', 'rrdtool',
       'fping', 'imagemagick', 'whois', 'mtr-tiny', 'nmap',
@@ -36,6 +36,7 @@
   file:
     path: "{{ observium.install_dir }}/{{ item }}"
     state: directory
+    mode: 0775
   become_user: "{{ observium.user }}"
   with_items:
     - rrd

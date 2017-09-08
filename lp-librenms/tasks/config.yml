@@ -1,0 +1,27 @@
+---
+- name: Config | Render Configuration
+  template:
+    src: config.j2
+    dest: "{{ observium.install_dir }}/config.php"
+
+- name: Config | Render SNMP Client/MIB
+  template:
+    src: snmp.j2
+    dest: /etc/snmp/snmp.conf
+
+- name: Config | Migrate Database
+  command: "php {{ observium.install_dir }}/build-base.php chdir={{ observium.install_dir }}"
+  changed_when: false
+
+- name: Config | LibreNMS VirtualHost
+  template:
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-enabled/librenms
+  notify: reload nginx
+
+- name: Config | PHP-FPM Timezone
+  lineinfile:
+    path: /etc/php5/fpm/php.ini
+    regexp: '^;?\w?date.timezone'
+    line: "date.timezone = {{ timezone | default('Europe/Brussels') }}"
+  notify: restart php-fpm

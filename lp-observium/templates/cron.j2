@@ -1,8 +1,0 @@
-# {{ ansible_managed }}
-#
-33   */6  * * *   root    {{ observium.install_dir }}/discovery.php -h all >> /dev/null 2>&1
-*/5  *    * * *   root    {{ observium.install_dir }}/discovery.php -h new >> /dev/null 2>&1
-*/5  *    * * *   root    {{ observium.install_dir }}/poller-wrapper.py {{ observium.poller.threads }} >> /dev/null 2>&1
-15   0    * * *   root    sh {{ observium.install_dir }}/daily.sh >> /dev/null 2>&1
-*    *    * * *   root    {{ observium.install_dir }}/alerts.php >> /dev/null 2>&1
-*  *      * * *   root    {{ observium.install_dir }}/html/plugins/Weathermap/map-poller.php >> /dev/null 2>&1

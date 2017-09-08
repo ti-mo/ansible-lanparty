@@ -1,0 +1,5 @@
+---
+- name: Run | PHP-FPM
+  service:
+    name: php5-fpm
+    state: started
