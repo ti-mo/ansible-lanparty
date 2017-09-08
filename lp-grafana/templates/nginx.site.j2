@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+# Nginx proxy for Grafana
+
+upstream grafana {
+  server 127.0.0.1:3000;
+  keepalive 15;
+}
+
+server {
+  listen          80;
+  server_name     {{ grafana_domain }};
+
+  #access_log      /var/log/nginx/grafana.access.log;
+  #error_log       /var/log/nginx/grafana.error.log;
+
+  proxy_set_header  X-Real-IP  $remote_addr;
+  proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header  Host $http_host;
+
+  location / {
+    proxy_pass http://grafana;
+    proxy_read_timeout 90;
+    proxy_buffering off;
+
+    # Access Control
+    allow 127.0.0.1;
+    allow {{ ansible_default_ipv4.address }};
+{% for n in trusted_networks | default([]) %}
+    allow {{ n }};
+{% endfor %}
+    deny all;
+  }
+}

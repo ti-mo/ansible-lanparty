@@ -1,0 +1,4 @@
+---
+- name: Install | Grafana
+  apt:
+    name: grafana

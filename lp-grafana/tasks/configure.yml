@@ -1,0 +1,6 @@
+---
+- name: Config | Nginx Site
+  template:
+    src: nginx.site.j2
+    dest: /etc/nginx/sites-enabled/grafana
+  notify: reload nginx
