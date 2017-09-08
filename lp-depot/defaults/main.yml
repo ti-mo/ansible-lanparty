@@ -15,6 +15,7 @@ depot_sites:
       - cs.steampowered.com
       - clientconfig.akamai.steamstatic.com
       - hsar.steampowered.com.edgesuite.net
+      - steampipe.akamaized.net
   origin:
     size: 250g
     domains:
